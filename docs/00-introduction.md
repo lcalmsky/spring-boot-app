@@ -84,7 +84,7 @@ dependencies {
 > 위에 캡쳐만 보고 프로젝트를 생성하신 분들은 누락된 패키지를 추가해주세요. 😅   
 > 패키지 추가 후 Gradle을 reload 해줘야 합니다.  
 > 단축키 `⌘` + `⇧` + `I`를 사용하거나 Gradle 윈도우에서 프로젝트를 우클릭하여 아래 메뉴를 클릭해줍니다.
-> ![](../resources/images/00-08.png){: width="411" height="142"}
+> <img src="../resources/images/00-08.png" width="50%" height="50%">
 
 (1) Web 관련 개발을 하기 위핸 패키지 입니다.   
 (2) 인증, 인가(권한) 등을 더 쉽게 개발할 수 있게 해주는 패키지 입니다.    
@@ -132,7 +132,6 @@ spring-boot-starter-security 패키지를 추가하였기 때문에 자동으로
 이렇게 로그인 화면이 표시되는데 `ID`에 `user`를 `Password`에 복사한 비밀번호를 입력하시면 됩니다.
 
 ![](../resources/images/00-07.png)
-![](../resources/images/00-07.png)
 
 그럼 페이지가 이동되는데 이렇게 `Whitelabel Error Page`가 나타나면 정상동작한 것 입니다.
 
@@ -140,3 +139,6 @@ spring-boot-starter-security 패키지를 추가하였기 때문에 자동으로
 
 ---
 
+여기까지 프로젝트 생성 및 애플리케이션 실행 테스트를 완료했습니다.
+
+다음 포스팅에서는 회원 관련 기능을 구현하기 위해 계정 관련 도메인을 설계하도록 하겠습니다.
