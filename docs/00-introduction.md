@@ -34,15 +34,15 @@
 
 1. `IntelliJ IDEA`를 실행한 뒤 `New Project` 버튼을 클릭합니다.
 
-![](../resources/images/00-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/00-01.png)
 
 2. 프로젝트 전반적인 설정을 입력합니다.
 
-![](../resources/images/00-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-02.png)
 
 3. 개발에 필요한 의존성을 추가합니다. 추가한 의존성에 대한 설명은 아래 추가할 예정입니다.
 
-![](../resources/images/00-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-03.png)
 
 > `dependency`에 `mail`과 `actuator`를 빼먹고 캡쳐를 했네요. 나중에 추가할 수 있으니 그냥 넘어가겠습니다. 😅
 
@@ -50,10 +50,10 @@
 
 [여기](https://start.spring.io/) 방문하여 위와 동일한 과정을 거칩니다.
 
-![](../resources/images/00-04.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-04.png)
 
 > `dependency`에 `mail`과 `actuator`를 빼먹고 캡쳐를 했네요. 나중에 추가할 수 있으니 그냥 넘어가겠습니다. 😅
-> 
+
 `GENERATE` 버튼을 클릭하면 프로젝트가 다운로드 되는데 압축을 플고 `IDE`로 열어 주시면 됩니다.
 
 ## 의존성
@@ -86,7 +86,7 @@ dependencies {
 > 위에 캡쳐만 보고 프로젝트를 생성하신 분들은 누락된 패키지를 추가해주세요. 😅   
 > 패키지 추가 후 Gradle을 reload 해줘야 합니다.  
 > 단축키 `⌘` + `⇧` + `I`를 사용하거나 Gradle 윈도우에서 프로젝트를 우클릭하여 아래 메뉴를 클릭해줍니다.
-> <img src="../resources/images/00-08.png" width="50%" height="50%">
+> <img src="https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/00-08.png" width="50%" height="50%">
 
 (1) Web 관련 개발을 하기 위핸 패키지 입니다.   
 (2) 인증, 인가(권한) 등을 더 쉽게 개발할 수 있게 해주는 패키지 입니다.    
@@ -110,7 +110,7 @@ main 메서드가 있는 클래스에서 실행하시면 스프링 부트 애플
 
 아니면 우측 상단에 있는 화살표 버튼을 누르셔도 됩니다.
 
-![](../resources/images/00-05.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-05.png)
 
 > 💡**Tip**: 기존에 실행했던 것을 다시 실행할 땐 아무 위치에서 `⌃` + `R`을, 실행 관련 컨텍스트 메뉴를 보고싶을 땐 `⌃` + `⌥` + `R`을 활용하세요.
 
@@ -129,11 +129,11 @@ Using generated security password: 0ebb320c-794e-4a0b-b12a-b5a506ab9e14
 
 spring-boot-starter-security 패키지를 추가하였기 때문에 자동으로 인증 설정이 적용된 것인데요, http://localhost:8080로 접속해보시면,
 
-![](../resources/images/00-06.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-06.png)
 
 이렇게 로그인 화면이 표시되는데 `ID`에 `user`를 `Password`에 복사한 비밀번호를 입력하시면 됩니다.
 
-![](../resources/images/00-07.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master//resources/images/00-07.png)
 
 그럼 페이지가 이동되는데 이렇게 `Whitelabel Error Page`가 나타나면 정상동작한 것 입니다.
 
