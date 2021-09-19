@@ -1,3 +1,5 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
 ## 들어가며
 
 원래 저는 인증 모듈을 담당하는 개발자로 현재 회사에 입사하였는데, 어쩌다보니 개발보다는 운영이 많은 부정거래 탐지쪽으로, 그 이후에는 자금세탁 방지를 위한 컴플라이언스 프로젝트를 관리하는 업무로 점점 개발과 멀어지게 되었습니다.
