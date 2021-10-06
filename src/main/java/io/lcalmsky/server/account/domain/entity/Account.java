@@ -59,8 +59,8 @@ public class Account extends AuditingEntity {
     public static class NotificationSetting {
         private boolean studyCreatedByEmail;
         private boolean studyCreatedByWeb;
-        private boolean studyRegistrationResultByEmailByEmail;
-        private boolean studyRegistrationResultByEmailByWeb;
+        private boolean studyRegistrationResultByEmail;
+        private boolean studyRegistrationResultByWeb;
         private boolean studyUpdatedByEmail;
         private boolean studyUpdatedByWeb;
     }

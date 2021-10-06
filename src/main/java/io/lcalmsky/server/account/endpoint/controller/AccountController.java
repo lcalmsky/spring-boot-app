@@ -23,7 +23,7 @@ public class AccountController {
 
     private final SignUpFormValidator signUpFormValidator;
     private final AccountRepository accountRepository;
-    private final JavaMailSender javaMailSender;
+    private final JavaMailSender mailSender;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder) {
@@ -48,7 +48,7 @@ public class AccountController {
                 .notificationSetting(Account.NotificationSetting.builder()
                         .studyCreatedByWeb(true)
                         .studyUpdatedByWeb(true)
-                        .studyRegistrationResultByEmailByWeb(true)
+                        .studyRegistrationResultByWeb(true)
                         .build())
                 .build();
         Account newAccount = accountRepository.save(account);
@@ -59,7 +59,7 @@ public class AccountController {
         mailMessage.setSubject("Webluxible 회원 가입 인증");
         mailMessage.setText(String.format("/check-email-token?token=%s&email=%s", newAccount.getEmailToken(),
                 newAccount.getEmail()));
-        javaMailSender.send(mailMessage);
+        mailSender.send(mailMessage);
 
         return "redirect:/";
     }
