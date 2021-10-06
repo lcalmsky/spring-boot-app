@@ -280,6 +280,51 @@ public class AccountController {
 (1) 작성한 Validator를 주입합니다.  
 (2) Validator를 이용해 객체를 검증하고, 에러가 있을 경우 기존과 동일하게 처리합니다.
 
+위에서 작성한 방식을 아래처럼 처리할 수도 있습니다.
+
+```java
+package io.lcalmsky.server.account.endpoint.controller;
+
+import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+
+@Controller
+@RequiredArgsConstructor
+public class AccountController {
+
+    private final SignUpFormValidator signUpFormValidator;
+
+    @InitBinder("signUpForm") // (1)
+    public void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(signUpFormValidator);
+    }
+
+    // 생략
+    
+    @PostMapping("/sign-up")
+    public String signUpSubmit(@Valid @ModelAttribute SignUpForm signUpForm, Errors errors) {
+        if (errors.hasErrors()) {
+            return "account/sign-up";
+        }
+        return "redirect:/";
+    }
+}
+
+```
+
+(1) `@InitBinder` 애너테이션을 사용해 `attribute`로 바인딩 할 객체를 지정하고 `WebDataBinder`를 이용해 validator를 추가해주면 해당 객체가 들어왔을 때 검증하는 로직을 직접 추가할 필요가 없습니다.
+
+
 
 
 ## Test

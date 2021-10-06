@@ -1,7 +1,11 @@
 package io.lcalmsky.server.account.endpoint.controller;
 
+import io.lcalmsky.server.account.domain.entity.Account;
 import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.server.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -18,6 +22,8 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final SignUpFormValidator signUpFormValidator;
+    private final AccountRepository accountRepository;
+    private final JavaMailSender javaMailSender;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder) {
@@ -35,11 +41,26 @@ public class AccountController {
         if (errors.hasErrors()) {
             return "account/sign-up";
         }
-//        signUpFormValidator.validate(signUpForm, errors);
-//        if (errors.hasErrors()) {
-//            return "account/sign-up";
-//        }
-        // TODO: 회원 가입 처리
+        Account account = Account.builder()
+                .email(signUpForm.getEmail())
+                .nickname(signUpForm.getNickname())
+                .password(signUpForm.getPassword())
+                .notificationSetting(Account.NotificationSetting.builder()
+                        .studyCreatedByWeb(true)
+                        .studyUpdatedByWeb(true)
+                        .studyRegistrationResultByEmailByWeb(true)
+                        .build())
+                .build();
+        Account newAccount = accountRepository.save(account);
+
+        newAccount.generateToken();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(newAccount.getEmail());
+        mailMessage.setSubject("Webluxible 회원 가입 인증");
+        mailMessage.setText(String.format("/check-email-token?token=%s&email=%s", newAccount.getEmailToken(),
+                newAccount.getEmail()));
+        javaMailSender.send(mailMessage);
+
         return "redirect:/";
     }
 }
