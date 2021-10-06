@@ -128,7 +128,7 @@
                 <a class="nav-link" href="#" th:href="@{/login}">로그인</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" th:href="@{/signup}">가입</a>
+                <a class="nav-link" href="#" th:href="@{/sign-up}">가입</a>
             </li>
         </ul>
     </div>
@@ -140,7 +140,7 @@
     </div>
     <div class="row justify-content-center">
         <form class="needs-validation col-sm-6" action="#"
-              th:action="@{/signup}" th:object="${signUpForm}" method="post" novalidate>
+              th:action="@{/sign-up}" th:object="${signUpForm}" method="post" novalidate>
             <div class="form-group">
                 <label for="nickname">닉네임</label>
                 <input id="nickname" type="text" th:field="*{nickname}" class="form-control"
