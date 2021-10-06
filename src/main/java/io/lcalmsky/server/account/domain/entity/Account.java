@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,6 +35,10 @@ public class Account extends AuditingEntity {
     @Embedded
     private NotificationSetting notificationSetting;
 
+    public void generateToken() {
+        this.emailToken = UUID.randomUUID().toString();
+    }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
@@ -54,8 +59,8 @@ public class Account extends AuditingEntity {
     public static class NotificationSetting {
         private boolean studyCreatedByEmail;
         private boolean studyCreatedByWeb;
-        private boolean studyRegistrationResultByEmailByEmail;
-        private boolean studyRegistrationResultByEmailByWeb;
+        private boolean studyRegistrationResultByEmail;
+        private boolean studyRegistrationResultByWeb;
         private boolean studyUpdatedByEmail;
         private boolean studyUpdatedByWeb;
     }
