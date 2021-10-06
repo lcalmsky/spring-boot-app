@@ -110,17 +110,17 @@ public class SignUpForm {
 
 애플리케이션을 실행하고 브라우저에서 `http://localhost:8080/sign-up` 으로 이동합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/images/03-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/03-01.png)
 
 위와 같이 정상적인 값을 입력하고 가입하기를 클릭하면 루트(/)로 이동하는 것을 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/images/03-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/03-02.png)
 
 그럼 이번엔 주어진 조건에 맞지 않게 입력해보겠습니다.
 
 모두 입력하지 않았을 경우 @NotBlank가 검증하는 부분을 통과하지 못하기 때문에 아래 그림 처럼 세 칸 모두 에러가 발생합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/images/03-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/03-03.png)
 
 이 상태에서는 닉네임을 3글자 미만으로 입력하거나 이메일 포맷이 아닌 값을 입력하면 실시간으로 피드백을 주는 것을 확인할 수 있습니다.
 
@@ -144,7 +144,7 @@ public class SignUpForm {
 
 에러가 존재할 경우 `form-text text-danger` 클래스에서 정의한 문구가 출력될텐데요, 그 부분을 테스트하기 위해 캐시를 비우고(크롬의 경우 개발자 도구를 열어 놓은 상태에서 새로고침 버튼을 롱클릭하게되면 메뉴를 확인할 수 있습니다) 새로고친 상태에서 다시 시도해보겠습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/images/03-04.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/03-04.png)
 
 일부러 닉네임만 유효하지 않게 입력해보았는데요, 가입하기 버튼을 클릭하면 Errors로 전달된 에러 메시지가 노출되는 것을 확인할 수 있습니다.
 
@@ -603,7 +603,7 @@ public class Account extends AuditingEntity {
 
 이제 `Validator` 동작 확인을 위해 같은 항목으로 다시 요청해보겠습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/images/03-05.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/03-05.png)
 
 정상적으로 동작함을 확인할 수 있습니다.
 
