@@ -1,5 +1,6 @@
 package io.lcalmsky.server.account.endpoint.controller;
 
+import io.lcalmsky.server.account.domain.entity.Account;
 import io.lcalmsky.server.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -63,6 +65,8 @@ class AccountControllerTest {
                 .andExpect(view().name("redirect:/"));
 
         assertTrue(accountRepository.existsByEmail("email@email.com"));
+        Account account = accountRepository.findByEmail("email@email.com");
+        assertNotEquals(account.getPassword(), "1234!@#$");
 
         then(mailSender)
                 .should()
