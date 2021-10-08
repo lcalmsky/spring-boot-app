@@ -108,12 +108,12 @@ class AccountControllerTest {
                         .param("password", "1234!@#$")
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().is3xxRedirection()) // redirection 응답
-                .andExpect(view().name("redirect:/")); // 후 리다이렉트
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
 
         assertTrue(accountRepository.existsByEmail("lcalmsky@gmail.com")); // 메일이 DB에 저장되었는지 확인
 
-        then(mailSender) // 모킹 된 mailSender로 send가 호출되었고 SimpleMailMessage가 전달되었는지 확인
+        then(mailSender)
                 .should()
                 .send(any(SimpleMailMessage.class));
     }
@@ -178,16 +178,14 @@ class AccountControllerTest {
                         .param("nickname", "nickname")
                         .param("email", "email@email.com")
                         .param("password", "1234!@#$")
-                        .with(csrf())) 
+                        .with(csrf())) // (2)
                 .andDo(print())
-                .andExpect(status().is3xxRedirection()) 
-                .andExpect(view().name("redirect:/")); 
+                .andExpect(status().is3xxRedirection()) // (3) 
+                .andExpect(view().name("redirect:/")); // (4)
 
-        assertTrue(accountRepository.existsByEmail("email@email.com")); 
+        assertTrue(accountRepository.existsByEmail("email@email.com")); // (5) 
 
-        then(mailSender)
-                .should()
-                .send(any(SimpleMailMessage.class));
+        then(mailSender).should().send(any(SimpleMailMessage.class)); // (6)
     }
 }
 ```
