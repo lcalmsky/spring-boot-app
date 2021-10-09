@@ -334,21 +334,21 @@ public class Account extends AuditingEntity {
 여기까지 완료되었다면 로컬에서 애플리케이션을 실행하고 테스트 해볼까요?
 
 1. `http://localhost:8080/sign-up`에 먼저 진입하여 가입을 진행합니다.
-![](../resources/images/06-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-01.png)
 
 2. 가입하기를 누른 뒤 로그에 나타나는 이메일 인증 링크를 확인하고 해당 링크로 다시 요청합니다.  
 ex) `http://localhost:8080/check-email-token?token=0b0e52f0-6fd3-4444-b7e3-d04532a3cdee&email=lcalmsky@gmail.com`
-![](../resources/images/06-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-02.png)
 3. 정상적으로 가입된 것을 확인할 수 있습니다. 
-![](../resources/images/06-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-03.png)
 
 2번에서 다시 요청할 때 token 값이나 email 값을 수정하면 에러가 노출되는 것을 확인할 수 있습니다.
 
 * 일치하지 않는 이메일로 수정했을 때
-![](../resources/images/06-04.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-04.png)
 
 * 일치하지 않는 토큰으로 수정했을 때
-![](../resources/images/06-05.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-05.png)
 
 ## Test 작성
 
@@ -537,7 +537,7 @@ class AccountControllerTest {
 
 기존 테스트를 포함해 모두 정상적으로 수행된 것을 확인할 수 있습니다.
 
-![](../resources/images/06-06.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/06-06.png)
 
 ---
 
