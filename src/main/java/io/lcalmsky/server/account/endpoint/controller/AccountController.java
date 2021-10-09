@@ -1,7 +1,9 @@
 package io.lcalmsky.server.account.endpoint.controller;
 
 import io.lcalmsky.server.account.application.AccountService;
+import io.lcalmsky.server.account.domain.entity.Account;
 import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.server.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,5 +41,24 @@ public class AccountController {
         }
         accountService.signUp(signUpForm);
         return "redirect:/";
+    }
+
+    private final AccountRepository accountRepository;
+
+    @GetMapping("/check-email-token")
+    public String verifyEmail(String token, String email, Model model) {
+        Account account = accountService.findAccountByEmail(email);
+        if (account == null) {
+            model.addAttribute("error", "wrong.email");
+            return "account/email-verification";
+        }
+        if (!token.equals(account.getEmailToken())) {
+            model.addAttribute("error", "wrong.token");
+            return "account/email-verification";
+        }
+        account.verified();
+        model.addAttribute("numberOfUsers", accountRepository.count());
+        model.addAttribute("nickname", account.getNickname());
+        return "account/email-verification";
     }
 }
