@@ -11,9 +11,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -63,13 +63,48 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
-
         assertTrue(accountRepository.existsByEmail("email@email.com"));
         Account account = accountRepository.findByEmail("email@email.com");
         assertNotEquals(account.getPassword(), "1234!@#$");
-
+        assertNotNull(account.getEmailToken());
         then(mailSender)
                 .should()
                 .send(any(SimpleMailMessage.class));
+    }
+
+    @DisplayName("인증 메일 확인: 잘못된 링크")
+    @Test
+    void verifyEmailWithWrongLink() throws Exception {
+        mockMvc.perform(get("/check-email-token")
+                        .param("token", "token")
+                        .param("email", "email"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/email-verification"))
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @DisplayName("인증 메일 확인: 유효한 링크")
+    @Test
+    @Transactional
+    void verifyEmail() throws Exception {
+        Account account = Account.builder()
+                .email("email@email.com")
+                .password("1234!@#$")
+                .nickname("nickname")
+                .notificationSetting(Account.NotificationSetting.builder()
+                        .studyCreatedByWeb(true)
+                        .studyUpdatedByWeb(true)
+                        .studyRegistrationResultByWeb(true)
+                        .build())
+                .build();
+        Account newAccount = accountRepository.save(account);
+        newAccount.generateToken();
+        mockMvc.perform(get("/check-email-token")
+                        .param("token", newAccount.getEmailToken())
+                        .param("email", newAccount.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/email-verification"))
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attributeExists("numberOfUsers", "nickname"));
     }
 }

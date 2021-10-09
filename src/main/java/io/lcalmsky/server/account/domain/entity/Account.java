@@ -5,6 +5,7 @@ import io.lcalmsky.server.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,8 @@ public class Account extends AuditingEntity {
 
     private String emailToken;
 
+    private LocalDateTime joinedAt;
+
     @Embedded
     private Profile profile;
 
@@ -37,6 +40,11 @@ public class Account extends AuditingEntity {
 
     public void generateToken() {
         this.emailToken = UUID.randomUUID().toString();
+    }
+
+    public void verified() {
+        this.isValid = true;
+        joinedAt = LocalDateTime.now();
     }
 
     @Embeddable
