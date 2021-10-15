@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,7 +38,8 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
-                .andExpect(model().attributeExists("signUpForm"));
+                .andExpect(model().attributeExists("signUpForm"))
+                .andExpect(unauthenticated());
     }
 
     @Test
@@ -62,7 +65,8 @@ class AccountControllerTest {
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(view().name("redirect:/"))
+                .andExpect(authenticated().withUsername("nickname"));
         assertTrue(accountRepository.existsByEmail("email@email.com"));
         Account account = accountRepository.findByEmail("email@email.com");
         assertNotEquals(account.getPassword(), "1234!@#$");
@@ -80,7 +84,8 @@ class AccountControllerTest {
                         .param("email", "email"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/email-verification"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(model().attributeExists("error"))
+                .andExpect(unauthenticated());
     }
 
     @DisplayName("인증 메일 확인: 유효한 링크")
@@ -105,6 +110,7 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/email-verification"))
                 .andExpect(model().attributeDoesNotExist("error"))
-                .andExpect(model().attributeExists("numberOfUsers", "nickname"));
+                .andExpect(model().attributeExists("numberOfUsers", "nickname"))
+                .andExpect(authenticated().withUsername("nickname"));
     }
 }
