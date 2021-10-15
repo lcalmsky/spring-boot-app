@@ -39,7 +39,8 @@ public class AccountController {
         if (errors.hasErrors()) {
             return "account/sign-up";
         }
-        accountService.signUp(signUpForm);
+        Account account = accountService.signUp(signUpForm);
+        accountService.login(account);
         return "redirect:/";
     }
 
@@ -57,6 +58,7 @@ public class AccountController {
             return "account/email-verification";
         }
         account.verified();
+        accountService.login(account);
         model.addAttribute("numberOfUsers", accountRepository.count());
         model.addAttribute("nickname", account.getNickname());
         return "account/email-verification";
