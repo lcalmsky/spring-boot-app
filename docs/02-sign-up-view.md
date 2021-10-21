@@ -250,7 +250,7 @@ spring:
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -276,7 +276,7 @@ public class AccountController {
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/SignUpForm.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import lombok.Data;
 
@@ -299,7 +299,7 @@ public class SignUpForm {
 `src/main/java/io/lcalmsky/server/config/SecurityConfig.java`
 
 ```java
-package io.lcalmsky.server.config;
+package io.lcalmsky.app.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
@@ -344,7 +344,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 `src/test/java/io/lcalmsky/server/account/endpoint/controller/AccountControllerTest.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
