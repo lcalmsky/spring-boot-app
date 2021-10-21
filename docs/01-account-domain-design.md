@@ -57,10 +57,10 @@
 위의 데이터들을 종합하여 `Account`라는 `Entity`를 구현합니다.
 
 ```java
-package io.lcalmsky.server.account.domain.entity;
+package io.lcalmsky.app.account.domain.entity;
 
-import io.lcalmsky.server.account.domain.support.ListStringConverter;
-import io.lcalmsky.server.domain.entity.AuditingEntity;
+import io.lcalmsky.app.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -129,7 +129,7 @@ public class Account extends AuditingEntity {
 (6) `List`를 `DB` 컬럼 하나에 매핑하기 위해 `Converter`를 사용하였습니다.
 
 ```java
-package io.lcalmsky.server.account.domain.support;
+package io.lcalmsky.app.account.domain.support;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -182,7 +182,7 @@ Controller 작성에 앞서 페이지 파일을 먼저 생성해 줄 건데요, 
 그리고 회원 가입 페이지로 redirect 시켜줄 수 있는 `Controller`를 작성합니다.
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -205,7 +205,7 @@ public class AccountController {
 > 💡Tip: macOS + IntelliJ 기준 AccountController 클래스에서 `⌥` + `⏎`를 누르면 테스트 클래스를 자동으로 생성할 수 있습니다.
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -250,7 +250,7 @@ Actual   :401
 따라서 `Security` 관련 설정을 추가해줘야 합니다.
 
 ```java
-package io.lcalmsky.server.config;
+package io.lcalmsky.app.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
