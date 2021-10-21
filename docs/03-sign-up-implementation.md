@@ -34,7 +34,7 @@ dependencies {
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,7 +75,7 @@ public class AccountController {
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/SignUpForm.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -165,10 +165,10 @@ public class SignUpForm {
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/validator/SignUpFormValidator.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller.validator;
+package io.lcalmsky.app.account.endpoint.controller.validator;
 
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -210,9 +210,9 @@ public class SignUpFormValidator implements Validator { // (1)
 `src/main/java/io/lcalmsky/server/account/infra/repository/AccountRepository.java`
 
 ```java
-package io.lcalmsky.server.account.infra.repository;
+package io.lcalmsky.app.account.infra.repository;
 
-import io.lcalmsky.server.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -239,9 +239,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> { // (2)
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -283,9 +283,9 @@ public class AccountController {
 위에서 작성한 방식을 아래처럼 처리할 수도 있습니다.
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -394,11 +394,11 @@ spring:
 `src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -479,7 +479,7 @@ public class AccountController {
 `src/main/java/io/lcalmsky/server/account/infra/email/ConsoleMailSender.java`
 
 ```java
-package io.lcalmsky.server.account.infra.email;
+package io.lcalmsky.app.account.infra.email;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -541,14 +541,13 @@ public class ConsoleMailSender implements JavaMailSender { // (4)
 `src/main/java/io/lcalmsky/server/account/domain/entity/Account.java`
 
 ```java
-package io.lcalmsky.server.account.domain.entity;
+package io.lcalmsky.app.account.domain.entity;
 
-import io.lcalmsky.server.account.domain.support.ListStringConverter;
-import io.lcalmsky.server.domain.entity.AuditingEntity;
+import io.lcalmsky.app.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
 @Entity

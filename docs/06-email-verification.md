@@ -65,12 +65,12 @@ public class AccountController {
   <summary>AccountController 전체 소스 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.application.AccountService;
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.application.AccountService;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -169,11 +169,11 @@ public class AccountService {
   <summary>Account Service 전체 소스 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.application;
+package io.lcalmsky.app.account.application;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -250,10 +250,10 @@ public class Account extends AuditingEntity {
 <summary>Account 전체 소스 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.domain.entity;
+package io.lcalmsky.app.account.domain.entity;
 
-import io.lcalmsky.server.account.domain.support.ListStringConverter;
-import io.lcalmsky.server.domain.entity.AuditingEntity;
+import io.lcalmsky.app.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -421,10 +421,10 @@ class AccountControllerTest {
 <summary>AccountControllerTest 전체 소스 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
