@@ -1,13 +1,13 @@
-package io.lcalmsky.server;
+package io.lcalmsky.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootAppServerApplication {
+public class App {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootAppServerApplication.class, args);
+        SpringApplication.run(App.class, args);
     }
 
 }
