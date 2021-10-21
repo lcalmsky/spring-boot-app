@@ -1,4 +1,4 @@
-package io.lcalmsky.server.account.domain.support;
+package io.lcalmsky.app.account.domain.support;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
