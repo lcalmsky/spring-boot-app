@@ -1,7 +1,7 @@
-package io.lcalmsky.server.account.domain.entity;
+package io.lcalmsky.app.account.domain.entity;
 
-import io.lcalmsky.server.account.domain.support.ListStringConverter;
-import io.lcalmsky.server.domain.entity.AuditingEntity;
+import io.lcalmsky.app.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

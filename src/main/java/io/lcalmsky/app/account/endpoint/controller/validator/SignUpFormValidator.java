@@ -1,7 +1,7 @@
-package io.lcalmsky.server.account.endpoint.controller.validator;
+package io.lcalmsky.app.account.endpoint.controller.validator;
 
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

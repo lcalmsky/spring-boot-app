@@ -1,4 +1,4 @@
-package io.lcalmsky.server.config;
+package io.lcalmsky.app.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;

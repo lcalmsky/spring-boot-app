@@ -1,8 +1,8 @@
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

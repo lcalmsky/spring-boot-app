@@ -1,4 +1,4 @@
-package io.lcalmsky.server.domain.entity;
+package io.lcalmsky.app.domain.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

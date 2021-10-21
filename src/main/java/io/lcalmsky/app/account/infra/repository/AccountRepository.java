@@ -1,6 +1,6 @@
-package io.lcalmsky.server.account.infra.repository;
+package io.lcalmsky.app.account.infra.repository;
 
-import io.lcalmsky.server.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
