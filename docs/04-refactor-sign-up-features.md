@@ -47,9 +47,9 @@ dependencies {
 `src/test/java/io/lcalmsky/server/account/endpoint/controller/AccountControllerTest.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,9 +142,9 @@ void signUpSubmitWithError() throws Exception {
 
 **회원 가입 처리: 입력값 정상**
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,14 +212,14 @@ class AccountControllerTest {
 
 먼저 기존 `AccountController` 클래스를 확인해볼까요?
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -343,14 +343,14 @@ private void sendVerificationEmail(Account newAccount) {
 
 분리한 메서드를 서비스 레이어로 이동시키도록 하겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/application/AccountService.java`
+`src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
-package io.lcalmsky.server.account.application;
+package io.lcalmsky.app.account.application;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -393,11 +393,11 @@ public class AccountService {
 `AccountController` 역시 수정해줘야겠죠?
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.application.AccountService;
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.application.AccountService;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -468,11 +468,11 @@ public String signUpSubmit(@Valid @ModelAttribute SignUpForm signUpForm, Errors 
 다음은 `AccountService`에서 기존과 동일하게 처리할 수 있게 수정해주겠습니다.
 
 ```java
-package io.lcalmsky.server.account.application;
+package io.lcalmsky.app.account.application;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

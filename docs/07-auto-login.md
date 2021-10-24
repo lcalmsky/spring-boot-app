@@ -26,7 +26,7 @@
 
 먼저 `AccountController`에서 `/sign-up`과 `/check-email-token` 요청이 왔을 때 로그인 할 수 있게 소스 코드를 수정해줍니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 // 생략
@@ -70,12 +70,12 @@ public class AccountController {
 <summary>AccountController 전체 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.application.AccountService;
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.application.AccountService;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -142,7 +142,7 @@ public class AccountController {
 
 바로 위에 설명한 것처럼 `AccountService`를 수정해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/application/AccountService.java`
+`src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 // 생략
@@ -174,11 +174,11 @@ public class AccountService {
 <summary>AccountService 전체 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.application;
+package io.lcalmsky.app.account.application;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -345,10 +345,10 @@ class AccountControllerTest {
 <summary>AccountControllerTest 전체 코드 보기</summary>
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

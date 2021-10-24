@@ -247,10 +247,10 @@ spring:
 
 이제 페이지가 동작할 수 있도록 컨트롤러를 수정해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -273,10 +273,10 @@ public class AccountController {
 
 객체를 전달해주기 위해 해당 클래스를 작성해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/SignUpForm.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/SignUpForm.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import lombok.Data;
 
@@ -296,10 +296,10 @@ public class SignUpForm {
 
 이전 포스팅에서 설정한 `SecurityConfig` 때문인데요, `static resource`를 접근할 때 인증하지 않아도 되도록 설정을 추가해줘야 합니다.
 
-`src/main/java/io/lcalmsky/server/config/SecurityConfig.java`
+`src/main/java/io/lcalmsky/app/config/SecurityConfig.java`
 
 ```java
-package io.lcalmsky.server.config;
+package io.lcalmsky.app.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
@@ -344,7 +344,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 `src/test/java/io/lcalmsky/server/account/endpoint/controller/AccountControllerTest.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

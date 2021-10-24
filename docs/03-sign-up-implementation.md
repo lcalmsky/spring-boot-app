@@ -31,10 +31,10 @@ dependencies {
 
 폼 객체를 받을 수 있는 엔드포인트를 `AccountController` 클래스에 추가합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -72,10 +72,10 @@ public class AccountController {
 
 (1)번의 `@Valid`가 동작하려면 해당 타입에도 검증할 대상에 애너테이션을 추가해줘야 합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/SignUpForm.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/SignUpForm.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -162,13 +162,13 @@ public class SignUpForm {
 
 그럼 `SignUpFormValidator` 클래스를 작성해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/validator/SignUpFormValidator.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/validator/SignUpFormValidator.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller.validator;
+package io.lcalmsky.app.account.endpoint.controller.validator;
 
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -207,12 +207,12 @@ public class SignUpFormValidator implements Validator { // (1)
 
 다음으로 위 클래스에서 사용한 `AccountRepository`도 작성해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/infra/repository/AccountRepository.java`
+`src/main/java/io/lcalmsky/app/account/infra/repository/AccountRepository.java`
 
 ```java
-package io.lcalmsky.server.account.infra.repository;
+package io.lcalmsky.app.account.infra.repository;
 
-import io.lcalmsky.server.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -236,12 +236,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> { // (2)
 
 이제 `Controller`에서 `validator`를 사용해 검증하도록 설정해줘야 합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -283,9 +283,9 @@ public class AccountController {
 위에서 작성한 방식을 아래처럼 처리할 수도 있습니다.
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -391,14 +391,14 @@ spring:
 ---
 회원 가입시 DB에 저장하는 부분과 인증 이메일을 보내는 부분까지 추가한 뒤 기능이 정상적으로 동작하는지 확인해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.server.account.endpoint.controller;
+package io.lcalmsky.app.account.endpoint.controller;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -476,10 +476,10 @@ public class AccountController {
 
 로컬에서 로그로 남기기 위한 것으로 사용할 메서드만 구현해주시면 됩니다.
 
-`src/main/java/io/lcalmsky/server/account/infra/email/ConsoleMailSender.java`
+`src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
 
 ```java
-package io.lcalmsky.server.account.infra.email;
+package io.lcalmsky.app.account.infra.email;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -538,13 +538,13 @@ public class ConsoleMailSender implements JavaMailSender { // (4)
 
 `Account`도 수정해줍니다. `generateToken` 메서드만 추가하시면 됩니다.
 
-`src/main/java/io/lcalmsky/server/account/domain/entity/Account.java`
+`src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
-package io.lcalmsky.server.account.domain.entity;
+package io.lcalmsky.app.account.domain.entity;
 
-import io.lcalmsky.server.account.domain.support.ListStringConverter;
-import io.lcalmsky.server.domain.entity.AuditingEntity;
+import io.lcalmsky.app.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;

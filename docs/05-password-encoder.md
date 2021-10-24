@@ -21,10 +21,10 @@ PasswordEncoder를 빈 등록해주면 되는데 직접 사용할 알고리즘�
 
 `SecurityConfig` 클래스에 `PasswordEncoder` 빈을 등록하도록 하겠습니다.
 
-`src/main/java/io/lcalmsky/server/config/SecurityConfig.java`
+`src/main/java/io/lcalmsky/app/config/SecurityConfig.java`
 
 ```java
-package io.lcalmsky.server.config;
+package io.lcalmsky.app.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -54,14 +54,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 다음은 인코딩을 적용하기 위해 `AccountService`를 수정해보도록 하겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/application/AccountService.java`
+`src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
-package io.lcalmsky.server.account.application;
+package io.lcalmsky.app.account.application;
 
-import io.lcalmsky.server.account.domain.entity.Account;
-import io.lcalmsky.server.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.server.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -140,12 +140,12 @@ void signUpSubmit() throws Exception {
 1. Account Entity 조회를 위해 AccountRepository에 findByEmail 메서드를 추가하고 조회합니다.
 2. 조회한 Account Entity의 비밀번호와 실제 입력한 비밀번호가 다른지 검증합니다. 비밀번호 인코딩이 수행됐다면 두 값이 서로 달라야 정상입니다.
 
-`src/main/java/io/lcalmsky/server/account/infra/repository/AccountRepository.java`
+`src/main/java/io/lcalmsky/app/account/infra/repository/AccountRepository.java`
 
 ```java
-package io.lcalmsky.server.account.infra.repository;
+package io.lcalmsky.app.account.infra.repository;
 
-import io.lcalmsky.server.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
