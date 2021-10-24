@@ -31,7 +31,7 @@ dependencies {
 
 폼 객체를 받을 수 있는 엔드포인트를 `AccountController` 클래스에 추가합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller;
@@ -72,7 +72,7 @@ public class AccountController {
 
 (1)번의 `@Valid`가 동작하려면 해당 타입에도 검증할 대상에 애너테이션을 추가해줘야 합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/SignUpForm.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/SignUpForm.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller;
@@ -162,7 +162,7 @@ public class SignUpForm {
 
 그럼 `SignUpFormValidator` 클래스를 작성해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/validator/SignUpFormValidator.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/validator/SignUpFormValidator.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller.validator;
@@ -207,7 +207,7 @@ public class SignUpFormValidator implements Validator { // (1)
 
 다음으로 위 클래스에서 사용한 `AccountRepository`도 작성해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/infra/repository/AccountRepository.java`
+`src/main/java/io/lcalmsky/app/account/infra/repository/AccountRepository.java`
 
 ```java
 package io.lcalmsky.app.account.infra.repository;
@@ -236,7 +236,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> { // (2)
 
 이제 `Controller`에서 `validator`를 사용해 검증하도록 설정해줘야 합니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller;
@@ -391,7 +391,7 @@ spring:
 ---
 회원 가입시 DB에 저장하는 부분과 인증 이메일을 보내는 부분까지 추가한 뒤 기능이 정상적으로 동작하는지 확인해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller;
@@ -476,7 +476,7 @@ public class AccountController {
 
 로컬에서 로그로 남기기 위한 것으로 사용할 메서드만 구현해주시면 됩니다.
 
-`src/main/java/io/lcalmsky/server/account/infra/email/ConsoleMailSender.java`
+`src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
 
 ```java
 package io.lcalmsky.app.account.infra.email;
@@ -538,7 +538,7 @@ public class ConsoleMailSender implements JavaMailSender { // (4)
 
 `Account`도 수정해줍니다. `generateToken` 메서드만 추가하시면 됩니다.
 
-`src/main/java/io/lcalmsky/server/account/domain/entity/Account.java`
+`src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
 package io.lcalmsky.app.account.domain.entity;
