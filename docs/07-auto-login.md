@@ -469,7 +469,7 @@ class AccountControllerTest {
 
 테스트를 실행해본 결과 기존 테스트가 모두 정상동작하는 것을 확인하였습니다.
 
-https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-01.png)
 
 ## View 구현
 
@@ -652,11 +652,11 @@ test {
 
 그리고 앱을 실행시킨 뒤 `http://localhost:8080/`에 접속해보면 다음과 같은 페이지가 노출되는 것을 확인할 수 있습니다.
 
-https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-02.png)
 
 여기서 회원 가입을 하고 나면,
 
-https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/07-03.png)
 
 이렇게 내비게이션 메뉴가 변경된 것을 확인할 수 있습니다.
 
