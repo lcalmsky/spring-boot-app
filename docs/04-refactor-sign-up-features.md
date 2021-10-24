@@ -213,7 +213,7 @@ class AccountControllerTest {
 
 먼저 기존 `AccountController` 클래스를 확인해볼까요?
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 package io.lcalmsky.app.account.endpoint.controller;
@@ -344,7 +344,7 @@ private void sendVerificationEmail(Account newAccount) {
 
 분리한 메서드를 서비스 레이어로 이동시키도록 하겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/application/AccountService.java`
+`src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 package io.lcalmsky.app.account.application;

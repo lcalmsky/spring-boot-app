@@ -27,7 +27,7 @@
 
 먼저 컨트롤러를 개발해보겠습니다.
 
-`src/main/java/io/lcalmsky/server/account/endpoint/controller/AccountController.java`
+`src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 @Controller
@@ -137,7 +137,7 @@ public class AccountController {
 
 먼저 `AccountService`에 메서드를 하나 추가합니다.
 
-`src/main/java/io/lcalmsky/server/account/application/AccountService.java`
+`src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 // 생략
