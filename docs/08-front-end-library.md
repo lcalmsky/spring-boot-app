@@ -119,7 +119,7 @@ found 0 vulnerabilities
 
 `node_modules`라는 디렉토리가 생성되고 하위에 bootstrap 디렉토리가 만들어졌습니다. 그리고 `package.json` 파일을 열어 보시면 `dependency`가 추가된 것을 확인할 수 있습니다.
 
-![](../resources/images/08-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/08-01.png)
 
 ```json
 {
@@ -155,7 +155,7 @@ found 0 vulnerabilities
 
 마찬가지로 `jquery` 디렉토리가 생성되었고 `package.json` 파일에 `dependency`가 추가되었습니다.
 
-![](../resources/images/08-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/08-02.png)
 
 ```json
 {
