@@ -7,8 +7,6 @@
 
 스프링 부트에서 프론트엔드 라이브러리 설정하는 방법을 알아봅니다.
 
-> 현재는 하나의 애플리케이션 안에 BE, FE가 같이 있습니다.
- 
 NPM (Node Package Manager)을 사용하여 dependency를 관리하고 package.json을 이용해 빌드합니다.
 
 ## Front-end 라이브러리 설정
