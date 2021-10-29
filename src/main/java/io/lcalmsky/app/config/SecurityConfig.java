@@ -27,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .mvcMatchers("/node_modules/**", "/images/**")
                 .antMatchers("/h2-console/**");
     }
 
