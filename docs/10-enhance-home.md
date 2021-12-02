@@ -24,7 +24,7 @@
 
 [`font-awesome`](https://fontawesome.com/)은 다양한 아이콘을 만들어주는 라이브러리 입니다. 
 
-[`jdenticon`](https://jdenticon.com/은 문자열에 맞게 임의의 아바타를 생성해주는 라이브러리 입니다.
+[`jdenticon`](https://jdenticon.com/)은 문자열에 맞게 임의의 아바타를 생성해주는 라이브러리 입니다.
 
 ## HTML 수정
 
