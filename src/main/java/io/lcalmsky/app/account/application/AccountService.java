@@ -46,7 +46,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    private void sendVerificationEmail(Account newAccount) {
+    public void sendVerificationEmail(Account newAccount) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newAccount.getEmail());
         mailMessage.setSubject("Webluxible 회원 가입 인증");
