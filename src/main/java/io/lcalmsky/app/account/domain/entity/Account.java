@@ -38,8 +38,15 @@ public class Account extends AuditingEntity {
     @Embedded
     private NotificationSetting notificationSetting;
 
+    private LocalDateTime emailTokenGeneratedAt;
+
     public void generateToken() {
         this.emailToken = UUID.randomUUID().toString();
+        this.emailTokenGeneratedAt = LocalDateTime.now();
+    }
+
+    public boolean enableToSendEmail() {
+        return this.emailTokenGeneratedAt.isBefore(LocalDateTime.now().minusMinutes(5));
     }
 
     public void verified() {
