@@ -3,10 +3,12 @@ package io.lcalmsky.app.account.domain.entity;
 import io.lcalmsky.app.account.domain.support.ListStringConverter;
 import io.lcalmsky.app.domain.entity.AuditingEntity;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -78,5 +80,22 @@ public class Account extends AuditingEntity {
         private boolean studyRegistrationResultByWeb;
         private boolean studyUpdatedByEmail;
         private boolean studyUpdatedByWeb;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Account account = (Account) o;
+        return id != null && Objects.equals(id, account.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
