@@ -13,6 +13,7 @@ public class ListStringConverter implements AttributeConverter<List<String>, Str
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
         return Optional.ofNullable(attribute)
+                .filter(list -> !list.isEmpty())
                 .map(a -> String.join(",", a))
                 .orElse(null);
     }
