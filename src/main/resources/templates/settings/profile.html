@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<div th:replace="fragments.html :: navigation-bar"></div>
+<div class="container">
+    <div class="row mt-5 justify-content-center">
+        <div class="col-2">
+            <div th:replace="fragments.html::settings-menu (currentMenu='profile')"></div>
+        </div>
+        <div class="col-8">
+            <h2 class="col-sm-12" th:text="${account.nickname}">nickname</h2>
+            <div class="row mt-3">
+                <form class="col-sm-6" action="#" th:action="@{/settings/profile}" th:object="${profile}" method="post"
+                      novalidate>
+                    <div class="form-group">
+                        <label for="bio">한 줄 소개</label>
+                        <input id="bio" type="text" th:field="*{bio}" class="form-control"
+                               placeholder="간략한 한 줄을 추가해 보세요." aria-describedby="bioHelp" required/>
+                        <small id="bioHelp" class="form-text text-muted">
+                            35자 이내로 입력하세요.
+                        </small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">
+                            35자를 초과하였습니다.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="url">링크</label>
+                        <input id="url" type="text" th:field="*{url}" class="form-control"
+                               placeholder="http://www.example.com" aria-describedby="urlHelp" required/>
+                        <small id="urlHelp" class="form-text text-muted">
+                            블로그, GitHub 등 본인을 표현할 수 있는 링크를 추가하세요.
+                        </small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{bio}">
+                            올바른 URL이 아닙니다.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="job">직업</label>
+                        <input id="job" type="text" th:field="*{job}" class="form-control"
+                               placeholder="어떤 일을 하고 계신가요?" aria-describedby="jobHelp" required/>
+                        <small id="jobHelp" class="form-text text-muted">
+                            ex) 개발자, 학생, 취준생, ...
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">활동 지역</label>
+                        <input id="location" type="text" th:field="*{location}" class="form-control"
+                               placeholder="서울, 경기 등" aria-describedby="locationHelp" required/>
+                        <small id="locationHelp" class="form-text text-muted">
+                            주요 활동 지역(사는 곳 또는 직장 위치)의 도시 이름을 입력하세요.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <button class="button btn-primary btn-block" type="submit" aria-describedby="submitHelp">수정하기
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
