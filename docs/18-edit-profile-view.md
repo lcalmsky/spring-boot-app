@@ -16,7 +16,7 @@
 
 먼저 페이지에 진입할 수 있게 컨트롤러를 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
+`src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
 package io.lcalmsky.app.settings.controller;
@@ -47,7 +47,7 @@ public class SettingsController {
 
 따라서 별도로 생성해주어야 합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
+`src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
 
 ```java
 package io.lcalmsky.app.settings.controller;
@@ -88,7 +88,7 @@ public class Profile {
 
 URL을 여러 개 입력받아 DB에 저장했다가 다시 화면에 표시해주려고 했었는데, 자꾸 이 부분 때문에 버그가 발생하고 그걸 찾아서 수정하는데 시간이 너무 오래 소모돼서 강의와 동일하게 URL을 List 타입에서 String 타입으로 변경하였습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
+`src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
 // 생략
@@ -241,7 +241,7 @@ public class Account extends AuditingEntity {
 
 Account 클래스가 변경되었으므로 영향 받는 모든 곳을 수정해줘야하는데 다행히 한 개의 html 파일만 수정하면 됩니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/account/profile.html`
+`src/main/resources/templates/account/profile.html`
 
 ```html
 <!DOCTYPE html>
@@ -382,7 +382,7 @@ Account 클래스가 변경되었으므로 영향 받는 모든 곳을 수정해
 
 프로필 뷰에서 작성할 fragment를 먼저 추가해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/fragments.html`
+`src/main/resources/templates/fragments.html`
 
 ```html
 <!DOCTYPE html>
@@ -528,7 +528,7 @@ Account 클래스가 변경되었으므로 영향 받는 모든 곳을 수정해
 
 다음은 프로필 뷰를 작성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/settings/profile.html`
+`src/main/resources/templates/settings/profile.html`
 
 account 하위에도 profile.html 파일이 있으니 settings 하위에 만들어서 구분해줍니다.
 
