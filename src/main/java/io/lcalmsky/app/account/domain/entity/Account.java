@@ -63,6 +63,17 @@ public class Account extends AuditingEntity {
             notificationSetting = new NotificationSetting();
         }
     }
+
+    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+        if (this.profile == null) {
+            this.profile = new Profile();
+        }
+        this.profile.bio = profile.getBio();
+        this.profile.url = profile.getUrl();
+        this.profile.job = profile.getJob();
+        this.profile.location = profile.getLocation();
+    }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
@@ -76,6 +87,7 @@ public class Account extends AuditingEntity {
         @Lob @Basic(fetch = FetchType.EAGER)
         private String image;
     }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
