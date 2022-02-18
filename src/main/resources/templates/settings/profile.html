@@ -9,6 +9,10 @@
             <div th:replace="fragments.html::settings-menu (currentMenu='profile')"></div>
         </div>
         <div class="col-8">
+            <div th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${message}">수정 완료</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <h2 class="col-sm-12" th:text="${account.nickname}">nickname</h2>
             <div class="row mt-3">
                 <form class="col-sm-6" action="#" th:action="@{/settings/profile}" th:object="${profile}" method="post"
