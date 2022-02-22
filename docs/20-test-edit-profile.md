@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 0fa1c18)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 9c46a61)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout 0fa1c18
+> > git checkout 9c46a61
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -22,7 +22,7 @@
 
 기존 public에서 default 레벨로 수정해주겠습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
 // 생략
@@ -85,9 +85,9 @@ public class SettingsController {
 
 ## Validation 코드 추가
 
-테스트 코드 작성 전에 Profile 클래스에 누락된 Validation을 추가하겠습니다.
+테스트 코드 작성 전에 `Profile` 클래스에 누락된 `validation`을 추가하겠습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
 
 ```java
 // 생략
@@ -104,7 +104,7 @@ public class Profile {
 }
 ```
 
-간단하게 길이에 대한 validation만 추가하였습니다.
+간단하게 길이에 대한 `validation`만 추가하였습니다.
 
 <details>
 <summary>Profile.java 전체 보기</summary>
@@ -151,7 +151,7 @@ public class Profile {
 
 이제 본격적으로 테스트 코드를 작성해보겠습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/test/java/io/lcalmsky/app/settings/controller/SettingsControllerTest.java`
+`/src/test/java/io/lcalmsky/app/settings/controller/SettingsControllerTest.java`
 
 먼저 전체 코드를 확인해보겠습니다.
 
@@ -245,7 +245,7 @@ class SettingsControllerTest {
 
 먼저 `WithAccount`라는 애너테이션을 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/test/java/io/lcalmsky/app/WithAccount.java`
+`/src/test/java/io/lcalmsky/app/WithAccount.java`
 
 ```java
 package io.lcalmsky.app;
@@ -268,7 +268,7 @@ public @interface WithAccount {
 
 위 2번의 `@WithSecurityContext`의 `attribute`로 전달하고 있는 팩토리 클래스도 생성해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/test/java/io/lcalmsky/app/WithAccountSecurityContextFactory.java`
+`/src/test/java/io/lcalmsky/app/WithAccountSecurityContextFactory.java`
 
 ```java
 package io.lcalmsky.app;
