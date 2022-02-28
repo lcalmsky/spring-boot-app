@@ -70,8 +70,12 @@
             <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
-                    <svg data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}" width="24"
-                         height="24" class="rounded border bg-light"></svg><!--"프로필" 대신 아바타 이미지를 보여줌-->
+                    <!-- 이미지가 존재하면 이미지를, 그렇지 않으면 아바타를 보여주도록 수정(시작) -->
+                    <svg th:if="${#strings.isEmpty(account?.profile?.image)}"
+                         th:data-jdenticon-value="${#authentication.name}" width="24" height="24" class="rounded border bg-light"></svg><!--"프로필" 대신 아바타 이미지를 보여줌-->
+                    <img th:if="${!#strings.isEmpty(account?.profile?.image)}"
+                         th:src="${account.profile.image}" width="24" height="24" class="rounded border"/>
+                    <!-- 이미지가 존재하면 이미지를, 그렇지 않으면 아바타를 보여주도록 수정(끝) -->
                 </a>
                 <div class="dropdown-menu dropdown-menu-sm-right" aria-labelledby="userDropdown">
                     <h6 class="dropdown-header">
