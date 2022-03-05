@@ -133,4 +133,38 @@ class SettingsControllerTest {
                 .andExpect(model().attributeExists("account"));
     }
 
+    @Test
+    @DisplayName("알림 설정 수정 폼")
+    @WithAccount("jaime")
+    void updateNotificationForm() throws Exception {
+        mockMvc.perform(get(SettingsController.SETTINGS_NOTIFICATION_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.SETTINGS_NOTIFICATION_VIEW_NAME))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("notificationForm"));
+    }
+
+    @Test
+    @DisplayName("알림 설정 수정: 입력값 정상")
+    @WithAccount("jaime")
+    void updateNotification() throws Exception {
+        mockMvc.perform(post(SettingsController.SETTINGS_NOTIFICATION_URL)
+                        .param("studyCreatedByEmail", "true")
+                        .param("studyCreatedByWeb", "true")
+                        .param("studyRegistrationResultByEmail", "true")
+                        .param("studyRegistrationResultByWeb", "true")
+                        .param("studyUpdatedByEmail", "true")
+                        .param("studyUpdatedByWeb", "true")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_NOTIFICATION_URL))
+                .andExpect(flash().attributeExists("message"));
+        Account account = accountRepository.findByNickname("jaime");
+        assertTrue(account.getNotificationSetting().isStudyCreatedByEmail());
+        assertTrue(account.getNotificationSetting().isStudyCreatedByWeb());
+        assertTrue(account.getNotificationSetting().isStudyRegistrationResultByEmail());
+        assertTrue(account.getNotificationSetting().isStudyRegistrationResultByWeb());
+        assertTrue(account.getNotificationSetting().isStudyUpdatedByEmail());
+        assertTrue(account.getNotificationSetting().isStudyUpdatedByWeb());
+    }
 }
