@@ -1081,7 +1081,7 @@ class SettingsControllerTest {
 
 전체 테스트 케이스를 모두 실행했을 때 정상 결과를 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-01.png)
 
 ## 테스트
 
@@ -1089,19 +1089,19 @@ class SettingsControllerTest {
 
 [애플리케이션 실행] - [가입] - [프로필 화면 진입] - [프로필 수정] -  [계정 탭 진입]을 순차적으로 수행하면 아래와 같은 화면을 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-02.png)
 
 닉네임을 정상적으로 변경하였을 때 아래처럼 노출되면 성공입니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-03.png)
 
 프로필 아이콘을 눌렀을 때도 닉네임 변경이 정상적으로 동작한 것을 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-04.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-04.png)
 
 동일한 닉네임으로 변경을 시도하거나, 너무 짧거나 너무 긴 닉네임으로 변경을 시도했을 때는 아래 처럼 에러 피드백을 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-05.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-05.png)
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources-images/24-06.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/24-06.png)
 
