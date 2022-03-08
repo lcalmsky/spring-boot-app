@@ -89,6 +89,10 @@ public class Account extends AuditingEntity {
         this.notificationSetting.studyRegistrationResultByWeb = notificationForm.isStudyRegistrationResultByWeb();
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
