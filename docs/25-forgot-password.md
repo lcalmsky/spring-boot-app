@@ -24,7 +24,7 @@
 
 이메일을 통한 로그인을 제공해야 하기 때문에 `AccountController` 클래스를 수정해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
+`/src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
 // 생략
@@ -203,7 +203,7 @@ public class AccountController {
 
 컨트롤러에서 `AccountService`에 위임한 기능들을 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
+`/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 // 생략
@@ -353,7 +353,7 @@ public class AccountService implements UserDetailsService {
 
 토큰이 유효한지 확인하는 기능을 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
+`/src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
 // 생략
@@ -521,7 +521,7 @@ public class Account extends AuditingEntity {
 
 메일로 전달한 링크에 포함되어있는 URL은 인증정보 없이 진입할 수 있어야하므로 Security 설정을 수정해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/config/SecurityConfig.java`
+`/src/main/java/io/lcalmsky/app/config/SecurityConfig.java`
 
 ```java
 // 생략
@@ -551,7 +551,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 `email-login.html`과 `logged-in-by-email.html` 두 개의 페이지를 account 하위에 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/account/email-login.html`
+`/src/main/resources/templates/account/email-login.html`
 
 ```html
 <!DOCTYPE html>
@@ -605,7 +605,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 </html>
 ```
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/account/logged-in-by-email.html`
+`/src/main/resources/templates/account/logged-in-by-email.html`
 
 ```html
 <!DOCTYPE html>
