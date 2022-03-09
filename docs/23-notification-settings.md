@@ -599,11 +599,11 @@ public class Account extends AuditingEntity {
 
 애플리케이션을 실행한 뒤 회원 가입 후 [프로필] - [프로필 수정 ]- [알림 설정] 메뉴에 순차적으로 진입합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-01.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-01.png)
 
 알림 설정을 수정한 뒤 저장하기 버튼을 눌렀을 때 아래 화면처럼 동작하면 성공입니다!
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-02.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-02.png)
 
 ## 테스트 코드 작성
 
@@ -832,6 +832,6 @@ class SettingsControllerTest {
 
 </details>
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-03.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/23-03.png)
 
 모두 성공하였습니다!
