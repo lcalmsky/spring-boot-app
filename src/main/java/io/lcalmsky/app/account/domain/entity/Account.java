@@ -93,6 +93,10 @@ public class Account extends AuditingEntity {
         this.nickname = nickname;
     }
 
+    public boolean isValid(String token) {
+        return this.emailToken.equals(token);
+    }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
