@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -40,6 +41,9 @@ public class Account extends AuditingEntity {
     private NotificationSetting notificationSetting = new NotificationSetting();
 
     private LocalDateTime emailTokenGeneratedAt;
+
+    @ManyToMany
+    private Set<Tag> tags;
 
     public void generateToken() {
         this.emailToken = UUID.randomUUID().toString();

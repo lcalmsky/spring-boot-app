@@ -1,0 +1,10 @@
+@startuml
+
+object Account
+object AccountTag
+object Tag
+
+Account <-right- AccountTag
+AccountTag -right-> Tag
+
+@enduml
