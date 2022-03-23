@@ -562,7 +562,7 @@ fragments에 위에서 설치한 라이브러리의 `css` 파일을 읽어올 �
 
 스크립트의 경우 css를 적용하는 스크립트와, tagify 라이브러리를 사용하는 스크립트 두 가지가 있습니다.
 
-자세한 설명은 ![여기](https://yaireo.github.io/tagify/)를 참조하시면 됩니다.
+자세한 설명은 [여기](https://yaireo.github.io/tagify/)를 참조하시면 됩니다.
 
 간단히 설명하자면, `tagify`가 적용된 컴포넌트에 액션이 발생할 때 실행될 `function`을 각각 구현했고, `ajax` 요청으로 서버와 통신하도록 하였습니다.
 
