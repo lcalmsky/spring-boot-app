@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 2218229)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: c5c6507)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout 2218229
+> > git checkout c5c6507
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -18,7 +18,7 @@
 
 `Tag` Entity에 컬럼 정보를 추가해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/domain/entity/Tag.java`
+`/src/main/java/io/lcalmsky/app/account/domain/entity/Tag.java`
 
 ```java
 package io.lcalmsky.app.account.domain.entity;
@@ -89,7 +89,7 @@ logging:
 
 관심 주제 뷰로 이동할 수 있도록 `SettingsController`를 수정해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
 // 생략
@@ -250,7 +250,7 @@ fragments에 위에서 설치한 라이브러리의 `css` 파일을 읽어올 �
 
 추가로 `info` 레벨을 나타낼 수 있는 `symbol`이 누락되어 추가해주었습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/fragments.html`
+`/src/main/resources/templates/fragments.html`
 
 ```html
 <!DOCTYPE html>
@@ -483,7 +483,7 @@ fragments에 위에서 설치한 라이브러리의 `css` 파일을 읽어올 �
 
 기존에 구현했던 것과 유사하게 구현하고 아래 스크립트 부분을 수정합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/settings/tags.html`
+`/src/main/resources/templates/settings/tags.html`
 
 ```html
 <!DOCTYPE html>
