@@ -8,10 +8,12 @@ spring:
     enabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
 logging:
   level:
-    org.hibernate.SQL: debug
+    org.hibernate:
+      SQL: debug
+      type.descriptor.sql.BasicBinder: trace
