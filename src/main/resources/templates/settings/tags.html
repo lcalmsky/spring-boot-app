@@ -19,14 +19,23 @@
                         <svg th:replace="fragments.html::symbol-info"/>
                         참여하고 싶은 스터디 주제를 입력해 주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 쉼표 또는 엔터를 입력하세요.
                     </div>
-                    <input id="tags" type="text" name="tags" class="tagify-outside" aria-describedby="tagHelp"/>
-
+                    <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
+                           class="tagify-outside" aria-describedby="tagHelp"/>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+<script type="application/javascript" th:inline="javascript">
+    $(function () {
+        let csrfToken = /*[[${_csrf.token}]]*/ null;
+        let csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        });
+    });
+</script>
 <script type="application/javascript">
     $(function () {
         function tagRequest(url, tagTitle) {

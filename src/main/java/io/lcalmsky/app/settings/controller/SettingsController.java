@@ -2,18 +2,21 @@ package io.lcalmsky.app.settings.controller;
 
 import io.lcalmsky.app.account.application.AccountService;
 import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.tag.domain.entity.Tag;
 import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.tag.infra.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final PasswordFormValidator passwordFormValidator;
     private final NicknameFormValidator nicknameFormValidator;
+    private final TagRepository tagRepository;
 
     @InitBinder("passwordForm")
     public void passwordFormValidator(WebDataBinder webDataBinder) {
@@ -119,19 +123,30 @@ public class SettingsController {
     @GetMapping(SETTINGS_TAGS_URL)
     public String updateTags(@CurrentUser Account account, Model model) {
         model.addAttribute(account);
+        Set<Tag> tags = accountService.getTags(account);
+        model.addAttribute("tags", tags.stream()
+                .map(Tag::getTitle)
+                .collect(Collectors.toList()));
         return SETTINGS_TAGS_VIEW_NAME;
     }
 
-//    @PostMapping(SETTINGS_ACCOUNT_URL)
-//    public String updateNickname(@CurrentUser Account account, @Valid NicknameForm nicknameForm, Errors errors, Model model, RedirectAttributes attributes) {
-//        if (errors.hasErrors()) {
-//            model.addAttribute(account);
-//            return SETTINGS_ACCOUNT_VIEW_NAME;
-//        }
-//        accountService.updateNickname(account, nicknameForm.getNickname());
-//        attributes.addFlashAttribute("message", "닉네임을 수정하였습니다.");
-//        return "redirect:" + SETTINGS_ACCOUNT_URL;
-//    }
+    @PostMapping(SETTINGS_TAGS_URL + "/add")
+    @ResponseStatus(HttpStatus.OK)
+    public void addTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title)
+                .orElseGet(() -> tagRepository.save(Tag.builder()
+                        .title(title)
+                        .build()));
+        accountService.addTag(account, tag);
+    }
 
-
+    @PostMapping(SETTINGS_TAGS_URL + "/remove")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm) {
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title)
+                .orElseThrow(IllegalArgumentException::new);
+        accountService.removeTag(account, tag);
+    }
 }
