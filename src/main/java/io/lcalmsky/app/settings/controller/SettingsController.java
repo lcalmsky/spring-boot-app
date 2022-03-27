@@ -1,9 +1,11 @@
 package io.lcalmsky.app.settings.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lcalmsky.app.account.application.AccountService;
 import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.tag.domain.entity.Tag;
 import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.tag.domain.entity.Tag;
 import io.lcalmsky.app.tag.infra.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,7 @@ public class SettingsController {
     private final PasswordFormValidator passwordFormValidator;
     private final NicknameFormValidator nicknameFormValidator;
     private final TagRepository tagRepository;
+    private final ObjectMapper objectMapper;
 
     @InitBinder("passwordForm")
     public void passwordFormValidator(WebDataBinder webDataBinder) {
@@ -127,6 +131,17 @@ public class SettingsController {
         model.addAttribute("tags", tags.stream()
                 .map(Tag::getTitle)
                 .collect(Collectors.toList()));
+        List<String> allTags = tagRepository.findAll()
+                .stream()
+                .map(Tag::getTitle)
+                .collect(Collectors.toList());
+        String whitelist = null;
+        try {
+            whitelist = objectMapper.writeValueAsString(allTags);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        model.addAttribute("whitelist", whitelist);
         return SETTINGS_TAGS_VIEW_NAME;
     }
 
