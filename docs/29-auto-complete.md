@@ -22,7 +22,7 @@
 
 먼저 태그를 조회해오는 시점에 기존 태그 리스트를 같이 전달해줘야 하기 때문에 `SettingsController` 클래스를 수정해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
 // 생략
@@ -237,6 +237,8 @@ public class SettingsController {
 ### 뷰 수정
 
 tags.html 파일을 수정해줍니다.
+
+`/src/main/resources/templates/settings/tags.html`
 
 ```html
 <!DOCTYPE html>
