@@ -2,11 +2,11 @@ package io.lcalmsky.app.account.application;
 
 import io.lcalmsky.app.account.domain.UserAccount;
 import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.tag.domain.entity.Tag;
 import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
 import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import io.lcalmsky.app.settings.controller.NotificationForm;
 import io.lcalmsky.app.settings.controller.Profile;
+import io.lcalmsky.app.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -35,22 +35,13 @@ public class AccountService implements UserDetailsService {
 
     public Account signUp(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateToken();
         sendVerificationEmail(newAccount);
         return newAccount;
     }
 
     private Account saveNewAccount(SignUpForm signUpForm) {
-        Account account = Account.builder()
-                .email(signUpForm.getEmail())
-                .nickname(signUpForm.getNickname())
-                .password(passwordEncoder.encode(signUpForm.getPassword()))
-                .notificationSetting(Account.NotificationSetting.builder()
-                        .studyCreatedByWeb(true)
-                        .studyUpdatedByWeb(true)
-                        .studyRegistrationResultByWeb(true)
-                        .build())
-                .build();
+        Account account = Account.with(signUpForm.getEmail(), signUpForm.getNickname(), passwordEncoder.encode(signUpForm.getPassword()));
+        account.generateToken();
         return accountRepository.save(account);
     }
 
