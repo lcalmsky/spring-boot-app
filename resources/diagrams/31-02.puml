@@ -1,0 +1,10 @@
+@startuml
+
+object Account
+object AccountZone
+object Zone
+
+Account <-right- AccountZone
+AccountZone -right-> Zone
+
+@enduml
