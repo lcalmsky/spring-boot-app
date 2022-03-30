@@ -248,7 +248,7 @@ public class ZoneService {
 
 `@PostConstruct` 애너테이션을 이용하면 빈 등록 이후에 해당 메서드가 실행됩니다.
 
-[Entity 생성](##-Entity-생성)의 맨 아랫 부분에 문자열을 `Zone` `Entity`로 매핑해주는 static 메서드를 구현했었는데 파일을 읽어와 각 라인을 바로 매핑하기 위함이었습니다.
+[Entity 생성](#Entity-생성)의 맨 아랫 부분에 문자열을 `Zone` `Entity`로 매핑해주는 static 메서드를 구현했었는데 파일을 읽어와 각 라인을 바로 매핑하기 위함이었습니다.
 
 매핑한 결과를 `ZoneRepository.saveAll` 메서드를 이용해 모두 저장해주면 지역 데이터 초기화가 완료됩니다.
 
