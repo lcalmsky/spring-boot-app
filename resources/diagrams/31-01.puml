@@ -1,0 +1,8 @@
+@startuml
+
+object Account
+object Zone
+
+Account -right-> Zone
+
+@enduml
