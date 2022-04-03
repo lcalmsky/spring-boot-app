@@ -1,9 +1,6 @@
 package io.lcalmsky.app.account.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,8 +9,9 @@ import javax.persistence.Id;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
-@ToString
 public class Zone {
     @Id
     @GeneratedValue
@@ -34,5 +32,10 @@ public class Zone {
         zone.localNameOfCity = split[1];
         zone.province = split[2];
         return zone;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)/%s", city, localNameOfCity, province);
     }
 }

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lcalmsky.app.WithAccount;
 import io.lcalmsky.app.account.application.AccountService;
 import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Zone;
 import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import io.lcalmsky.app.tag.domain.entity.Tag;
 import io.lcalmsky.app.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ class SettingsControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired AccountRepository accountRepository;
+    @Autowired ZoneRepository zoneRepository;
     @Autowired TagRepository tagRepository;
     @Autowired PasswordEncoder passwordEncoder;
     @Autowired ObjectMapper objectMapper;
@@ -39,6 +42,7 @@ class SettingsControllerTest {
     @AfterEach
     void afterEach() {
         accountRepository.deleteAll();
+        zoneRepository.deleteAll();
     }
 
     @Test
@@ -279,5 +283,52 @@ class SettingsControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk());
         assertFalse(jaime.getTags().contains(newTag));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 수정 폼")
+    @WithAccount("jaime")
+    void updateZonesForm() throws Exception {
+        mockMvc.perform(get(SettingsController.SETTINGS_ZONE_URL))
+                .andExpect(view().name(SettingsController.SETTINGS_ZONE_VIEW_NAME))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("whitelist"))
+                .andExpect(model().attributeExists("zones"));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 추가")
+    @WithAccount("jaime")
+    void addZone() throws Exception {
+        Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
+        zoneRepository.save(testZone);
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+        mockMvc.perform(post(SettingsController.SETTINGS_ZONE_URL + "/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        Account account = accountRepository.findByNickname("jaime");
+        assertTrue(account.getZones().contains(testZone));
+    }
+
+    @Test
+    @DisplayName("계정의 지역 정보 삭제")
+    @WithAccount("jaime")
+    void removeZone() throws Exception {
+        Account jaime = accountRepository.findByNickname("jaime");
+        Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
+        zoneRepository.save(testZone);
+        accountService.addZone(jaime, testZone);
+        assertTrue(jaime.getZones().contains(testZone));
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+        mockMvc.perform(post(SettingsController.SETTINGS_ZONE_URL + "/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        assertFalse(jaime.getZones().contains(testZone));
     }
 }
