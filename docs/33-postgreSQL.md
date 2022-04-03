@@ -60,7 +60,7 @@ jaime=#
 
 postgreSQL 의존성을 추가해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/build.gradle`
+`/spring-boot-app/build.gradle`
 
 ```groovy
 dependencies {
@@ -146,7 +146,7 @@ compileJava.dependsOn copyFrontLib
 
 application-local-db.yml 파일을 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/application-local-db.yml`
+`/src/main/resources/application-local-db.yml`
 
 ```yaml
 spring:
@@ -170,11 +170,11 @@ logging:
 
 ## 애플리케이션 Configuration 수정
 
-여태까지는 아무런 profile 없이 동작했기 때문에 application.yml 설정을 읽어서 시작하였고, 해당 설정에 `spring.profiles.active: local`로 되어있어 application-local.yml 설정을 override하여 실행이 되었습니다.
+여태까지는 아무런 `profile` 없이 동작했기 때문에 `application.yml` 설정을 읽어서 시작하였고, 해당 설정에 `spring.profiles.active: local`로 되어있어 `application-local.yml` 설정을 `override`하여 실행이 되었습니다.
 
-방금 추가한 설정을 적용하기 위해 IDE의 configuration 메뉴에서 `local-db` 프로파일로 실행되도록 합니다.
+방금 추가한 설정을 적용하기 위해 IDE의 `configuration` 메뉴에서 `local-db` 프로파일로 실행되도록 합니다.
 
-IntelliJ의 경우 `⌘ + ⌥ + R`을 누르면 맨 위에 `Edit Configurations` 라는 메뉴가 있습니다.
+`IntelliJ`의 경우 `⌘ + ⌥ + R`을 누르면 맨 위에 `Edit Configurations` 라는 메뉴가 있습니다.
 
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/33-02.png)
 
@@ -186,13 +186,13 @@ IntelliJ의 경우 `⌘ + ⌥ + R`을 누르면 맨 위에 `Edit Configurations`
 
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/33-04.png)
 
-메뉴에 진입하면 기존 프로파일을 복사(⌘ + D)하여 local-db를 사용함을 알 수 있는 이름으로 설정하고 아래 `active profiles`도 `local-db`로 설정합니다.
+메뉴에 진입하면 기존 프로파일을 복사(⌘ + D)하여 `local-db`를 사용함을 알 수 있는 이름으로 설정하고 아래 `active profiles`도 `local-db`로 설정합니다.
 
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/33-05.png)
 
 ---
 
-여기까지 설정 후 `local-db`로 애플리케이션을 실행하면 에러가 발생합니다.
+여기까지 설정 후 설정한 `configuration`을 이용해 `local-db`로 애플리케이션을 실행하면 에러가 발생합니다.
 
 그 이유는 `JavaMailSender`의 구현체인 `ConsoleMailSender`를 `local` 프로파일에서만 동작하게 했기 때문인데요, `local-db`에서도 동작할 수 있게 수정해줍니다.
 
@@ -200,7 +200,7 @@ IntelliJ의 경우 `⌘ + ⌥ + R`을 누르면 맨 위에 `Edit Configurations`
 
 `ConsoleMailSender` 클래스의 `@Profile` 애노테이션의 `attribute`에 `local-db`를 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
+`/spring-boot-app/src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
 
 ```java
 // 생략
@@ -273,7 +273,7 @@ public class ConsoleMailSender implements JavaMailSender {
 
 다시 `local-db` 프로파일로 동작하게 실행하면 앱이 정상적으로 실행됩니다.
 
-그리고 로컬 DB를 사용하기 때문에 몇 차례 반복하더라도 이전 처럼 테이블을 생성하는 쿼리가 계속 나타나거나, 지역 정보 등을 미리 입력하는 쿼리가 실행되지 않게 됩니다.
+그리고 로컬 DB를 사용하고 `spring.jpa.hibernate.ddl-auto: update` 설정 때문에 몇 차례 반복해서 실행하더라도 이전 처럼 테이블을 생성하는 쿼리가 계속 나타나거나, 지역 정보 등을 미리 입력하는 쿼리가 실행되지 않게 됩니다.
 
 ## IntelliJ Database 설정
 
@@ -301,4 +301,4 @@ public class ConsoleMailSender implements JavaMailSender {
 
 ---
 
-다음 포스팅에서는 ConsoleMailSender를 대신하여 실제로 메일을 전송할 수 있도록 SMTP 설정을 하도록 하겠습니다. 
+다음 포스팅에서는 `ConsoleMailSender`를 대신하여 실제로 메일을 전송할 수 있도록 `SMTP` 설정을 하도록 하겠습니다. 
