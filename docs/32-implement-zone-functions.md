@@ -16,7 +16,7 @@
 
 SettingsController에 지역 관련 엔드포인트를 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
 // 생략
@@ -285,7 +285,7 @@ public class SettingsController {
 
 지역 정보를 주고 받을 폼 클래스를 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/settings/controller/ZoneForm.java`
+`/src/main/java/io/lcalmsky/app/settings/controller/ZoneForm.java`
 
 ```java
 package io.lcalmsky.app.settings.controller;
@@ -318,7 +318,7 @@ public class ZoneForm {
 
 Account와 Zone의 관계 설정을 해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
+`/src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
 // 생략
@@ -504,7 +504,7 @@ public class Account extends AuditingEntity {
 
 지역 정보를 조회하고 추가하고 삭제하기 위한 기능을 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
+`/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 // 생략
@@ -691,7 +691,7 @@ public class AccountService implements UserDetailsService {
 
 @Builder와 생성자, toString을 추가로 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/domain/entity/Zone.java`
+`/src/main/java/io/lcalmsky/app/account/domain/entity/Zone.java`
 
 ```java
 package io.lcalmsky.app.account.domain.entity;
@@ -771,7 +771,7 @@ public class Zone {
 
 시와 도로 지역을 찾을 수 있는 메서드를 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/zone/infra/repository/ZoneRepository.java`
+`/src/main/java/io/lcalmsky/app/zone/infra/repository/ZoneRepository.java`
 
 ```java
 package io.lcalmsky.app.zone.infra.repository;
@@ -792,7 +792,7 @@ public interface ZoneRepository extends JpaRepository<Zone, Long> {
 
 tags.html을 복사하여 zones.html을 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/settings/zones.html`
+`/src/main/resources/templates/settings/zones.html`
 
 ```html
 <!DOCTYPE html>
@@ -908,7 +908,7 @@ x 버튼을 눌러 관심 지역을 삭제합니다.
 
 SettingsControllerTest 클래스에 추가된 기능에 대한 테스트를 작성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/test/java/io/lcalmsky/app/settings/controller/SettingsControllerTest.java`
+`/src/test/java/io/lcalmsky/app/settings/controller/SettingsControllerTest.java`
 
 ```java
 // 생략
