@@ -18,6 +18,9 @@ Gmail을 SMTP 서버로 활용해 메일을 전송하는 기능을 구현합니�
 
 [Gmail](https://mail.google.com/)로 접속한 뒤 우측 상단의 프로필 사진을 클릭하여 `다른 계정 추가`를 클릭합니다.
 
+> 앞으로 등장하는 모든 캡처들에 포함된 개인 정보는 이메일 주소를 제외하고 모두 삭제하였습니다.  
+> 공백처럼 보일 수 있으나 실제로는 값을 입력하였으므로 헷갈리지 마시길 바랍니다.
+
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/34-01.png)
 
 로그인 화면 좌측 하단에 `계정 만들기`를 클릭하고 `본인 계정`을 클릭합니다.
