@@ -10,6 +10,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jaime.lee.dev@gmail.com
+    password: app-password-issued
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.timeout: 5000
+      mail.smtp.starttls.enable: true
 logging:
   level:
     org.hibernate:

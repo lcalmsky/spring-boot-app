@@ -37,3 +37,4 @@ out/
 ### VS Code ###
 .vscode/
 src/main/resources/static/node_modules
+/src/main/resources/application-local-db-private.yml
