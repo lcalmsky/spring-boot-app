@@ -60,7 +60,7 @@ public class EmailMessage {
 
 `EmailService`를 구현하여 로그로 메일을 출력하는 `ConsoleEmailService`를 작성합니다.
 
-```/src/main/java/io/lcalmsky/app/mail/`ConsoleEmailServi`ce.java`
+`/src/main/java/io/lcalmsky/app/mail/`ConsoleEmailService.java`
 
 ```java
 package io.lcalmsky.app.mail;
@@ -138,7 +138,8 @@ public class HtmlEmailService implements EmailService {
 
 기존에 `account.infra.mail` 패키지 내부에 존재했었는데 `mail` 패키지 자체를 삭제하였습니다.
 
-**삭제**
+**삭제**:
+
 `src/main/java/io/lcalmsky/app/account/infra/email/`
 `src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
 
@@ -341,7 +342,7 @@ public class AccountService implements UserDetailsService {
 
 > 리팩토링을 했을 경우 꼭 테스트를 돌려보시는 게 좋습니다.
 
-제가 캡쳐는 따로 못했지만 `AccountControllerTest`에서 회원 가입 처리 후 이메일 전송이 제대로 되었는지 확인하는 부분에서 테스트에 실패하게 됩니다.
+캡쳐는 따로 못했지만 `AccountControllerTest`에서 회원 가입 처리 후 이메일 전송이 제대로 되었는지 확인하는 부분에서 테스트에 실패하게 됩니다.
 
 마찬가지로 수정해주겠습니다.
 
