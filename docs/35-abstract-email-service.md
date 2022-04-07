@@ -60,7 +60,7 @@ public class EmailMessage {
 
 `EmailService`를 구현하여 로그로 메일을 출력하는 `ConsoleEmailService`를 작성합니다.
 
-`/src/main/java/io/lcalmsky/app/mail/`ConsoleEmailService.java`
+`/src/main/java/io/lcalmsky/app/mail/ConsoleEmailService.java`
 
 ```java
 package io.lcalmsky.app.mail;
