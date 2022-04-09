@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: ac91413)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: c4984db)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout ac91413
+> > git checkout c4984db
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -16,7 +16,7 @@ Thymeleaf 템플릿을 이용해 이메일 템플릿을 작성합니다.
 
 템플릿 위치에 디렉토리를 하나 생성하고 하위에 이메일 템플릿을 HTML로 작성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/mail/simple-link.html`
+`/src/main/resources/templates/mail/simple-link.html`
 
 ```html
 <!DOCTYPE html>
@@ -53,8 +53,8 @@ Thymeleaf 템플릿을 이용해 이메일 템플릿을 작성합니다.
 
 따라서 설정파일에 해당 내용을 추가해줍니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/application-local.yml`
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/application-local-db.yml`
+`/src/main/resources/application-local.yml`
+`/src/main/resources/application-local-db.yml`
 
 ```yaml
 # 생략
@@ -131,7 +131,7 @@ app:
 
 애플리케이션 관련 설정을 읽어오는 클래스를 하나 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/config/AppProperties.java`
+`/src/main/java/io/lcalmsky/app/config/AppProperties.java`
 
 ```java
 package io.lcalmsky.app.config;
@@ -156,7 +156,7 @@ public class AppProperties {
 
 메일 전송하는 부분을 수정합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
+`/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
 @Service
