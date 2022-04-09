@@ -219,13 +219,13 @@ public class AccountService implements UserDetailsService {
 
 가입 후 인증 메일을 확인합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/36-01.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/36-01.png)
 
 HTML 포맷이 적용된 것을 확인할 수 있습니다.
 
 메일로 전송된 링크를 클릭하면,
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/36-02.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/36-02.png)
 
 가입이 정상적으로 처리되는 것을 확인할 수 있습니다.
 
