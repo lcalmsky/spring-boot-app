@@ -15,6 +15,7 @@
     "font-awesome": "^4.7.0",
     "jdenticon": "^3.1.1",
     "jquery": "^3.6.0",
-    "jquery-cropper": "^1.0.1"
+    "jquery-cropper": "^1.0.1",
+    "tinymce": "^6.0.1"
   }
 }
