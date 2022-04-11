@@ -1,0 +1,12 @@
+@startuml
+
+object Study
+object Account
+object Tag
+object Zone
+
+Account <-right- Study
+Study -right-> Zone
+Study -down-> Tag
+
+@enduml
