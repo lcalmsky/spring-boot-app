@@ -338,11 +338,13 @@ public class StudyFormValidator implements Validator {
 
 ## 라이브러리 설치
 
-스터디 상세 정보를 적을 때 사용하기위한 위지윅(WYSIWYG) 에디터 라이브러리를 설치합니다. 
+스터디 상세 정보를 적을 때 사용하기위한 위지윅(WYSIWYG) 에디터 라이브러리를 설치합니다.
+
+> 저는 검색해서 나오는 아무 에디터나 사용하였습니다.
 
 ```shell
 > cd src/main/resources/static 
-> npm install summernote
+> npm install tinymce
 ```
 
 ## fragments 수정
