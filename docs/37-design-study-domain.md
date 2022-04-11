@@ -23,7 +23,7 @@
 
 객체 관점에서 `Study`와 다른 `Entity`의 관계는 다음과 같습니다.
 
-![](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lcalmsky/spring-boot-app/resources/diagrams/37-01.puml)
+![](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/diagrams/37-01.puml)
 
 * `Study`에서 `Account` 쪽으로 `@ManyToMany` 단방향 관계 두 개(managers, members)
 * `Study`에서 `Zone`으로 `@ManyToMany` 단방향 관계
