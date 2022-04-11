@@ -714,7 +714,7 @@ postgres DB를 실행시키고 local-db 설정으로 애플리케이션을 실�
 
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/38-06.png)
 
-의도한대로 /study/<study-path>로 이동한 것을 확인할 수 있습니다.
+의도한대로 /study/`study-path`로 이동한 것을 확인할 수 있습니다.
 
 아직 페이지를 구현하지 않았기 때문에 에러 페이지가 노출되면 정상입니다.
 
