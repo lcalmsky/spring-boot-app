@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<div th:replace="fragments.html :: navigation-bar"></div>
+
+<div th:replace="fragments.html :: study-banner"></div>
+
+<div class="container">
+    <!--스터디 정보-->
+    <div th:replace="fragments.html :: study-info"></div>
+
+    <!--스터디 메뉴-->
+    <div th:replace="fragments.html :: study-menu(info)"></div>
+
+    <!--스터디 상세 소개-->
+    <div class="row px-3 justify-content-center">
+        <div class="col-10 pt-3" th:utext="${study.fullDescription}"></div> <!--utext는 HTML 렌더링함-->
+    </div>
+
+    <div th:replace="fragments.html :: footer"></div>
+</div>
+<script th:replace="fragments.html::tooltip"></script>
+</body>
+</html>

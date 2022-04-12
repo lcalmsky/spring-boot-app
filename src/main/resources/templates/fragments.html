@@ -179,4 +179,117 @@
     <use xlink:href="#exclamation-triangle-fill"/>
 </svg>
 
+<div th:fragment="study-banner" th:if="${study.useBanner}" class="row" id="study-logo">
+    <img th:src="${study.image}"/>
+</div>
+
+<div th:fragment="study-info">
+    <div class="row pt-4 text-left justify-content-center bg-light">
+        <!--스터디 이름 표시-->
+        <div class="col-6">
+            <a href="#" class="text-decoration-none" th:href="@{'/study/' + ${study.path}}">
+                <span class="h2" th:text="${study.title}">스터디 이름</span>
+            </a>
+        </div>
+        <div class="col-4 text-right justify-content-end">
+            <!--스터디를 공개하지 않았을 경우-->
+            <span th:if="${!study.published}" class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+                  data-placement="bottom" title="공개 준비중입니다.">
+                <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button"
+                        disabled>DRAFT</button>
+            </span>
+            <!--스터디가 종료된 경우-->
+            <span th:if="${study.closed}" class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+                  data-placement="bottom" title="종료된 스터디 입니다.">
+                <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button"
+                        disabled>CLOSED</button>
+            </span>
+            <!--스터디 멤버를 모집하고있지 않은 경우-->
+            <span th:if="${!study.recruiting}" class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+                  data-placement="bottom" title="현재 모집중이 아닙니다.">
+                <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button" disabled>OFF</button>
+            </span>
+            <!--인증된 사용자이고 스터디가 가입 가능한 경우-->
+            <span sec:authorize="isAuthenticated()" th:if="${study.isJoinable(#authentication.principal)}"
+                  class="btn-group" role="group" aria-label="Basic example">
+                <!--스터디 가입 링크-->
+                <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/join'}">
+                    스터디 가입
+                </a>
+                <!--스터디 멤버 수-->
+                <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
+                   th:text="${study.members.size()}">1</a>
+            </span>
+            <!--인증된 사용자이고 스터디 멤버인 경우-->
+            <span sec:authorize="isAuthenticated()"
+                  th:if="${!study.closed && study.isMember(#authentication.principal)}" class="btn-group"
+                  role="group">
+                <!--스터디 가입 링크-->
+                <a class="btn btn-outline-warning" th:href="@{'/study/' + ${study.path} + '/leave'}">
+                    스터디 탈퇴
+                </a>
+                <!--스터디 멤버 수-->
+                <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
+                   th:text="${study.members.size()}">1</a>
+            </span>
+            <!--인증된 사용자이고 스터디 관리자인 경우-->
+            <span sec:authorize="isAuthenticated()"
+                  th:if="${study.published && !study.closed && study.isManager(#authentication.principal)}">
+                <!--모임 만들기 링크-->
+                <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/new-event'}">
+                    <i class>a fa-plus"></i> 모임 만들기
+                </a>
+            </span>
+        </div>
+    </div>
+    <!--스터디 짧은 소개-->
+    <div class="row justify-content-center bg-light">
+        <div class="col-10">
+            <p class="lead" th:text="${study.shortDescription}"></p>
+        </div>
+    </div>
+    <!--태그, 지역-->
+    <div class="row justify-content-center bg-light">
+        <div class="col-10">
+            <p>
+                <span th:each="tag: ${study.tags}"
+                      class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
+                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                        <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                    </a>
+                </span>
+                <span th:each="zone: ${study.zones}" class="font-weight-light text-monospace badge badge-primary mr-3">
+                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                        <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
+                    </a>
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="study-menu (studyMenu)" class="row px-3 justify-content-center bg-light">
+    <nav class="col-10 nav nav-tabs">
+        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'info'}? active" th:href="@{'/study/' + ${study.path}}">
+            <i class="fa fa-info-circle"></i> 소개
+        </a>
+        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'members'}? active" th:href="@{'/study/' + ${study.path} + '/members'}">
+            <i class="fa fa-user"></i> 구성원
+        </a>
+        <a class="nav-item nav-link" th:classappend="${studyMenu == 'events'}? active" href="#" th:href="@{'/study/' + ${study.path} + '/events'}">
+            <i class="fa fa-calendar"></i> 모임
+        </a>
+        <a sec:authorize="isAuthenticated()" th:if="${study.isManager(#authentication.principal)}"
+           class="nav-item nav-link" th:classappend="${studyMenu == 'settings'}? active" href="#" th:href="@{'/study/' + ${study.path} + '/settings/description'}">
+            <i class="fa fa-cog"></i> 설정
+        </a>
+    </nav>
+</div>
+
+<script th:fragment="tooltip" type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
 </html>
