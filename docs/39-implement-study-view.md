@@ -288,7 +288,7 @@ public class Study {
 
 설명은 인라인 주석으로 대체하였습니다.
 
-이 `fragments`를 이용해 스터디 뷰를 작성합니다.
+이제 `fragments`를 이용해 스터디 뷰를 작성합니다.
 
 `/src/main/resources/templates/study/view.html`
 
@@ -471,9 +471,9 @@ public class Study {
 
 [JPA 관련 포스팅](https://jaime-note.tistory.com/54)에서 다룬 적이 있긴 합니다만 이런 문제를 `N+1 problem`이라고 부릅니다.
 
-`join` 관계에 있는 테이블에 대해 `lazy` 로딩을 하기 때문인데요, `lazy` 로딩은 `entity` 내에 `collection` 타입의 필드가 존재할 때 바로 조회해서 가져오는 것이 아니라 추가 쿼리를 통해 가져오는 방식을 말합니다.
+`join` 관계에 있는 테이블에 대해 `lazy` 로딩을 하기 때문인데요, `lazy` 로딩은 `entity` 내에서 다른 객체 타입의 필드와 관계를 맺고 있을 때 바로 조회해서 가져오는 것이 아니라 추가 쿼리를 통해 가져오는 방식을 말합니다.
 
-2, 3, 4, 5번 모두 `collection`과 관련된 기능이기 때문에 4번의 추가 쿼리가 발생한 것입니다.
+2, 3, 4, 5번 모두 `collection` 객체와 관련된 기능이기 때문에 4번의 추가 쿼리가 발생한 것입니다.
 
 > ```java
 > @Target({METHOD, FIELD}) 
