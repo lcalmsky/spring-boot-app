@@ -1,3 +1,149 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
+> 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 0eb765a)
+> ```shell
+> > git clone https://github.com/lcalmsky/spring-boot-app.git
+> > git checkout 0eb765a
+> ```
+> ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
+
+## Overview
+
+스터디 구성원 조회 기능을 구현합니다.
+
+여태까지 계속 해왔던 것이기 때문에 자세한 설명은 생략하겠습니다.
+
+## 엔드포인트 추가
+
+스터디 조회 화면에서 구성원 메뉴를 클릭했을 때 관련 페이지로 이동하도록 컨트롤러를 수정해줍니다.
+
+`/src/main/java/io/lcalmsky/app/study/endpoint/StudyController.java`
+
+```java
+// 생략
+@Controller
+@RequiredArgsConstructor
+public class StudyController {
+    // 생략
+    @GetMapping("/study/{path}/members")
+    public String viewStudyMembers(@CurrentUser Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(studyRepository.findByPath(path));
+        return "study/members";
+    }
+}
+```
+
+<details>
+<summary>StudyController.java 전체 보기</summary>
+
+```java
+package io.lcalmsky.app.study.endpoint;
+
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.study.application.StudyService;
+import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.study.form.StudyForm;
+import io.lcalmsky.app.study.form.validator.StudyFormValidator;
+import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+@Controller
+@RequiredArgsConstructor
+public class StudyController {
+    private final StudyService studyService;
+    private final StudyFormValidator studyFormValidator;
+    private final StudyRepository studyRepository;
+
+    @InitBinder("studyForm")
+    public void studyFormInitBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(studyFormValidator);
+    }
+
+    @GetMapping("/new-study")
+    public String newStudyForm(@CurrentUser Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(new StudyForm());
+        return "study/form";
+    }
+
+    @PostMapping("/new-study")
+    public String newStudySubmit(@CurrentUser Account account, @Valid StudyForm studyForm, Errors errors) {
+        if (errors.hasErrors()) {
+            return "study/form";
+        }
+        Study newStudy = studyService.createNewStudy(studyForm, account);
+        return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(), StandardCharsets.UTF_8);
+    }
+
+    @GetMapping("/study/{path}")
+    public String viewStudy(@CurrentUser Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(studyRepository.findByPath(path));
+        return "study/view";
+    }
+
+    @GetMapping("/study/{path}/members")
+    public String viewStudyMembers(@CurrentUser Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(studyRepository.findByPath(path));
+        return "study/members";
+    }
+}
+```
+
+</details>
+
+## 뷰 구현
+
+먼저 `fragments`를 수정해줍니다.
+
+`/src/main/resources/templates/fragments.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--생략-->
+<div th:fragment="member-list (members, isManager)" class="row px-3 justify-content-center">
+    <ul class="list-unstyled col-10">
+        <li class="d-flex mt-3" th:each="member: ${members}">
+            <div class="flex-shrink-0">
+                <svg th:if="${#strings.isEmpty(member?.profile?.image)}" th:data-jdenticon-value="${member.nickname}" width="64" height="64" class="rounded border bg-light me-3"></svg>
+                <img th:if="${!#strings.isEmpty(member?.profile?.image)}" th:src="${member?.profile?.image}" width="64" height="64" class="rounded border me-3"/>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5 class="mt-0 mb-1">
+                    <span th:text="${member.nickname}"></span>
+                    <span th:if="${isManager}" class="badge bg-primary">관리자</span>
+                </h5>
+                <span th:text="${member.profile.bio}"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+</html>
+```
+
+<details>
+<summary>fragment.html 전체 보기</summary>
+
+```html
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
@@ -311,3 +457,234 @@
 </div>
 
 </html>
+```
+
+</details>
+
+현재 계정과 스터디 정보를 전달받아서 리스트 형태로 보여주는데 프로필 사진과, 닉네임, 관리자 여부에 따라 태그를 표현해주고, 한 줄 소개도 보여줍니다.
+
+다음으로 템플릿 경로에 `study` 하위에 `members.html` 파일을 생성하고 작성합니다.
+
+`/src/main/resources/templates/study/members.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<div th:replace="fragments.html :: navigation-bar"></div>
+<div th:replace="fragments.html :: study-banner"></div>
+<div class="container">
+    <div th:replace="fragments.html :: study-info"></div>
+    <div th:replace="fragments.html :: study-menu('members')"></div>
+
+    <div th:replace="fragments.html :: member-list(${study.managers},${true})"></div>
+    <div th:replace="fragments.html :: member-list(${study.members},${false})"></div>
+
+    <div th:replace="fragments.html :: footer"></div>
+</div>
+<script th:replace="fragments.html :: tooltip"></script>
+</body>
+</html>
+```
+
+---
+
+> 제가 프론트엔드 쪽을 너무 몰라서 그동안 Bootstrap 4.x 버전 대에서만 동작하는 클래스들을 그대로 사용한 것이 너무 많이 있었습니다.  
+> 앞으로도 발견하면 조금씩 수정할 예정인데, 이미 지나간 포스팅을 모두 바꾸기엔 한계가 있어 어떤 것들을 수정했는지만 간단히 나열할 예정입니다.  
+> 
+> **fragments.html 수정 사항**
+> * ml-* -> ms-* 로 수정
+> * mr-* -> me-* 로 수정
+> * dropdown-menu-sm-right -> dropdown-menu-sm-end 로 수정
+
+## 테스트 코드 작성
+
+```java
+// 생략
+@SpringBootTest
+@Transactional
+@AutoConfigureMockMvc
+class StudyControllerTest {
+    // 생략
+    @Test
+    @DisplayName("스터디 멤버 뷰")
+    @WithAccount("jaime")
+    void studyMemberView() throws Exception {
+        Account account = accountRepository.findByNickname("jaime");
+        String studyPath = "study-path";
+        studyService.createNewStudy(StudyForm.builder()
+                .path(studyPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), account);
+        mockMvc.perform(get("/study/" + studyPath + "/members"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/members"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"));
+    }
+}
+```
+
+<details>
+<summary>StudyControllerTest.java 전체 보기</summary>
+
+```java
+package io.lcalmsky.app.study.endpoint;
+
+import io.lcalmsky.app.WithAccount;
+import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.study.application.StudyService;
+import io.lcalmsky.app.study.form.StudyForm;
+import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@Transactional
+@AutoConfigureMockMvc
+class StudyControllerTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired AccountRepository accountRepository;
+    @Autowired StudyRepository studyRepository;
+    @Autowired StudyService studyService;
+
+    @Test
+    @DisplayName("스터디 폼 조회")
+    @WithAccount("jaime")
+    void studyForm() throws Exception {
+        mockMvc.perform(get("/new-study"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/form"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("studyForm"));
+    }
+
+    @Test
+    @DisplayName("스터디 추가: 정상")
+    @WithAccount("jaime")
+    void createStudy() throws Exception {
+        String studyPath = "study-test";
+        mockMvc.perform(post("/new-study")
+                        .param("path", studyPath)
+                        .param("title", "study-title")
+                        .param("shortDescription", "short-description")
+                        .param("fullDescription", "fullDescription")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath));
+        assertTrue(studyRepository.existsByPath(studyPath));
+    }
+
+    @Test
+    @DisplayName("스터디 추가: 입력값 비정상")
+    @WithAccount("jaime")
+    void createStudyWithError() throws Exception {
+        String studyPath = "s";
+        mockMvc.perform(post("/new-study")
+                        .param("path", studyPath)
+                        .param("title", "study-title")
+                        .param("shortDescription", "short-description")
+                        .param("fullDescription", "fullDescription")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/form"))
+                .andExpect(model().hasErrors());
+    }
+
+    @Test
+    @DisplayName("스터디 추가: 입력값 중복")
+    @WithAccount("jaime")
+    void createStudyWithDuplicate() throws Exception {
+        Account account = accountRepository.findByNickname("jaime");
+        String duplicatedPath = "study-path";
+        studyService.createNewStudy(StudyForm.builder()
+                .path(duplicatedPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), account);
+        mockMvc.perform(post("/new-study")
+                        .param("path", duplicatedPath)
+                        .param("title", "study-title")
+                        .param("shortDescription", "short-description")
+                        .param("fullDescription", "fullDescription")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/form"))
+                .andExpect(model().hasErrors());
+    }
+
+    @Test
+    @DisplayName("스터디 뷰")
+    @WithAccount("jaime")
+    void studyView() throws Exception {
+        Account account = accountRepository.findByNickname("jaime");
+        String studyPath = "study-path";
+        studyService.createNewStudy(StudyForm.builder()
+                .path(studyPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), account);
+        mockMvc.perform(get("/study/" + studyPath))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/view"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"));
+    }
+
+    @Test
+    @DisplayName("스터디 멤버 뷰")
+    @WithAccount("jaime")
+    void studyMemberView() throws Exception {
+        Account account = accountRepository.findByNickname("jaime");
+        String studyPath = "study-path";
+        studyService.createNewStudy(StudyForm.builder()
+                .path(studyPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), account);
+        mockMvc.perform(get("/study/" + studyPath + "/members"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/members"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"));
+    }
+}
+```
+
+</details>
+
+## 테스트
+
+> 앞으로 별 다른 설명이 없어도 `postgres DB`를 실행하고 `local-db` 프로파일로 실행합니다.
+
+애플리케이션을 실행한 뒤 로그인 후 스터디 화면으로 진입합니다.
+
+제가 기존에 생성한 스터디 `url`은 `spring-boot` 이므로 주소로 바로 접속하였습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/40-01.png)
+
+여기서 구성원 메뉴를 클릭합니다.
+
+> 테스트하기 전에 프로필 수정 기능을 이용해 한 줄 소개와 프로필 이미지를 추가해주었습니다.
+ 
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/40-02.png)
+
+정상적으로 조회되었습니다.
