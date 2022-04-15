@@ -3,6 +3,7 @@ package io.lcalmsky.app.study.domain.entity;
 import io.lcalmsky.app.account.domain.UserAccount;
 import io.lcalmsky.app.account.domain.entity.Account;
 import io.lcalmsky.app.account.domain.entity.Zone;
+import io.lcalmsky.app.study.form.StudyDescriptionForm;
 import io.lcalmsky.app.study.form.StudyForm;
 import io.lcalmsky.app.tag.domain.entity.Tag;
 import lombok.AccessLevel;
@@ -91,5 +92,10 @@ public class Study {
 
     public boolean isManager(UserAccount userAccount) {
         return this.managers.contains(userAccount.getAccount());
+    }
+
+    public void updateDescription(StudyDescriptionForm studyDescriptionForm) {
+        this.shortDescription = studyDescriptionForm.getShortDescription();
+        this.fullDescription = studyDescriptionForm.getFullDescription();
     }
 }

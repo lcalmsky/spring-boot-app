@@ -64,12 +64,7 @@
     </div>
     <div th:replace="fragments::footer"></div>
     <script th:replace="fragments::form-validation"></script>
-    <script src="/node_modules/tinymce/tinymce.min.js"></script>
-    <script>
-        tinymce.init({
-            selector: 'textarea#fullDescription'
-        })
-    </script>
+    <script th:replace="fragments.html::editor-script"></script>
 </div>
 </body>
 </html>

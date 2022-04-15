@@ -2,6 +2,7 @@ package io.lcalmsky.app.account.domain.entity;
 
 import io.lcalmsky.app.domain.entity.AuditingEntity;
 import io.lcalmsky.app.settings.controller.NotificationForm;
+import io.lcalmsky.app.study.domain.entity.Study;
 import io.lcalmsky.app.tag.domain.entity.Tag;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -112,6 +113,10 @@ public class Account extends AuditingEntity {
 
     public boolean isValid(String token) {
         return this.emailToken.equals(token);
+    }
+
+    public boolean isManagerOf(Study study) {
+        return study.getManagers().contains(this);
     }
 
     @Embeddable
