@@ -310,4 +310,34 @@
     </ul>
 </div>
 
+<div th:fragment="study-settings-menu (currentMenu)" class="list-group">
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'description'}? active"
+       href="#" th:href="@{'/study/' + ${study.path} + '/settings/description'}">소개</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'image'}? active"
+       href="#" th:href="@{'/study/' + ${study.path} + '/settings/banner'}">배너 이미지</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active"
+       href="#" th:href="@{'/study/' + ${study.path} + '/settings/tags'}">스터디 주제</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active"
+       href="#" th:href="@{'/study/' + ${study.path} + '/settings/zones'}">활동 지역</a>
+    <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'study'}? active"
+       href="#" th:href="@{'/study/' + ${study.path} + '/settings/study'}">스터디</a>
+</div>
+
+<div th:fragment="editor-script">
+    <script src="/node_modules/tinymce/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#fullDescription'
+        })
+    </script>
+</div>
+
+<div th:fragment="message" th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+        <use xlink:href="#check-circle-fill"/>
+    </svg>
+    <span th:text="${message}">완료</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
 </html>

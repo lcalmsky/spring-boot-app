@@ -162,4 +162,9 @@ public class AccountService implements UserDetailsService {
         accountRepository.findById(account.getId())
                 .ifPresent(a -> a.getZones().remove(zone));
     }
+
+    public Account getAccountBy(String nickname) {
+        return Optional.ofNullable(accountRepository.findByNickname(nickname))
+                .orElseThrow(() -> new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다."));
+    }
 }
