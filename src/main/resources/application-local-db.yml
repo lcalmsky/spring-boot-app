@@ -26,3 +26,6 @@ logging:
       type.descriptor.sql.BasicBinder: trace
 app:
   host: http://localhost:8080
+server:
+  tomcat:
+    max-http-form-post-size: 5MB

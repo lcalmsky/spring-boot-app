@@ -41,4 +41,16 @@ public class StudyService {
     public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
         study.updateDescription(studyDescriptionForm);
     }
+
+    public void updateStudyImage(Study study, String image) {
+        study.updateImage(image);
+    }
+
+    public void enableStudyBanner(Study study) {
+        study.setBanner(true);
+    }
+
+    public void disableStudyBanner(Study study) {
+        study.setBanner(false);
+    }
 }

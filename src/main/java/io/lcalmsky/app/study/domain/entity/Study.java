@@ -9,6 +9,7 @@ import io.lcalmsky.app.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -66,6 +67,7 @@ public class Study {
 
     private boolean closed;
 
+    @Accessors(fluent = true)
     private boolean useBanner;
 
     public static Study from(StudyForm studyForm) {
@@ -97,5 +99,13 @@ public class Study {
     public void updateDescription(StudyDescriptionForm studyDescriptionForm) {
         this.shortDescription = studyDescriptionForm.getShortDescription();
         this.fullDescription = studyDescriptionForm.getFullDescription();
+    }
+
+    public void updateImage(String image) {
+        this.image = image;
+    }
+
+    public void setBanner(boolean useBanner) {
+        this.useBanner = useBanner;
     }
 }

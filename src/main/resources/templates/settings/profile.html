@@ -124,7 +124,7 @@
                         let img = document.createElement("img");
                         img.id = 'new-profile';
                         img.src = e.target.result;
-                        img.width = 250;
+                        img.setAttribute('with', '100%');
 
                         $newProfileImage.html(img);
                         $newProfileImage.show();
