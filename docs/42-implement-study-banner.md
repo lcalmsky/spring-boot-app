@@ -155,6 +155,8 @@ public class StudySettingsController {
 }
 ```
 
+</details>
+
 ## 서비스 수정
 
 위 컨트롤러에서 트랜잭션을 사용하기위해 서비스에 위임한 부분을 구현합니다.
@@ -182,7 +184,6 @@ public class StudyService {
 }
 ```
 
-</details>
 
 <details>
 <summary>StudyService.java 전체 보기</summary>
