@@ -55,4 +55,34 @@ public class StudySettingsController {
     private String encode(String path) {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
+
+    @GetMapping("/banner")
+    public String studyImageForm(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudy(account, path);
+        model.addAttribute(account);
+        model.addAttribute(study);
+        return "study/settings/banner";
+    }
+
+    @PostMapping("/banner")
+    public String updateBanner(@CurrentUser Account account, @PathVariable String path, String image, RedirectAttributes attributes) {
+        Study study = studyService.getStudy(account, path);
+        studyService.updateStudyImage(study, image);
+        attributes.addFlashAttribute("message", "스터디 이미지를 수정하였습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/banner";
+    }
+
+    @PostMapping("/banner/enable")
+    public String enableStudyBanner(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyService.getStudy(account, path);
+        studyService.enableStudyBanner(study);
+        return "redirect:/study/" + encode(path) + "/settings/banner";
+    }
+
+    @PostMapping("/banner/disable")
+    public String disableStudyBanner(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyService.getStudy(account, path);
+        studyService.disableStudyBanner(study);
+        return "redirect:/study/" + encode(path) + "/settings/banner";
+    }
 }
