@@ -1,11 +1,11 @@
 package io.lcalmsky.app.settings.controller;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class ZoneForm {
 
     private String zoneName;
