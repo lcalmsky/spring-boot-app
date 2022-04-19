@@ -270,17 +270,21 @@
 
 <div th:fragment="study-menu (studyMenu)" class="row px-3 justify-content-center bg-light">
     <nav class="col-10 nav nav-tabs">
-        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'info'}? active" th:href="@{'/study/' + ${study.path}}">
+        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'info'}? active"
+           th:href="@{'/study/' + ${study.path}}">
             <i class="fa fa-info-circle"></i> 소개
         </a>
-        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'members'}? active" th:href="@{'/study/' + ${study.path} + '/members'}">
+        <a class="nav-item nav-link" href="#" th:classappend="${studyMenu == 'members'}? active"
+           th:href="@{'/study/' + ${study.path} + '/members'}">
             <i class="fa fa-user"></i> 구성원
         </a>
-        <a class="nav-item nav-link" th:classappend="${studyMenu == 'events'}? active" href="#" th:href="@{'/study/' + ${study.path} + '/events'}">
+        <a class="nav-item nav-link" th:classappend="${studyMenu == 'events'}? active" href="#"
+           th:href="@{'/study/' + ${study.path} + '/events'}">
             <i class="fa fa-calendar"></i> 모임
         </a>
         <a sec:authorize="isAuthenticated()" th:if="${study.isManager(#authentication.principal)}"
-           class="nav-item nav-link" th:classappend="${studyMenu == 'settings'}? active" href="#" th:href="@{'/study/' + ${study.path} + '/settings/description'}">
+           class="nav-item nav-link" th:classappend="${studyMenu == 'settings'}? active" href="#"
+           th:href="@{'/study/' + ${study.path} + '/settings/description'}">
             <i class="fa fa-cog"></i> 설정
         </a>
     </nav>
@@ -296,8 +300,10 @@
     <ul class="list-unstyled col-10">
         <li class="d-flex mt-3" th:each="member: ${members}">
             <div class="flex-shrink-0">
-                <svg th:if="${#strings.isEmpty(member?.profile?.image)}" th:data-jdenticon-value="${member.nickname}" width="64" height="64" class="rounded border bg-light me-3"></svg>
-                <img th:if="${!#strings.isEmpty(member?.profile?.image)}" th:src="${member?.profile?.image}" width="64" height="64" class="rounded border me-3"/>
+                <svg th:if="${#strings.isEmpty(member?.profile?.image)}" th:data-jdenticon-value="${member.nickname}"
+                     width="64" height="64" class="rounded border bg-light me-3"></svg>
+                <img th:if="${!#strings.isEmpty(member?.profile?.image)}" th:src="${member?.profile?.image}" width="64"
+                     height="64" class="rounded border me-3"/>
             </div>
             <div class="flex-grow-1 ms-3">
                 <h5 class="mt-0 mb-1">
@@ -319,7 +325,8 @@
        href="#" th:href="@{'/study/' + ${study.path} + '/settings/tags'}">스터디 주제</a>
     <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active"
        href="#" th:href="@{'/study/' + ${study.path} + '/settings/zones'}">활동 지역</a>
-    <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'study'}? active"
+    <a class="list-group-item list-group-item-action list-group-item-danger"
+       th:classappend="${currentMenu == 'study'}? active"
        href="#" th:href="@{'/study/' + ${study.path} + '/settings/study'}">스터디</a>
 </div>
 
@@ -338,6 +345,109 @@
     </svg>
     <span th:text="${message}">완료</span>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
+    $(function () {
+        var csrfToken = /*[[${_csrf.token}]]*/ null;
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        });
+    });
+</script>
+
+<div th:fragment="update-tags (baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript" th:inline="javascript">
+        $(function () {
+            function tagRequest(url, tagTitle) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'tagTitle': tagTitle})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#tags");
+            var tagify = new Tagify(tagInput, {
+                pattern: /^.{0,20}$/,
+                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown: {
+                    enabled: 1,
+                }
+            });
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            tagify.DOM.input.classList.add('form-control');
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
+</div>
+
+<div th:fragment="update-zones (baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            function tagRequest(url, zoneName) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'zoneName': zoneName})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#zones");
+
+            var tagify = new Tagify(tagInput, {
+                enforceWhitelist: true,
+                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown: {
+                    enabled: 1, // suggest tags after a single character input
+                } // map tags
+            });
+
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
 </div>
 
 </html>

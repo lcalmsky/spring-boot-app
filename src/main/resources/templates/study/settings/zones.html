@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<svg th:replace="fragments.html :: svg-symbols"/>
+<body>
+    <nav th:replace="fragments.html :: navigation-bar"></nav>
+    <div th:replace="fragments.html :: study-banner"></div>
+    <div class="container">
+        <div th:replace="fragments.html :: study-info"></div>
+        <div th:replace="fragments.html :: study-menu(studyMenu='settings')"></div>
+        <div class="row mt-3 justify-content-center">
+            <div class="col-2">
+                <div th:replace="fragments.html :: study-settings-menu(currentMenu='zones')"></div>
+            </div>
+            <div class="col-8">
+                <div class="row">
+                    <h2 class="col-sm-12">주요 활동 지역</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="alert alert-info" role="alert">
+                            <svg th:replace="fragments::symbol-info"/>
+                            주로 스터디를 진행하는 지역을 등록하세요. 시스템에 등록된 지역만 선택할 수 있습니다.
+                        </div>
+                        <div id="whitelist" th:text="${whitelist}" hidden></div>
+                        <input id="zones" type="text" name="zones" th:value="${#strings.listJoin(zones, ',')}"
+                               class="tagify-outside">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:replace="fragments.html :: footer"></div>
+    </div>
+    <script th:replace="fragments.html :: ajax-csrf-header"></script>
+    <script th:replace="fragments.html :: update-zones(baseUrl='/study/' + ${study.path} + '/settings/zones')"></script>
+</body>
+</html>

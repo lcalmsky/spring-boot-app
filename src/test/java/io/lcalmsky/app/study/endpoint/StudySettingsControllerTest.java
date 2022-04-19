@@ -1,12 +1,19 @@
 package io.lcalmsky.app.study.endpoint;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lcalmsky.app.WithAccount;
 import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.account.domain.entity.Zone;
 import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.settings.controller.TagForm;
+import io.lcalmsky.app.settings.controller.ZoneForm;
 import io.lcalmsky.app.study.application.StudyService;
 import io.lcalmsky.app.study.domain.entity.Study;
 import io.lcalmsky.app.study.form.StudyForm;
 import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +39,10 @@ class StudySettingsControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired AccountRepository accountRepository;
     @Autowired StudyRepository studyRepository;
+    @Autowired TagRepository tagRepository;
+    @Autowired ZoneRepository zoneRepository;
     @Autowired StudyService studyService;
+    @Autowired ObjectMapper objectMapper;
     private final String studyPath = "study-test";
 
     @BeforeEach
@@ -124,5 +135,109 @@ class StudySettingsControllerTest {
                 .andExpect(redirectedUrl("/study/" + studyPath + "/settings/banner"));
         Study study = studyRepository.findByPath(studyPath);
         assertFalse(study.useBanner());
+    }
+
+    @Test
+    @DisplayName("스터디 세팅 폼 조회(스터디 주제)")
+    @WithAccount("jaime")
+    void studySettingFormTag() throws Exception {
+        mockMvc.perform(get("/study/" + studyPath + "/settings/tags"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/tags"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("tags"))
+                .andExpect(model().attributeExists("whitelist"));
+    }
+
+    @Test
+    @DisplayName("스터디 태그 추가")
+    @WithAccount("jaime")
+    void addStudyTag() throws Exception {
+        String tagTitle = "newTag";
+        TagForm tagForm = TagForm.builder()
+                .tagTitle(tagTitle)
+                .build(); // 패키지가 달라 객체 생성이 되지 않아 TagForm에 @AllArgsConstructor, @Builder 추가
+        mockMvc.perform(post("/study/" + studyPath + "/settings/tags/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        Tag tag = tagRepository.findByTitle(tagTitle).orElse(null);
+        assertNotNull(tag);
+        assertTrue(study.getTags().contains(tag));
+    }
+
+    @Test
+    @DisplayName("스터디 태그 삭제")
+    @WithAccount("jaime")
+    void removeStudyTag() throws Exception {
+        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        String tagTitle = "newTag";
+        Tag tag = tagRepository.save(Tag.builder()
+                .title(tagTitle)
+                .build());
+        studyService.addTag(study, tag);
+        TagForm tagForm = TagForm.builder()
+                .tagTitle(tagTitle)
+                .build(); // 패키지가 달라 객체 생성이 되지 않아 TagForm에 @AllArgsConstructor, @Builder 추가
+        mockMvc.perform(post("/study/" + studyPath + "/settings/tags/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        assertFalse(study.getTags().contains(tag));
+    }
+
+    @Test
+    @DisplayName("스터디 세팅 폼 조회(활동 지역)")
+    @WithAccount("jaime")
+    void studySettingFormZone() throws Exception {
+        mockMvc.perform(get("/study/" + studyPath + "/settings/zones"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/zones"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("zones"))
+                .andExpect(model().attributeExists("whitelist"));
+    }
+
+    @Test
+    @DisplayName("스터디 지역 추가")
+    @WithAccount("jaime")
+    void addStudyZone() throws Exception {
+        Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
+        zoneRepository.save(testZone);
+        ZoneForm zoneForm = ZoneForm.builder()
+                .zoneName(testZone.toString())
+                .build();
+        zoneForm.setZoneName(testZone.toString());
+        mockMvc.perform(post("/study/" + studyPath + "/settings/zones/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        assertTrue(study.getZones().contains(testZone));
+    }
+
+    @Test
+    @DisplayName("스터디 지역 삭제")
+    @WithAccount("jaime")
+    void removeStudyZone() throws Exception {
+        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
+        zoneRepository.save(testZone);
+        studyService.addZone(study, testZone);
+        ZoneForm zoneForm = ZoneForm.builder()
+                .zoneName(testZone.toString())
+                .build();
+        mockMvc.perform(post("/study/" + studyPath + "/settings/zones/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+        assertFalse(study.getZones().contains(testZone));
     }
 }
