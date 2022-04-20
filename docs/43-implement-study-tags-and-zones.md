@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 77d2d02)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 2c78a45)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout 77d2d02
+> > git checkout 2c78a45
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -365,14 +365,14 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        Study study = studyRepository.findServiceWithTagsByPath(path);
+        Study study = studyRepository.findStudyWithTagsByPath(path);
         checkStudyExists(path, study);
         checkAccountIsManager(account, study);
         return study;
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        Study study = studyRepository.findServiceWithZonesByPath(path);
+        Study study = studyRepository.findStudyWithZonesByPath(path);
         checkStudyExists(path, study);
         checkAccountIsManager(account, study);
         return study;
@@ -430,11 +430,11 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithTagsByPath(path));
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithZonesByPath(path));
     }
 
     private Study getStudy(Account account, String path, Study studyByPath) {
@@ -501,11 +501,11 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithTagsByPath(path));
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithZonesByPath(path));
     }
 
     private Study getStudy(Account account, String path, Study studyByPath) {
@@ -791,10 +791,10 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     Study findByPath(String path);
 
     @EntityGraph(value = "Study.withTagsAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findServiceWithTagsByPath(String path);
+    Study findStudyWithTagsByPath(String path);
 
     @EntityGraph(value = "Study.withZonesAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findServiceWithZonesByPath(String path);
+    Study findStudyWithZonesByPath(String path);
 }
 ```
 
@@ -814,7 +814,7 @@ select * from TableName where ColumnName = columnValue;
 
 `find`, `ByColumnName` 과 같은 정해진 문구는 SQL문을 생성할 때 영향을 주지만 그 사이에 있는 값은 메서드를 구분하는 기능만 가지고 있을 뿐 쿼리에는 영향을 주지 않습니다.
 
-따라서 `findByPath`, `findServiceWithTagsByPath`, `findServiceWithZonesByPath`이 세 가지 쿼리는 `@EntityGraph` 설정이 없다면 동일한 쿼리(findByPath)를 나타냅니다.
+따라서 `findByPath`, `findStudyWithTagsByPath`, `findStudyWithZonesByPath`이 세 가지 쿼리는 `@EntityGraph` 설정이 없다면 동일한 쿼리(findByPath)를 나타냅니다.
 
 하지만 `@EntityGraph` 내에서 설정한 `@NamedEntityGraph`를 따르기 때문에 세 가지 쿼리는 달라지게 됩니다.
 
@@ -1316,7 +1316,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(tagForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
         Tag tag = tagRepository.findByTitle(tagTitle).orElse(null);
         assertNotNull(tag);
         assertTrue(study.getTags().contains(tag));
@@ -1326,7 +1326,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 태그 삭제")
     @WithAccount("jaime")
     void removeStudyTag() throws Exception {
-        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
         String tagTitle = "newTag";
         Tag tag = tagRepository.save(Tag.builder()
                 .title(tagTitle)
@@ -1371,7 +1371,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(zoneForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
         assertTrue(study.getZones().contains(testZone));
     }
 
@@ -1379,7 +1379,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 지역 삭제")
     @WithAccount("jaime")
     void removeStudyZone() throws Exception {
-        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
         zoneRepository.save(testZone);
         studyService.addZone(study, testZone);
