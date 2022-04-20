@@ -1179,8 +1179,9 @@ public class StudyForm {
 ```
 
 > 기존 fragments.html 파일에 오타가 있어 수정한 부분입니다.
-> * text-right -> text-end로 수정
-> * <i class>a fa-plus"> -> <i class="fa fa-plus"> 오타 수정
+> * ```text-right -> text-end```로 수정
+> * ```<i class>a fa-plus"> -> <i class="fa fa-plus">```로 오타 수정
+
 
 ## 테스트
 
