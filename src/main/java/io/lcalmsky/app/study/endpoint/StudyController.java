@@ -6,7 +6,6 @@ import io.lcalmsky.app.study.application.StudyService;
 import io.lcalmsky.app.study.domain.entity.Study;
 import io.lcalmsky.app.study.form.StudyForm;
 import io.lcalmsky.app.study.form.validator.StudyFormValidator;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

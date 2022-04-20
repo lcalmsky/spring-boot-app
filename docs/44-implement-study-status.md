@@ -10,123 +10,124 @@
 
 ## Overview
 
-스터디 설정 중 관심 분야(태그)와 지역을 설정하는 기능을 구현합니다.
+스터디의 상태를 변경할 수 있는 기능을 구현합니다.
 
-기존에 구현했던 내용과 매우 유사하기 때문에 설명보다는 코드 위주로 작성하겠습니다.
+> 스터디를 생성한 직후에는 스터디가 공개된 상태가 아닌 DRAFT 상태를 가지게 되는데, 이 상태를 공개로 변환하고, 팀원을 모집중임을 알릴 수 있는 상태로 변경할 수 있도록 합니다.
 
-## 엔드포인트 수정
+스터디 경로 및 이름을 수정할 수 있는 기능을 구현합니다.
 
-`StudySettingsController` 클래스에 새로운 메서드를 추가합니다.
+스터디 삭제 기능을 구현합니다.
+
+## 엔드포인트 추가
+
+스터디 상태 변경, 경로 변경, 이름 변경, 삭제에 대한 엔드포인트를 `StudySettingsController` 클래스에 추가합니다.
 
 `/src/main/java/io/lcalmsky/app/study/endpoint/StudySettingsController.java`
 
 ```java
-package io.lcalmsky.app.study.endpoint;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.settings.controller.TagForm;
-import io.lcalmsky.app.settings.controller.ZoneForm;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.application.TagService;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
-
-@Controller
-@RequestMapping("/study/{path}/settings")
-@RequiredArgsConstructor
+// 생략
 public class StudySettingsController {
-    private final StudyService studyService;
-    private final TagService tagService;
-    private final StudyRepository studyRepository;
-    private final TagRepository tagRepository;
-    private final ZoneRepository zoneRepository;
-    private final ObjectMapper objectMapper;
-
-    @GetMapping("/tags")
-    public String studyTagsForm(@CurrentUser Account account, @PathVariable String path, Model model) throws JsonProcessingException {
+    // 생략
+    @GetMapping("/study") // (1)
+    public String studySettingForm(@CurrentUser Account account, @PathVariable String path, Model model) {
         Study study = studyService.getStudy(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
-        model.addAttribute("tags", study.getTags().stream()
-                .map(Tag::getTitle)
-                .collect(Collectors.toList()));
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(tagRepository.findAll().stream()
-                .map(Tag::getTitle)
-                .collect(Collectors.toList())));
-        return "study/settings/tags";
+        return "study/settings/study";
     }
 
-    @PostMapping("/tags/add")
-    @ResponseStatus(HttpStatus.OK)
-    public void addTag(@CurrentUser Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
-        Study study = studyService.getStudyToUpdateTag(account, path);
-        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
-        studyService.addTag(study, tag);
+    @PostMapping("/study/publish") // (2)
+    public String publishStudy(@CurrentUser Account account, @PathVariable String path, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.publish(study);
+        attributes.addFlashAttribute("message", "스터디를 공개했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
     }
 
-    @PostMapping("/tags/remove")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeTag(@CurrentUser Account account, @PathVariable String path, @RequestBody TagForm tagForm) {
-        Study study = studyService.getStudyToUpdateTag(account, path);
-        Tag tag = tagRepository.findByTitle(tagForm.getTagTitle())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 태그입니다."));
-        studyService.removeTag(study, tag);
+    @PostMapping("/study/close") // (3)
+    public String closeStudy(@CurrentUser Account account, @PathVariable String path, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.close(study);
+        attributes.addFlashAttribute("message", "스터디를 종료했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
     }
 
-    @GetMapping("/zones")
-    public String studyZonesForm(@CurrentUser Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        Study study = studyService.getStudy(account, path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-        model.addAttribute("zones", study.getZones().stream()
-                .map(Zone::toString)
-                .collect(Collectors.toList()));
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(zoneRepository.findAll().stream()
-                .map(Zone::toString)
-                .collect(Collectors.toList())));
-        return "study/settings/zones";
+    @PostMapping("/recruit/start") // (4)
+    public String startRecruit(@CurrentUser Account account, @PathVariable String path, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!study.isEnableToRecruit()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러 번 변경할 수 없습니다.");
+            return "redirect:/study/" + encode(path) + "/settings/study";
+        }
+        studyService.startRecruit(study);
+        attributes.addFlashAttribute("message", "인원 모집을 시작합니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
     }
 
-    @PostMapping("/zones/add")
-    @ResponseStatus(HttpStatus.OK)
-    public void addZones(@CurrentUser Account account, @PathVariable String path, @RequestBody ZoneForm zoneForm) {
-        Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다."));
-        studyService.addZone(study, zone);
+    @PostMapping("/recruit/stop") // (5)
+    public String stopRecruit(@CurrentUser Account account, @PathVariable String path, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!study.isEnableToRecruit()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러 번 변경할 수 없습니다.");
+            return "redirect:/study/" + encode(path) + "/settings/study";
+        }
+        studyService.stopRecruit(study);
+        attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
     }
 
-    @PostMapping("/zones/remove")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeZones(@CurrentUser Account account, @PathVariable String path, @RequestBody ZoneForm zoneForm) {
-        Study study = studyService.getStudyToUpdateZone(account, path);
-        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다."));
-        studyService.removeZone(study, zone);
+    @PostMapping("/study/path") // (6)
+    public String updateStudyPath(@CurrentUser Account account, @PathVariable String path, @RequestParam String newPath, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!studyService.isValidPath(newPath)) {
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute("studyPathError", "사용할 수 없는 스터디 경로입니다.");
+            return "study/settings/study";
+        }
+
+        studyService.updateStudyPath(study, newPath);
+        attributes.addFlashAttribute("message", "스터디 경로를 수정하였습니다.");
+        return "redirect:/study/" + encode(newPath) + "/settings/study";
+    }
+
+    @PostMapping("/study/title") // (7)
+    public String updateStudyTitle(@CurrentUser Account account, @PathVariable String path, String newTitle,
+                                   Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!studyService.isValidTitle(newTitle)) {
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute("studyTitleError", "스터디 이름을 다시 입력하세요.");
+            return "study/settings/study";
+        }
+
+        studyService.updateStudyTitle(study, newTitle);
+        attributes.addFlashAttribute("message", "스터디 이름을 수정했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/study/remove") // (8)
+    public String removeStudy(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.remove(study);
+        return "redirect:/";
     }
 }
-
 ```
 
-`TagForm`, `ZoneForm`, `TagRepository`, `ZoneRepository` 의존성을 추가하고 `whitelist`를 작성해서 반환해주기 위해 `ObjectMapper`도 추가하였습니다.
+1. 스터디 설정 내 메뉴 중 스터디 메뉴에 진입했을 때 보여줄 뷰로 이동합니다.
+2. 스터디 공개 버튼과 연동합니다.
+3. 스터디 종료 버튼과 연동합니다.
+4. 팀원 모집 시작 버튼과 연동합니다.
+5. 팀원 모집 중단 버튼과 연동합니다.
+6. 스터디 경로 수정 버튼과 연동합니다.
+7. 스터디 이름 수정 버튼과 연동합니다.
+8. 스터디 삭제 버튼과 연동합니다.
 
-`StudyService`가 `path`를 이용해 `Study`를 조회해오는 부분을 기존의 `getStudy`를 사용하지 않고 `getStudyToUpdateTag`, `getStudyToUpdateZone으로` 나누었습니다.
+모든 기능이 이전에 구현했던 기능들과 매우 유사하고, `Transaction` 처리는 `Service` 레이어에 위임했음을 알 수 있습니다.
 
-그 이유는 `StudyService`를 구현하는 부분에서 설명하겠습니다.
+현재 구현되지 않은 부분들이 많아 컴파일 에러가 발생하므로 순차적으로 기능들을 구현하겠습니다.
 
 <details>
 <summary>StudySettingsController.java 전체 보기</summary>
@@ -175,7 +176,7 @@ public class StudySettingsController {
 
     @GetMapping("/description")
     public String viewStudySetting(@CurrentUser Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
         model.addAttribute(StudyDescriptionForm.builder()
@@ -187,7 +188,7 @@ public class StudySettingsController {
 
     @PostMapping("/description")
     public String updateStudy(@CurrentUser Account account, @PathVariable String path, @Valid StudyDescriptionForm studyDescriptionForm, Errors errors, Model model, RedirectAttributes attributes) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         if (errors.hasErrors()) {
             model.addAttribute(account);
             model.addAttribute(study);
@@ -204,7 +205,7 @@ public class StudySettingsController {
 
     @GetMapping("/banner")
     public String studyImageForm(@CurrentUser Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
         return "study/settings/banner";
@@ -212,7 +213,7 @@ public class StudySettingsController {
 
     @PostMapping("/banner")
     public String updateBanner(@CurrentUser Account account, @PathVariable String path, String image, RedirectAttributes attributes) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         studyService.updateStudyImage(study, image);
         attributes.addFlashAttribute("message", "스터디 이미지를 수정하였습니다.");
         return "redirect:/study/" + encode(path) + "/settings/banner";
@@ -220,21 +221,21 @@ public class StudySettingsController {
 
     @PostMapping("/banner/enable")
     public String enableStudyBanner(@CurrentUser Account account, @PathVariable String path) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         studyService.enableStudyBanner(study);
         return "redirect:/study/" + encode(path) + "/settings/banner";
     }
 
     @PostMapping("/banner/disable")
     public String disableStudyBanner(@CurrentUser Account account, @PathVariable String path) {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         studyService.disableStudyBanner(study);
         return "redirect:/study/" + encode(path) + "/settings/banner";
     }
 
     @GetMapping("/tags")
     public String studyTagsForm(@CurrentUser Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
         model.addAttribute("tags", study.getTags().stream()
@@ -265,11 +266,11 @@ public class StudySettingsController {
 
     @GetMapping("/zones")
     public String studyZonesForm(@CurrentUser Account account, @PathVariable String path, Model model) throws JsonProcessingException {
-        Study study = studyService.getStudy(account, path);
+        Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
         model.addAttribute("zones", study.getZones().stream()
-                .map(Zone::toString )
+                .map(Zone::toString)
                 .collect(Collectors.toList()));
         model.addAttribute("whitelist", objectMapper.writeValueAsString(zoneRepository.findAll().stream()
                 .map(Zone::toString)
@@ -294,177 +295,174 @@ public class StudySettingsController {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다."));
         studyService.removeZone(study, zone);
     }
+
+    @GetMapping("/study")
+    public String studySettingForm(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudyToUpdate(account, path);
+        model.addAttribute(account);
+        model.addAttribute(study);
+        return "study/settings/study";
+    }
+
+    @PostMapping("/study/publish")
+    public String publishStudy(@CurrentUser Account account, @PathVariable String path, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.publish(study);
+        attributes.addFlashAttribute("message", "스터디를 공개했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/study/close")
+    public String closeStudy(@CurrentUser Account account, @PathVariable String path, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.close(study);
+        attributes.addFlashAttribute("message", "스터디를 종료했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/recruit/start")
+    public String startRecruit(@CurrentUser Account account, @PathVariable String path, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!study.isEnableToRecruit()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러 번 변경할 수 없습니다.");
+            return "redirect:/study/" + encode(path) + "/settings/study";
+        }
+        studyService.startRecruit(study);
+        attributes.addFlashAttribute("message", "인원 모집을 시작합니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/recruit/stop")
+    public String stopRecruit(@CurrentUser Account account, @PathVariable String path, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!study.isEnableToRecruit()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러 번 변경할 수 없습니다.");
+            return "redirect:/study/" + encode(path) + "/settings/study";
+        }
+        studyService.stopRecruit(study);
+        attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/study/path")
+    public String updateStudyPath(@CurrentUser Account account, @PathVariable String path, @RequestParam String newPath, Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!studyService.isValidPath(newPath)) {
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute("studyPathError", "사용할 수 없는 스터디 경로입니다.");
+            return "study/settings/study";
+        }
+
+        studyService.updateStudyPath(study, newPath);
+        attributes.addFlashAttribute("message", "스터디 경로를 수정하였습니다.");
+        return "redirect:/study/" + encode(newPath) + "/settings/study";
+    }
+
+    @PostMapping("/study/title")
+    public String updateStudyTitle(@CurrentUser Account account, @PathVariable String path, String newTitle,
+                                   Model model, RedirectAttributes attributes) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        if (!studyService.isValidTitle(newTitle)) {
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute("studyTitleError", "스터디 이름을 다시 입력하세요.");
+            return "study/settings/study";
+        }
+
+        studyService.updateStudyTitle(study, newTitle);
+        attributes.addFlashAttribute("message", "스터디 이름을 수정했습니다.");
+        return "redirect:/study/" + encode(path) + "/settings/study";
+    }
+
+    @PostMapping("/study/remove")
+    public String removeStudy(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.remove(study);
+        return "redirect:/";
+    }
 }
+
 ```
 
 </details>
 
-## Service 추가 및 수정
+## 서비스 수정
 
-먼저 Tag 관련 `Transaction`을 다룰 `TagService`를 추가합니다.
-
-`/src/main/java/io/lcalmsky/app/tag/application/TagService.java`
-
-```java
-package io.lcalmsky.app.tag.application;
-
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class TagService {
-    private final TagRepository tagRepository;
-
-    public Tag findOrCreateNew(String tagTitle) {
-        return tagRepository.findByTitle(tagTitle).orElseGet(
-                () -> tagRepository.save(Tag.builder()
-                        .title(tagTitle)
-                        .build())
-        );
-    }
-}
-```
-
-태그가 존재하는지 찾아서 반환하는데 존재하지 않는 경우 `TagRepository`에 저장 후 반환합니다.
-
-그리고 `StudyService`에도 메서드를 추가해줍니다.
+컨트롤러에서 위임한 기능들을 구현하기 위해 `StudyService` 클래스를 수정합니다.
 
 `/src/main/java/io/lcalmsky/app/study/application/StudyService.java`
 
 ```java
-package io.lcalmsky.app.study.application;
-
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class StudyService {
-    private final StudyRepository studyRepository;
-
-    // 생략
-    
-    public Study getStudy(Account account, String path) {
-        Study study = studyRepository.findByPath(path);
-        checkStudyExists(path, study);
-        checkAccountIsManager(account, study);
-        return study;
-    }
-
-    public Study getStudyToUpdateTag(Account account, String path) {
-        Study study = studyRepository.findServiceWithTagsByPath(path);
-        checkStudyExists(path, study);
-        checkAccountIsManager(account, study);
-        return study;
-    }
-
-    public Study getStudyToUpdateZone(Account account, String path) {
-        Study study = studyRepository.findServiceWithZonesByPath(path);
-        checkStudyExists(path, study);
-        checkAccountIsManager(account, study);
-        return study;
-    }
-
-    private void checkStudyExists(String path, Study study) {
-        if (study == null) {
-            throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
-        }
-    }
-
-    private void checkAccountIsManager(Account account, Study study) {
-        if (!account.isManagerOf(study)) {
-            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
-        }
-    }
-
-    // 생략
-    
-    public void addTag(Study study, Tag tag) {
-        study.addTag(tag);
-    }
-
-    public void removeTag(Study study, Tag tag) {
-        study.removeTag(tag);
-    }
-
-    public void addZone(Study study, Zone zone) {
-        study.addZone(zone);
-    }
-
-    public void removeZone(Study study, Zone zone) {
-        study.removeZone(zone);
-    }
-}
-```
-
-기존에 `path`를 이용해 `Study`를 가져오는 메서드인 `getStudy(path)`를 제거하고 `getStudy(account, path)` 메서드를 리팩터링 하였습니다.
-
-다른 메서드에서도 사용할 유효성 검증 메서드들(스터디 존재 여부, 관리자 여부)을 추출하였습니다.
-
-그리고 `StudySettingsController`에서 `Study`를 조회할 때 사용하였던 `getStudyToUpdateTag`, `getStudyToUpdateZone` 메서드를 추가하였습니다.
-
-대부분의 내용은 유사한데 `StudyRepository`에 조회할 때 사용하는 메서드가 상이합니다.
-
-그래서 이 부분을 한 번 더 리팩토링 하겠습니다.
-
-```java
 // 생략
 public class StudyService {
-    private final StudyRepository studyRepository;
     // 생략
-    public Study getStudy(Account account, String path) {
+    public Study getStudy(Account account, String path) { // (1) 
+        Study study = studyRepository.findByPath(path);
+        checkStudyExists(path, study);
+        return study;
+    }
+
+    public Study getStudyToUpdate(Account account, String path) { // (1) 
         return getStudy(account, path, studyRepository.findByPath(path));
     }
-
-    public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
-    }
-
-    public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
-    }
-
-    private Study getStudy(Account account, String path, Study studyByPath) {
-        checkStudyExists(path, studyByPath);
-        checkAccountIsManager(account, studyByPath);
-        return studyByPath;
-    }
-
-    private void checkStudyExists(String path, Study study) {
-        if (study == null) {
-            throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
-        }
-    }
-
-    private void checkAccountIsManager(Account account, Study study) {
-        if (!account.isManagerOf(study)) {
-            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
-        }
-    }
     // 생략
+    public void publish(Study study) { // (2)
+        study.publish();
+    }
+
+    public void close(Study study) { // (3)
+        study.close();
+    }
+
+    public void startRecruit(Study study) { // (4)
+        study.startRecruit();
+    }
+
+    public void stopRecruit(Study study) { // (5)
+        study.stopRecruit();
+    }
+
+    public boolean isValidPath(String newPath) { // (6) 
+        if (!newPath.matches(StudyForm.VALID_PATH_PATTERN)) {
+            return false;
+        }
+        return !studyRepository.existsByPath(newPath);
+    }
+
+    public void updateStudyPath(Study study, String newPath) { // (7)
+        study.updatePath(newPath);
+    }
+
+    public boolean isValidTitle(String newTitle) { // (8)
+        return newTitle.length() <= 50;
+    }
+
+    public void updateStudyTitle(Study study, String newTitle) { // (9)
+        study.updateTitle(newTitle);
+    }
+
+    public void remove(Study study) { // (10)
+        if (!study.isRemovable()) {
+            throw new IllegalStateException("스터디를 삭제할 수 없습니다.");
+        }
+        studyRepository.delete(study);
+    }
 }
 ```
 
-`StudyRepository`에 조회하는 기능을 세 가지로 나눈 이유는 [지난 번 포스팅](https://jaime-note.tistory.com/308)에서 다뤘던 N+1 문제를 보다 효율적으로 해결하기 위해서입니다.
+1. 일반 사용자의 접근과 관리자가 수정하기 위해 접근할 때를 구분해 주었습니다.
+2. 스터디를 공개합니다.
+3. 스터디를 종료합니다.
+4. 팀원 모집을 시작합니다.
+5. 팀원 모집을 중단합니다.
+6. 스터디 경로가 유효한지 판단합니다. 정규표현식을 이용한 패턴 검사는 StudyForm 에서 사용한 패턴을 상수로 추출하여 동일하게 사용하였습니다. 기존에 존재하는 경로를 사용해선 안 되므로 해당 경로를 사용하는 스터디가 있는지도 확인해줍니다.
+7. 스터디 경로를 업데이트 합니다.
+8. 스터디 아름의 유효성을 검사합니다.
+9. 스터디 이름을 업데이트 합니다.
+10. 스터디를 삭제합니다.
 
-스터디 설정 내에서 관심 주제를 변경하거나 지역을 변경할 때는 각각 관심 주제(tag)와 지역(zone) 정보가 스터디와 함께 조회되어야 합니다.
-
-기존에 사용했던 `studyRepository.findByPath` 메서드는 주제와 지역 모두를 가져오기위해 각각의 테이블과 join 하는 과정을 거치는데요, 메서드를 분리하여 해당하는 테이블만 join 하도록하였습니다.
-
-더 자세한 내용은 다음 항목에서 다루겠습니다.
+유효성 검사를 제외하고 스터디의 상태를 바꾸는 내용은 대부분 도메인 `Entity`가 직접 변경할 수 있게 위임하였습니다.
 
 <details>
 <summary>StudyService.java 전체 보기</summary>
@@ -497,15 +495,25 @@ public class StudyService {
     }
 
     public Study getStudy(Account account, String path) {
+        Study study = studyRepository.findByPath(path);
+        checkStudyExists(path, study);
+        return study;
+    }
+
+    public Study getStudyToUpdate(Account account, String path) {
         return getStudy(account, path, studyRepository.findByPath(path));
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithTagsByPath(path));
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
+        return getStudy(account, path, studyRepository.findStudyWithZonesByPath(path));
+    }
+
+    public Study getStudyToUpdateStatus(Account account, String path) {
+        return getStudy(account, path, studyRepository.findStudyWithManagersByPath(path));
     }
 
     private Study getStudy(Account account, String path, Study studyByPath) {
@@ -557,75 +565,127 @@ public class StudyService {
     public void removeZone(Study study, Zone zone) {
         study.removeZone(zone);
     }
+
+    public void publish(Study study) {
+        study.publish();
+    }
+
+    public void close(Study study) {
+        study.close();
+    }
+
+    public void startRecruit(Study study) {
+        study.startRecruit();
+    }
+
+    public void stopRecruit(Study study) {
+        study.stopRecruit();
+    }
+
+    public boolean isValidPath(String newPath) {
+        if (!newPath.matches(StudyForm.VALID_PATH_PATTERN)) {
+            return false;
+        }
+        return !studyRepository.existsByPath(newPath);
+    }
+
+    public void updateStudyPath(Study study, String newPath) {
+        study.updatePath(newPath);
+    }
+
+    public boolean isValidTitle(String newTitle) {
+        return newTitle.length() <= 50;
+    }
+
+    public void updateStudyTitle(Study study, String newTitle) {
+        study.updateTitle(newTitle);
+    }
+
+    public void remove(Study study) {
+        if (!study.isRemovable()) {
+            throw new IllegalStateException("스터디를 삭제할 수 없습니다.");
+        }
+        studyRepository.delete(study);
+    }
 }
 
 ```
 
 </details>
 
-## Entity, Repository 수정
+## Entity 수정
 
-효율적인 쿼리를 위해 `Study Entity`에 `@NamedEntityGraph`를 추가합니다.
+위에서 위임한 내용을 `Study` `Entity`에 구현합니다.
 
 `/src/main/java/io/lcalmsky/app/study/domain/entity/Study.java`
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
-
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@NamedEntityGraph(name = "Study.withAll", attributeNodes = {
-        @NamedAttributeNode("tags"),
-        @NamedAttributeNode("zones"),
-        @NamedAttributeNode("managers"),
-        @NamedAttributeNode("members")
+// 생략
+@NamedEntityGraph(name = "Study.withManagers", attributeNodes = { // (1)
+        @NamedAttributeNode("managers")
 })
-@NamedEntityGraph(name = "Study.withTagsAndManagers", attributeNodes = {
-        @NamedAttributeNode("tags"),
-        @NamedAttributeNode("managers"),
-})
-@NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
-        @NamedAttributeNode("zones"),
-        @NamedAttributeNode("managers"),
-})
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Study {
     // 생략
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
+    public void publish() { // (2)
+        if (this.closed || this.published) {
+            throw new IllegalStateException("스터디를 이미 공개했거나 종료된 스터디 입니다.");
+        }
+        this.published = true;
+        this.publishedDateTime = LocalDateTime.now();
     }
 
-    public void removeTag(Tag tag) {
-        this.tags.remove(tag);
+    public void close() { // (3)
+        if (!this.published || this.closed) {
+            throw new IllegalStateException("스터디를 공개하지 않았거나 이미 종료한 스터디 입니다.");
+        }
+        this.closed = true;
+        this.closedDateTime = LocalDateTime.now();
     }
 
-    public void addZone(Zone zone) {
-        this.zones.add(zone);
+    public boolean isEnableToRecruit() { // (4)
+        return this.published && this.recruitingUpdatedDateTime == null
+                || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
     }
 
-    public void removeZone(Zone zone) {
-        this.zones.remove(zone);
+    public void updatePath(String newPath) { // (5)
+        this.path = newPath;
+    }
+
+    public void updateTitle(String newTitle) { // (6)
+        this.title = newTitle;
+    }
+
+    public boolean isRemovable() { // (7)
+        return !this.published;
+    }
+
+    public void startRecruit() { // (8)
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 시작할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = true;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
+    }
+
+    public void stopRecruit() { // (9)
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 멈출 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = false;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
     }
 }
 ```
 
-클래스 내부에는 `tag`와 `zone`을 추가하고 삭제하기 위한 메서드를 추가하였습니다.
+1. 관리자 정보 fetch join 하도록 NamedEntityGraph를 추가하였습니다.
+2. 스터디의 이전 상태를 검사하여 예외를 던지거나 공개된 상태로 변경합니다.
+3. 스터디의 이전 상태를 검사하여 예외를 던지거나 종료된 상태로 변경합니다.
+4. 팀원 모집이 가능한 상태인지 검사합니다.
+5. 스터디 경로를 변경합니다.
+6. 스터디 이름을 변경합니다.
+7. 스터디를 제거할 수 있는 상태인지 확인합니다.
+8. 스터디 상태를 검사하여 예외를 던지거나 팀원 모집 상태로 변경합니다.
+9. 스터디 상태를 검사하여 예외를 던지거나 팀원 모집 중단 상태로 변경합니다.
 
 <details>
 <summary>Study.java 전체 보기</summary>
@@ -658,11 +718,14 @@ import java.util.Set;
 })
 @NamedEntityGraph(name = "Study.withTagsAndManagers", attributeNodes = {
         @NamedAttributeNode("tags"),
-        @NamedAttributeNode("managers"),
+        @NamedAttributeNode("managers")
 })
 @NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
         @NamedAttributeNode("zones"),
-        @NamedAttributeNode("managers"),
+        @NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withManagers", attributeNodes = {
+        @NamedAttributeNode("managers")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -765,15 +828,80 @@ public class Study {
     public void removeZone(Zone zone) {
         this.zones.remove(zone);
     }
+
+    public void publish() {
+        if (this.closed || this.published) {
+            throw new IllegalStateException("스터디를 이미 공개했거나 종료된 스터디 입니다.");
+        }
+        this.published = true;
+        this.publishedDateTime = LocalDateTime.now();
+    }
+
+    public void close() {
+        if (!this.published || this.closed) {
+            throw new IllegalStateException("스터디를 공개하지 않았거나 이미 종료한 스터디 입니다.");
+        }
+        this.closed = true;
+        this.closedDateTime = LocalDateTime.now();
+    }
+
+    public boolean isEnableToRecruit() {
+        return this.published && this.recruitingUpdatedDateTime == null
+                || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public void updatePath(String newPath) {
+        this.path = newPath;
+    }
+
+    public void updateTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
+    public boolean isRemovable() {
+        return !this.published;
+    }
+
+    public void startRecruit() {
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 시작할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = true;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
+    }
+
+    public void stopRecruit() {
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 멈출 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = false;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
+    }
 }
 
 ```
 
 </details>
 
-다음으로 `StudyRepository`에는 `@EntityGraph`를 설정해 준 메서드를 추가하였습니다.
+## Repository 수정
+
+`StudyService`에서 관리자 정보만 포함한 스터디를 조회하기 위해 사용하는 메서드를 `StudyRepository`에 추가해줍니다.
 
 `/src/main/java/io/lcalmsky/app/study/infra/repository/StudyRepository.java`
+
+```java
+// 생략
+public interface StudyRepository extends JpaRepository<Study, Long> {
+    // 생략
+    @EntityGraph(value = "Study.withManagers", type = EntityGraph.EntityGraphType.FETCH)
+    Study findStudyWithManagersByPath(String path);
+}
+```
+
+메서드를 추가하고 `Study Entity`에 추가한 `NamedEntityGraph`를 `EntityGraph`로 설정해주었습니다.
+
+<details>
+<summary>StudyRepository.java 전체 보기</summary>
 
 ```java
 package io.lcalmsky.app.study.infra.repository;
@@ -791,245 +919,85 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     Study findByPath(String path);
 
     @EntityGraph(value = "Study.withTagsAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findServiceWithTagsByPath(String path);
+    Study findStudyWithTagsByPath(String path);
 
     @EntityGraph(value = "Study.withZonesAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findServiceWithZonesByPath(String path);
+    Study findStudyWithZonesByPath(String path);
+
+    @EntityGraph(value = "Study.withManagers", type = EntityGraph.EntityGraphType.FETCH)
+    Study findStudyWithManagersByPath(String path);
 }
 ```
 
-스프링 부트 JPA 에서 메서드쿼리를 작성할 때 적용되는 문법이 있습니다.
+</details>
+
+## StudyForm 수정
+
+`StudyService`에서 스터디 경로의 유효성을 확인하기 위한 부분에서 사용했던 정규표현식 패턴을 상수로 변경해 외부에서 접근할 수 있게 하였습니다.
+
+`/src/main/java/io/lcalmsky/app/study/form/StudyForm.java`
+
+```java
+// 생략
+public class StudyForm {
+
+    public static final String VALID_PATH_PATTERN = "^[ㄱ-ㅎ가-힣a-z0-9_-]{2,20}$";
+
+    @NotBlank
+    @Length(min = 2, max = 20)
+    @Pattern(regexp = VALID_PATH_PATTERN)
+    private String path;
+    // 생략
+}
 
 ```
-TableType findByColumnName(ColumnType columnValue);
-``` 
-
-이런식으로 메서드를 작성했다면 실제로 변환되는 SQL 문은
-
-```sql
-select * from TableName where ColumnName = columnValue;
-```
-
-이런식으로 적용 됩니다.
-
-`find`, `ByColumnName` 과 같은 정해진 문구는 SQL문을 생성할 때 영향을 주지만 그 사이에 있는 값은 메서드를 구분하는 기능만 가지고 있을 뿐 쿼리에는 영향을 주지 않습니다.
-
-따라서 `findByPath`, `findServiceWithTagsByPath`, `findServiceWithZonesByPath`이 세 가지 쿼리는 `@EntityGraph` 설정이 없다면 동일한 쿼리(findByPath)를 나타냅니다.
-
-하지만 `@EntityGraph` 내에서 설정한 `@NamedEntityGraph`를 따르기 때문에 세 가지 쿼리는 달라지게 됩니다.
-
-`@EntityGraph` 애너테이션의 `attribute`인 `type`에 들어갈 수 있는 타입은 `EntityGraph.EntityGraphType`  타입으로 해당 타입은 두 가지의 값을 가집니다.
-
-* `EntityGraph.EntityGraphType.LOAD`: `Entity` 그래프의 속성 노드에의해 지정된 속성은 `FetchType.EAGER`로 처리되고, 그렇지 않은 속성은 지정되어있는 속성으로, 지정되어있지 않다면 기본 `FetchType`에 따라 처리
-* `EntityGraph.EntityGraphType.FETCH`: `Entity` 그래프의 속성 노드에의해 지정된 속성은 `FetchType.EAGER`로 처리되고, 그렇지 않은 속성은 `FetchType.LAZY`로 처리 
-
-미세한 차이지만 따로 `FetchType`을 지정한 경우 `LOAD`를 쓰고, 그렇지 않은 경우 `FETCH`를 쓴다고 생각하면 얼추 대다수 상황에 적용할 수 있습니다.
-
-`fetch join`을 사용하기 위해 `EntityGraph`를 사용하는 것이므로 대부분의 경우 `FETCH`를 사용해 지정되지 않은 필드는 모두 `LAZY`로 가져오는 방식으로 사용해도 구현에 전혀 지장이 없습니다.
-
-## 뷰 구현
-
-추가로 페이지를 구현하기에 앞서 프로필 설정에서의 `tags`, `zones`와 매우 유사하기 때문에 중복되는 내용을 먼저 `fragments.html` 파일로 추출하겠습니다.
-
-`/src/main/resources/templates/fragments.html`
-
-```html
-<script type="application/javascript" th:inline="javascript" th:fragment="ajax-csrf-header">
-    $(function () {
-        var csrfToken = /*[[${_csrf.token}]]*/ null;
-        var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
-        $(document).ajaxSend(function (e, xhr, options) {
-            xhr.setRequestHeader(csrfHeader, csrfToken);
-        });
-    });
-</script>
-
-<div th:fragment="update-tags (baseUrl)">
-    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-    <script type="application/javascript" th:inline="javascript">
-        $(function () {
-            function tagRequest(url, tagTitle) {
-                $.ajax({
-                    dataType: "json",
-                    autocomplete: {
-                        enabled: true,
-                        rightKey: true,
-                    },
-                    contentType: "application/json; charset=utf-8",
-                    method: "POST",
-                    url: "[(${baseUrl})]" + url,
-                    data: JSON.stringify({'tagTitle': tagTitle})
-                }).done(function (data, status) {
-                    console.log("${data} and status is ${status}");
-                });
-            }
-
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value);
-            }
-
-            function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value);
-            }
-
-            var tagInput = document.querySelector("#tags");
-            var tagify = new Tagify(tagInput, {
-                pattern: /^.{0,20}$/,
-                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
-                dropdown: {
-                    enabled: 1,
-                }
-            });
-            tagify.on("add", onAdd);
-            tagify.on("remove", onRemove);
-            tagify.DOM.input.classList.add('form-control');
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        });
-    </script>
-</div>
-
-<div th:fragment="update-zones (baseUrl)">
-    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-    <script type="application/javascript">
-        $(function () {
-            function tagRequest(url, zoneName) {
-                $.ajax({
-                    dataType: "json",
-                    autocomplete: {
-                        enabled: true,
-                        rightKey: true,
-                    },
-                    contentType: "application/json; charset=utf-8",
-                    method: "POST",
-                    url: "[(${baseUrl})]" + url,
-                    data: JSON.stringify({'zoneName': zoneName})
-                }).done(function (data, status) {
-                    console.log("${data} and status is ${status}");
-                });
-            }
-
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value);
-            }
-
-            function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value);
-            }
-
-            var tagInput = document.querySelector("#zones");
-
-            var tagify = new Tagify(tagInput, {
-                enforceWhitelist: true,
-                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
-                dropdown: {
-                    enabled: 1, // suggest tags after a single character input
-                } // map tags
-            });
-
-            tagify.on("add", onAdd);
-            tagify.on("remove", onRemove);
-
-            // add a class to Tagify's input element
-            tagify.DOM.input.classList.add('form-control');
-            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        });
-    </script>
-</div>
-```
-
-`csrf header`를 설정하는 부분과, `tags`, `zones`를 업데이트 하는 부분을 `fragment`로 추출하였습니다.
-
-기존에 `/settings/tags.html,` `/settings/zones.html` 파일도 `fragment`를 `replace` 하는 방식으로 바꿔주었으나 이번 포스팅과는 관련이 없으므로 간단히 코드만 공유하겠습니다.
 
 <details>
-<summary>/settings/tags.html 전체 보기</summary>
+<summary>StudyForm.java 전체 보기</summary>
 
-```html
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments.html :: head"></head>
-<body class="bg-light">
-    <div th:replace="fragments.html :: navigation-bar"></div>
-    <svg th:replace="fragments.html::svg-symbols"/>
-    <div class="container">
-        <div class="row mt-5 justify-content-center">
-            <div class="col-2">
-                <div th:replace="fragments.html::settings-menu (currentMenu='tags')"></div>
-            </div>
-            <div class="col-8">
-                <div class="row">
-                    <h2 class="col-12">관심있는 스터디 주제</h2>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-info" role="alert">
-                            <svg th:replace="fragments.html::symbol-info"/>
-                            참여하고 싶은 스터디 주제를 입력해 주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 쉼표 또는 엔터를 입력하세요.
-                        </div>
-                        <div id="whitelist" th:text="${whitelist}" hidden></div>
-                        <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
-                               class="tagify-outside" aria-describedby="tagHelp"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script th:replace="fragments.html :: ajax-csrf-header"></script>
-    <script th:replace="fragments.html :: update-tags(baseUrl='/settings/tags')"></script>
-</body>
-</html>
+```java
+package io.lcalmsky.app.study.form;
+
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class StudyForm {
+
+    public static final String VALID_PATH_PATTERN = "^[ㄱ-ㅎ가-힣a-z0-9_-]{2,20}$";
+
+    @NotBlank
+    @Length(min = 2, max = 20)
+    @Pattern(regexp = VALID_PATH_PATTERN)
+    private String path;
+
+    @NotBlank
+    @Length(max = 50)
+    private String title;
+
+    @NotBlank
+    @Length(max = 100)
+    private String shortDescription;
+
+    @NotBlank
+    private String fullDescription;
+}
+
 ```
 
 </details>
 
-<details>
-<summary>/settings/zones.html.html 전체 보기</summary>
+## 뷰 작성
 
-```html
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments.html :: head"></head>
-<body class="bg-light">
-    <div th:replace="fragments.html :: navigation-bar"></div>
-    <svg th:replace="fragments.html::svg-symbols"/>
-    <div class="container">
-        <div class="row mt-5 justify-content-center">
-            <div class="col-2">
-                <div th:replace="fragments.html::settings-menu (currentMenu='zones')"></div>
-            </div>
-            <div class="col-8">
-                <div class="row">
-                    <h2 class="col-12">주요 활동 지역</h2>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-info" role="alert">
-                            <svg th:replace="fragments.html::symbol-info"/>
-                            스터디를 참가할 수 있는 지역을 등록하세요. 해당 지역에 스터디가 등록되면 알림을 받을 수 있습니다. 시스템에 등록된 지역 외에는 등록되지 않습니다. 반드시
-                            자동완성을 통해 입력해주세요.
-                        </div>
-                        <div id="whitelist" th:text="${whitelist}" hidden></div>
-                        <input id="zones" type="text" name="zones" th:value="${#strings.listJoin(zones, ',')}"
-                               class="tagify-outside" aria-describedby="tagHelp"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script th:replace="fragments.html :: ajax-csrf-header"></script>
-    <script th:replace="fragments.html :: update-zones(baseUrl='/settings/zones')"></script>
-</body>
-</html>
-```
+스터디 설정 내 스터디 메뉴 화면을 작성합니다.
 
-</details>
-
-위의 두 파일을 복사하여 `study` 경로 하위에 동일한 이름으로 파일을 생성합니다.
-
-두 파일 역시 대부분 기능이 유사하고 옆에 메뉴만 조금씩 달라졌으므로 코드로 설명을 대체하겠습니다.
-
-`/src/main/resources/templates/study/settings/tags.html`
+`/src/main/resources/templates/study/settings/study.html`
 
 ```html
 <!DOCTYPE html>
@@ -1044,111 +1012,354 @@ select * from TableName where ColumnName = columnValue;
         <div th:replace="fragments.html :: study-menu(studyMenu='settings')"></div>
         <div class="row mt-3 justify-content-center">
             <div class="col-2">
-                <div th:replace="fragments.html :: study-settings-menu(currentMenu='tags')"></div>
+                <div th:replace="fragments.html :: study-settings-menu(currentMenu='study')"></div>
             </div>
             <div class="col-8">
+                <div th:replace="fragments.html :: message"></div>
                 <div class="row">
-                    <h2 class="col-sm-12">스터디 주제</h2>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
+                    <h5 class="col-sm-12">스터디 공개 및 종료</h5>
+                    <form th:if="${!study.published && !study.closed}" class="col-sm-12" action="#"
+                          th:action="@{'/study/' + ${study.getPath()} + '/settings/study/publish'}" method="post"
+                          novalidate>
                         <div class="alert alert-info" role="alert">
-                            <svg th:replace="fragments::symbol-info"/>
-                            스터디에서 주로 다루는 주제를 태그로 등록하세요. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요.
+                            <svg th:replace="fragments.html::symbol-info"/>
+                            스터디를 다른 사용자에게 공개할 준비가 되었다면 버튼을 클릭하세요.<br/>
+                            소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.<br/>
+                            스터디를 공개하면 주요 활동 지역과 스터디 주제에 관심있는 다른 사용자에게 알림을 전송합니다.
                         </div>
-                        <div id="whitelist" th:text="${whitelist}" hidden>
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">스터디 공개
+                            </button>
                         </div>
-                        <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
-                               class="tagify-outside" aria-describedby="tagHelp">
+                    </form>
+                    <form th:if="${study.published && !study.closed}" class="col-sm-12" action="#"
+                          th:action="@{'/study/' + ${study.getPath()} + '/settings/study/close'}" method="post"
+                          novalidate>
+                        <div class="alert alert-warning" role="alert">
+                            <svg th:replace="fragments.html::symbol-warning"/>
+                            스터디 활동을 마쳤다면 스터디를 종료하세요.<br/>
+                            스터디를 종료하면 더이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.<br/>
+                            스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다.
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-warning" type="submit" aria-describedby="submitHelp">스터디 종료
+                            </button>
+                        </div>
+                    </form>
+                    <div th:if="${study.closed}" class="col-sm-12 alert alert-info">
+                        이 스터디는 <span class="date-time" th:text="${study.closedDateTime}"></span>에 종료됐습니다.<br/>
+                        다시 스터디를 진행하고 싶다면 새로운 스터디를 만드세요.<br/>
                     </div>
+                </div>
+
+                <hr th:if="${!study.closed && !study.recruiting && study.published}"/>
+                <div class="row" th:if="${!study.closed && !study.recruiting && study.published}">
+                    <h5 class="col-sm-12">팀원 모집</h5>
+                    <form class="col-sm-12" action="#"
+                          th:action="@{'/study/' + ${study.getPath()} + '/settings/recruit/start'}" method="post"
+                          novalidate>
+                        <div class="alert alert-info" role="alert">
+                            <svg th:replace="fragments.html::symbol-info"/>
+                            팀원을 모집합니다.<br/>
+                            충분한 스터디 팀원을 모집했다면 모집을 멈출 수 있습니다.<br/>
+                            팀원 모집 정보는 1시간에 한번만 바꿀 수 있습니다.
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">
+                                팀원 모집 시작
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <hr th:if="${!study.closed && study.recruiting && study.published}"/>
+                <div class="row" th:if="${!study.closed && study.recruiting && study.published}">
+                    <h5 class="col-sm-12">팀원 모집</h5>
+                    <form class="col-sm-12" action="#"
+                          th:action="@{'/study/' + ${study.getPath()} + '/settings/recruit/stop'}" method="post"
+                          novalidate>
+                        <div class="alert alert-primary" role="alert">
+                            <svg th:replace="fragments.html::symbol-info"/>
+                            팀원 모집을 중답합니다.<br/>
+                            팀원 충원이 필요할 때 다시 팀원 모집을 시작할 수 있습니다.<br/>
+                            팀원 모집 정보는 1시간에 한번만 바꿀 수 있습니다.
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">
+                                팀원 모집 중단
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <hr th:if="${!study.closed}"/>
+                <div class="row" th:if="${!study.closed}">
+                    <h5 class="col-sm-12">스터디 경로</h5>
+                    <form class="col-sm-12 needs-validation" action="#"
+                          th:action="@{'/study/' + ${study.path} + '/settings/study/path'}" method="post" novalidate>
+                        <div class="alert alert-warning" role="alert">
+                            <svg th:replace="fragments.html::symbol-warning"/>
+                            스터디 경로를 수정하면 이전에 사용하던 경로로 스터디에 접근할 수 없으니 주의하세요. <br/>
+                        </div>
+                        <div class="form-group">
+                            <input id="path" type="text" name="newPath" th:value="${newPath}" class="form-control"
+                                   placeholder="예) study-path" aria-describedby="pathHelp" required>
+                            <small id="pathHelp" class="form-text text-muted">
+                                공백없이 문자, 숫자, 대시(-)와 언더바(_)만 3자 이상 20자 이내로 입력하세요. 스터디 홈 주소에 사용합니다. 예) /study/<b>study-path</b>
+                            </small>
+                            <small class="invalid-feedback">스터디 경로를 입력하세요.</small>
+                            <small class="form-text text-danger" th:if="${studyPathError}" th:text="${studyPathError}">Path
+                                Error</small>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button class="btn btn-outline-warning" type="submit" aria-describedby="submitHelp">경로 수정
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <hr th:if="${!study.closed}"/>
+                <div class="row" th:if="${!study.closed}">
+                    <h5 class="col-12">스터디 이름</h5>
+                    <form class="needs-validation col-12" action="#"
+                          th:action="@{'/study/' + ${study.path} + '/settings/study/title'}" method="post" novalidate>
+                        <div class="alert alert-warning" role="alert">
+                            <svg th:replace="fragments.html::symbol-warning"/>
+                            스터디 이름을 수정합니다.<br/>
+                        </div>
+                        <div class="form-group">
+                            <label for="title">스터디 이름</label>
+                            <input id="title" type="text" name="newTitle" th:value="${study.title}" class="form-control"
+                                   placeholder="스터디 이름" aria-describedby="titleHelp" required maxlength="50">
+                            <small id="titleHelp" class="form-text text-muted">
+                                스터디 이름을 50자 이내로 입력하세요.
+                            </small>
+                            <small class="invalid-feedback">스터디 이름을 입력하세요.</small>
+                            <small class="form-text text-danger" th:if="${studyTitleError}"
+                                   th:text="${studyTitleError}">Title Error</small>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button class="btn btn-outline-warning" type="submit" aria-describedby="submitHelp">스터디 이름
+                                수정
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <hr/>
+                <div class="row">
+                    <h5 class="col-sm-12 text-danger">스터디 삭제</h5>
+                    <form class="col-sm-12" action="#"
+                          th:action="@{'/study/' + ${study.getPath()} + '/settings/study/remove'}" method="post"
+                          novalidate>
+                        <div class="alert alert-danger" role="alert">
+                            <svg th:replace="fragments.html::symbol-danger"/>
+                            스터디를 삭제하면 스터디 관련 모든 기록을 삭제하며 복구할 수 없습니다. <br/>
+                            <b>다음에 해당하는 스터디는 자동으로 삭제 됩니다.</b>
+                            <ul>
+                                <li>만든지 1주일이 지난 비공개 스터디</li>
+                                <li>스터디 공개 이후, 한달 동안 모임을 만들지 않은 스터디</li>
+                                <li>스터디 공개 이후, 모임을 만들지 않고 종료한 스터디</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-danger" type="submit" aria-describedby="submitHelp">스터디 삭제
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
         <div th:replace="fragments.html :: footer"></div>
     </div>
-    <script th:replace="fragments.html :: ajax-csrf-header"></script>
-    <script th:replace="fragments.html :: update-tags(baseUrl='/study/' + ${study.path} + '/settings/tags')"></script>
+    <script th:replace="fragments.html :: tooltip"></script>
+    <script th:replace="fragments.html :: form-validation"></script>
 </body>
 </html>
 ```
 
-`/src/main/resources/templates/study/settings/zones.html`
-
-```html
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments.html :: head"></head>
-<svg th:replace="fragments.html :: svg-symbols"/>
-<body>
-    <nav th:replace="fragments.html :: navigation-bar"></nav>
-    <div th:replace="fragments.html :: study-banner"></div>
-    <div class="container">
-        <div th:replace="fragments.html :: study-info"></div>
-        <div th:replace="fragments.html :: study-menu(studyMenu='settings')"></div>
-        <div class="row mt-3 justify-content-center">
-            <div class="col-2">
-                <div th:replace="fragments.html :: study-settings-menu(currentMenu='zones')"></div>
-            </div>
-            <div class="col-8">
-                <div class="row">
-                    <h2 class="col-sm-12">주요 활동 지역</h2>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="alert alert-info" role="alert">
-                            <svg th:replace="fragments::symbol-info"/>
-                            주로 스터디를 진행하는 지역을 등록하세요. 시스템에 등록된 지역만 선택할 수 있습니다.
-                        </div>
-                        <div id="whitelist" th:text="${whitelist}" hidden></div>
-                        <input id="zones" type="text" name="zones" th:value="${#strings.listJoin(zones, ',')}"
-                               class="tagify-outside">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div th:replace="fragments.html :: footer"></div>
-    </div>
-    <script th:replace="fragments.html :: ajax-csrf-header"></script>
-    <script th:replace="fragments.html :: update-zones(baseUrl='/study/' + ${study.path} + '/settings/zones')"></script>
-</body>
-</html>
-```
+> 기존 fragments.html 파일에 오타가 있어 수정한 부분입니다.
+> * text-right -> text-end로 수정
+> * <i class>a fa-plus"> -> <i class="fa fa-plus"> 오타 수정
 
 ## 테스트
 
-애플리케이션을 실행한 뒤 스터디에 진입하고 설정 탭에서 스터디 주제를 클릭합니다.
+애플리케이션 실행 후 스터디 설정 내 스터디 메뉴에 진입해 구현한 내용을 테스트합니다.
 
-기존에 태그를 테스트했던 것과 동일한 방식으로 테스트하여 정상 동작을 확인합니다.
+먼저 화면에 진입합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/43-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-01.png)
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/43-02.png)
+전체적인 뷰가 제대로 구현되었고, 상태를 나타내는 아이콘도 `DRAFT`, `OFF`를 나타내고 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/43-03.png)
+스터디 공개 버튼을 클릭하고 변화를 확인합니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-02.png)
+
+우측 상단에 `DRAFT` 아이콘이 사라졌고 스터디가 공개되었다는 안내 문구가 노출되고 버튼도 스터디 종료로 변경되었습니다.
+
+다음으로는 팀원 모집 시작 버튼을 클릭하고 변화를 확인합니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-03.png)
+
+설명과 버튼에 변화가 있는 것을 확인할 수 있습니다.
+
+다음으로 스터디 경로를 변경해보겠습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-04.png)
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-05.png)
+
+주소 표시줄을 확인해보면 실제 경로가 변경된 것을 확인할 수 있습니다.
+
+> 테스트 이후 다시 `spring-boot`로 원복하였습니다.
+
+이름 변경을 테스트한 결과도 마찬가지로 잘 적용되었습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-06.png)
+
+> 테스트 이후 다시 `스프링 부트 스터디`로 원복하였습니다.
+
+스터디 삭제를 테스트하기 전에 새로운 계정을 만들어서 스터디의 상태를 확인해보겠습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-07.png)
+
+스터디 가입 버튼이 노출되어있는 것을 확인할 수 있습니다. (아직 스터디 가입 기능은 구현되어있지 않습니다.)
+
+마지막으로, 스터디 삭제 기능을 테스트하기 위해 임시로 스터디 하나를 생성해보도록 하겠습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-08.png)
+
+생성한 뒤 다시 스터디 설정 메뉴로 들어가서 삭제 버튼을 클릭하면
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-09.png)
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/44-10.png)
+
+삭제된 뒤 홈으로 돌아간 것을 확인할 수 있습니다.
 
 ## 테스트 코드 작성
 
-테스트 코드 작성에 앞서 `TagForm`, `ZoneForm`의 경우 패키지가 달라 객체를 생성할 수 없어 각각 클래스에 `@AllArgsConstructor,` `@Builder` 애너테이션을 추가하였습니다.
-
-```java
-// 생략
-@AllArgsConstructor
-@Builder
-public class TagForm {
-    // 생략
-}
-```
-
-```java
-// 생략
-@AllArgsConstructor
-@Builder
-public class ZoneForm {
-    // 생략
-}
-```
+계속 반복되는 내용이므로 소스 코드로 대체합니다.
 
 `/src/test/java/io/lcalmsky/app/study/endpoint/StudySettingsControllerTest.java`
+
+```java
+// 생략
+class StudySettingsControllerTest {
+    // 생략
+    @Test
+    @DisplayName("스터디 세팅 폼 조회(스터디)")
+    @WithAccount("jaime")
+    void studySettingFormStudy() throws Exception {
+        mockMvc.perform(get("/study/" + studyPath + "/settings/study"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/study"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"));
+    }
+
+    @Test
+    @DisplayName("스터디 공개")
+    @WithAccount("jaime")
+    void publishStudy() throws Exception {
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/publish")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(studyPath);
+        assertTrue(study.isPublished());
+    }
+
+    @Test
+    @DisplayName("스터디 종료")
+    @WithAccount("jaime")
+    void closeStudy() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/close")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isClosed());
+    }
+
+    @Test
+    @DisplayName("스터디 팀원 모집 시작")
+    @WithAccount("jaime")
+    void startRecruit() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/recruit/start")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isRecruiting());
+    }
+
+    @Test
+    @DisplayName("스터디 팀원 모집 중지: 1시간 이내 시도 -> 실패")
+    @WithAccount("jaime")
+    void stopRecruit() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        studyService.startRecruit(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/recruit/stop")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isRecruiting());
+    }
+
+    @Test
+    @DisplayName("스터디 경로 변경")
+    @WithAccount("jaime")
+    void updateStudyPath() throws Exception {
+        String newPath = "new-path";
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/path")
+                        .param("newPath", newPath)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + newPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(newPath);
+        assertEquals(newPath, study.getPath());
+    }
+
+    @Test
+    @DisplayName("스터디 이름 변경")
+    @WithAccount("jaime")
+    void updateStudyTitle() throws Exception {
+        String newTitle = "newTitle";
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/title")
+                        .param("newTitle", newTitle)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(studyPath);
+        assertEquals(newTitle, study.getTitle());
+    }
+
+    @Test
+    @DisplayName("스터디 삭제")
+    @WithAccount("jaime")
+    void removeStudy() throws Exception {
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/remove")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+        assertNull(studyRepository.findByPath(studyPath));
+    }
+}
+```
+
+<details>
+<summary>StudySettingsControllerTest.java 전체 보기</summary>
 
 ```java
 package io.lcalmsky.app.study.endpoint;
@@ -1238,7 +1449,7 @@ class StudySettingsControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/study/" + studyPath + "/settings/description"));
-        Study study = studyService.getStudy(account, studyPath);
+        Study study = studyService.getStudyToUpdate(account, studyPath);
         assertEquals(shortDescriptionToBeUpdated, study.getShortDescription());
         assertEquals(fullDescriptionToBeUpdated, study.getFullDescription());
     }
@@ -1316,7 +1527,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(tagForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
         Tag tag = tagRepository.findByTitle(tagTitle).orElse(null);
         assertNotNull(tag);
         assertTrue(study.getTags().contains(tag));
@@ -1326,7 +1537,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 태그 삭제")
     @WithAccount("jaime")
     void removeStudyTag() throws Exception {
-        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
+        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
         String tagTitle = "newTag";
         Tag tag = tagRepository.save(Tag.builder()
                 .title(tagTitle)
@@ -1371,7 +1582,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(zoneForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
         assertTrue(study.getZones().contains(testZone));
     }
 
@@ -1379,7 +1590,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 지역 삭제")
     @WithAccount("jaime")
     void removeStudyZone() throws Exception {
-        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
+        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
         zoneRepository.save(testZone);
         studyService.addZone(study, testZone);
@@ -1393,9 +1604,115 @@ class StudySettingsControllerTest {
                 .andExpect(status().isOk());
         assertFalse(study.getZones().contains(testZone));
     }
+
+    @Test
+    @DisplayName("스터디 세팅 폼 조회(스터디)")
+    @WithAccount("jaime")
+    void studySettingFormStudy() throws Exception {
+        mockMvc.perform(get("/study/" + studyPath + "/settings/study"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("study/settings/study"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("study"));
+    }
+
+    @Test
+    @DisplayName("스터디 공개")
+    @WithAccount("jaime")
+    void publishStudy() throws Exception {
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/publish")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(studyPath);
+        assertTrue(study.isPublished());
+    }
+
+    @Test
+    @DisplayName("스터디 종료")
+    @WithAccount("jaime")
+    void closeStudy() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/close")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isClosed());
+    }
+
+    @Test
+    @DisplayName("스터디 팀원 모집 시작")
+    @WithAccount("jaime")
+    void startRecruit() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/recruit/start")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isRecruiting());
+    }
+
+    @Test
+    @DisplayName("스터디 팀원 모집 중지: 1시간 이내 시도 -> 실패")
+    @WithAccount("jaime")
+    void stopRecruit() throws Exception {
+        Study study = studyRepository.findByPath(studyPath);
+        studyService.publish(study);
+        studyService.startRecruit(study);
+        mockMvc.perform(post("/study/" + studyPath + "/settings/recruit/stop")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        assertTrue(study.isRecruiting());
+    }
+
+    @Test
+    @DisplayName("스터디 경로 변경")
+    @WithAccount("jaime")
+    void updateStudyPath() throws Exception {
+        String newPath = "new-path";
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/path")
+                        .param("newPath", newPath)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + newPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(newPath);
+        assertEquals(newPath, study.getPath());
+    }
+
+    @Test
+    @DisplayName("스터디 이름 변경")
+    @WithAccount("jaime")
+    void updateStudyTitle() throws Exception {
+        String newTitle = "newTitle";
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/title")
+                        .param("newTitle", newTitle)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/settings/study"))
+                .andExpect(flash().attributeExists("message"));
+        Study study = studyRepository.findByPath(studyPath);
+        assertEquals(newTitle, study.getTitle());
+    }
+
+    @Test
+    @DisplayName("스터디 삭제")
+    @WithAccount("jaime")
+    void removeStudy() throws Exception {
+        mockMvc.perform(post("/study/" + studyPath + "/settings/study/remove")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+        assertNull(studyRepository.findByPath(studyPath));
+    }
 }
 ```
 
-구현한 기능들을 테스트할 수 있도록 작성하여 테스트를 실행하였고, 기존 기능을 포함하여 모두 정상적으로 동작하였습니다!
-
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/43-04.png)
+</details>

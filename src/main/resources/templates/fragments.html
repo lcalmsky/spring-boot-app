@@ -191,7 +191,7 @@
                 <span class="h2" th:text="${study.title}">스터디 이름</span>
             </a>
         </div>
-        <div class="col-4 text-right justify-content-end">
+        <div class="col-4 text-end justify-content-end">
             <!--스터디를 공개하지 않았을 경우-->
             <span th:if="${!study.published}" class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
                   data-placement="bottom" title="공개 준비중입니다.">
@@ -237,7 +237,7 @@
                   th:if="${study.published && !study.closed && study.isManager(#authentication.principal)}">
                 <!--모임 만들기 링크-->
                 <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/new-event'}">
-                    <i class>a fa-plus"></i> 모임 만들기
+                    <i class="fa fa-plus"></i> 모임 만들기
                 </a>
             </span>
         </div>
