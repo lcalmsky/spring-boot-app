@@ -365,14 +365,14 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        Study study = studyRepository.findStudyWithTagsByPath(path);
+        Study study = studyRepository.findServiceWithTagsByPath(path);
         checkStudyExists(path, study);
         checkAccountIsManager(account, study);
         return study;
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        Study study = studyRepository.findStudyWithZonesByPath(path);
+        Study study = studyRepository.findServiceWithZonesByPath(path);
         checkStudyExists(path, study);
         checkAccountIsManager(account, study);
         return study;
@@ -430,11 +430,11 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findStudyWithTagsByPath(path));
+        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findStudyWithZonesByPath(path));
+        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
     }
 
     private Study getStudy(Account account, String path, Study studyByPath) {
@@ -501,11 +501,11 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        return getStudy(account, path, studyRepository.findStudyWithTagsByPath(path));
+        return getStudy(account, path, studyRepository.findServiceWithTagsByPath(path));
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        return getStudy(account, path, studyRepository.findStudyWithZonesByPath(path));
+        return getStudy(account, path, studyRepository.findServiceWithZonesByPath(path));
     }
 
     private Study getStudy(Account account, String path, Study studyByPath) {
@@ -791,10 +791,10 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     Study findByPath(String path);
 
     @EntityGraph(value = "Study.withTagsAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithTagsByPath(String path);
+    Study findServiceWithTagsByPath(String path);
 
     @EntityGraph(value = "Study.withZonesAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithZonesByPath(String path);
+    Study findServiceWithZonesByPath(String path);
 }
 ```
 
@@ -814,7 +814,7 @@ select * from TableName where ColumnName = columnValue;
 
 `find`, `ByColumnName` 과 같은 정해진 문구는 SQL문을 생성할 때 영향을 주지만 그 사이에 있는 값은 메서드를 구분하는 기능만 가지고 있을 뿐 쿼리에는 영향을 주지 않습니다.
 
-따라서 `findByPath`, `findStudyWithTagsByPath`, `findStudyWithZonesByPath`이 세 가지 쿼리는 `@EntityGraph` 설정이 없다면 동일한 쿼리(findByPath)를 나타냅니다.
+따라서 `findByPath`, `findServiceWithTagsByPath`, `findServiceWithZonesByPath`이 세 가지 쿼리는 `@EntityGraph` 설정이 없다면 동일한 쿼리(findByPath)를 나타냅니다.
 
 하지만 `@EntityGraph` 내에서 설정한 `@NamedEntityGraph`를 따르기 때문에 세 가지 쿼리는 달라지게 됩니다.
 
@@ -1316,7 +1316,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(tagForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
+        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
         Tag tag = tagRepository.findByTitle(tagTitle).orElse(null);
         assertNotNull(tag);
         assertTrue(study.getTags().contains(tag));
@@ -1326,7 +1326,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 태그 삭제")
     @WithAccount("jaime")
     void removeStudyTag() throws Exception {
-        Study study = studyRepository.findStudyWithTagsByPath(studyPath);
+        Study study = studyRepository.findServiceWithTagsByPath(studyPath);
         String tagTitle = "newTag";
         Tag tag = tagRepository.save(Tag.builder()
                 .title(tagTitle)
@@ -1371,7 +1371,7 @@ class StudySettingsControllerTest {
                         .content(objectMapper.writeValueAsString(zoneForm))
                         .with(csrf()))
                 .andExpect(status().isOk());
-        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
+        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
         assertTrue(study.getZones().contains(testZone));
     }
 
@@ -1379,7 +1379,7 @@ class StudySettingsControllerTest {
     @DisplayName("스터디 지역 삭제")
     @WithAccount("jaime")
     void removeStudyZone() throws Exception {
-        Study study = studyRepository.findStudyWithZonesByPath(studyPath);
+        Study study = studyRepository.findServiceWithZonesByPath(studyPath);
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트시").province("테스트주").build();
         zoneRepository.save(testZone);
         studyService.addZone(study, testZone);
