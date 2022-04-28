@@ -4,6 +4,7 @@ import io.lcalmsky.app.WithAccount;
 import io.lcalmsky.app.account.domain.entity.Account;
 import io.lcalmsky.app.account.infra.repository.AccountRepository;
 import io.lcalmsky.app.study.application.StudyService;
+import io.lcalmsky.app.study.domain.entity.Study;
 import io.lcalmsky.app.study.form.StudyForm;
 import io.lcalmsky.app.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -131,5 +133,49 @@ class StudyControllerTest {
                 .andExpect(view().name("study/members"))
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attributeExists("study"));
+    }
+
+    @Test
+    @DisplayName("스터디 가입")
+    @WithAccount(value = {"jaime", "test"})
+    void joinStudy() throws Exception {
+        // 스터디 생성
+        Account manager = accountRepository.findByNickname("jaime");
+        String studyPath = "study-path";
+        Study study = studyService.createNewStudy(StudyForm.builder()
+                .path(studyPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), manager);
+        // 스터디 가입
+        mockMvc.perform(get("/study/" + studyPath + "/join"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/members"));
+        Account member = accountRepository.findByNickname("test");
+        assertTrue(study.getMembers().contains(member));
+    }
+
+    @Test
+    @DisplayName("스터디 탈퇴")
+    @WithAccount(value = {"jaime", "test"})
+    void leaveStudy() throws Exception {
+        // 스터디 생성
+        Account manager = accountRepository.findByNickname("jaime");
+        String studyPath = "study-path";
+        Study study = studyService.createNewStudy(StudyForm.builder()
+                .path(studyPath)
+                .title("study-title")
+                .shortDescription("short-description")
+                .fullDescription("full-description")
+                .build(), manager);
+        // 스터디 가입
+        Account member = accountRepository.findByNickname("test");
+        studyService.addMember(study, member);
+        // 스터디 탈퇴
+        mockMvc.perform(get("/study/" + studyPath + "/leave"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/study/" + studyPath + "/members"));
+        assertFalse(study.getMembers().contains(member));
     }
 }

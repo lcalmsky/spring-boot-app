@@ -8,5 +8,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = WithAccountSecurityContextFactory.class)
 public @interface WithAccount {
-    String value();
+    String[] value() default "";
 }

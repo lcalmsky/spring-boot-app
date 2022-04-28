@@ -225,7 +225,7 @@
                   th:if="${!study.closed && study.isMember(#authentication.principal)}" class="btn-group"
                   role="group">
                 <!--스터디 가입 링크-->
-                <a class="btn btn-outline-warning" th:href="@{'/study/' + ${study.path} + '/leave'}">
+                <a class="btn btn-outline-danger" th:href="@{'/study/' + ${study.path} + '/leave'}">
                     스터디 탈퇴
                 </a>
                 <!--스터디 멤버 수-->

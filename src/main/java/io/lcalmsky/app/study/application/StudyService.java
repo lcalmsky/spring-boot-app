@@ -137,4 +137,12 @@ public class StudyService {
         }
         studyRepository.delete(study);
     }
+
+    public void addMember(Study study, Account account) {
+        study.addMember(account);
+    }
+
+    public void removeMember(Study study, Account account) {
+        study.removeMember(account);
+    }
 }
