@@ -6,6 +6,7 @@ import io.lcalmsky.app.study.application.StudyService;
 import io.lcalmsky.app.study.domain.entity.Study;
 import io.lcalmsky.app.study.form.StudyForm;
 import io.lcalmsky.app.study.form.validator.StudyFormValidator;
+import io.lcalmsky.app.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 public class StudyController {
     private final StudyService studyService;
     private final StudyFormValidator studyFormValidator;
+    private final StudyRepository studyRepository;
 
     @InitBinder("studyForm")
     public void studyFormInitBinder(WebDataBinder webDataBinder) {
@@ -59,5 +61,19 @@ public class StudyController {
         model.addAttribute(account);
         model.addAttribute(studyService.getStudy(account, path));
         return "study/members";
+    }
+
+    @GetMapping("/study/{path}/join")
+    public String joinStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.addMember(study, account);
+        return "redirect:/study/" + study.getEncodedPath() + "/members";
+    }
+
+    @GetMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentUser Account account, @PathVariable String path) {
+        Study study = studyRepository.findStudyWithMembersByPath(path);
+        studyService.removeMember(study, account);
+        return "redirect:/study/" + study.getEncodedPath() + "/members";
     }
 }
