@@ -216,19 +216,19 @@ public class EventForm {
 
 애플리케이션 실행 후 스터디 화면으로 진입합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-01.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-01.png)
 
 모임 만들기 버튼을 클릭하여 뷰를 확인합니다. 
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-02.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-02.png)
 
 모집 방법을 클릭했을 때 동작을 확인합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-03.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-03.png)
 
 날짜 관련 입력을 위해 달력 모양 버튼을 클릭했을 때 동작을 확인합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-04.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/47-04.png)
 
 ---
 
