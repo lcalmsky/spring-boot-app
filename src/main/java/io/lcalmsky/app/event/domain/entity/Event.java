@@ -1,64 +1,74 @@
 package io.lcalmsky.app.event.domain.entity;
 
 import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.event.form.EventForm;
 import io.lcalmsky.app.study.domain.entity.Study;
-import java.time.LocalDateTime;
-import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-@EqualsAndHashCode(of = "id")
 public class Event {
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  @ManyToOne
-  private Study study;
+    @ManyToOne
+    private Study study;
 
-  @ManyToOne
-  private Account createdBy;
+    @ManyToOne
+    private Account createdBy;
 
-  @Column(nullable = false)
-  private String title;
+    @Column(nullable = false)
+    private String title;
 
-  @Lob
-  private String description;
+    @Lob
+    private String description;
 
-  @Column(nullable = false)
-  private LocalDateTime createdDateTime;
+    @Column(nullable = false)
+    private LocalDateTime createdDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime endEnrollmentDateTime;
+    @Column(nullable = false)
+    private LocalDateTime endEnrollmentDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime startDateTime;
+    @Column(nullable = false)
+    private LocalDateTime startDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime endDateTime;
+    @Column(nullable = false)
+    private LocalDateTime endDateTime;
 
-  private Integer limitOfEnrollments;
+    private Integer limitOfEnrollments;
 
-  @OneToMany(mappedBy = "event")
-  private List<Enrollment> enrollments;
+    @OneToMany(mappedBy = "event") @ToString.Exclude
+    private List<Enrollment> enrollments;
 
-  @Enumerated(EnumType.STRING)
-  private EventType eventType;
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
 
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+    public static Event from(EventForm eventForm, Account account, Study study) {
+        Event event = new Event();
+        event.eventType = eventForm.getEventType();
+        event.description = eventForm.getDescription();
+        event.endDateTime = eventForm.getEndDateTime();
+        event.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+        event.limitOfEnrollments = eventForm.getLimitOfEnrollments();
+        event.startDateTime = eventForm.getStartDateTime();
+        event.title = eventForm.getTitle();
+        event.createdBy = account;
+        event.study = study;
+        event.createdDateTime = LocalDateTime.now();
+        return event;
+    }
 }
