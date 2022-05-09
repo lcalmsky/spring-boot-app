@@ -24,7 +24,7 @@ public class StudyService {
         return studyRepository.save(study);
     }
 
-    public Study getStudy(Account account, String path) {
+    public Study getStudy(String path) {
         Study study = studyRepository.findByPath(path);
         checkStudyExists(path, study);
         return study;

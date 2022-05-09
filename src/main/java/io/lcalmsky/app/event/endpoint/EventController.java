@@ -5,9 +5,11 @@ import io.lcalmsky.app.account.support.CurrentUser;
 import io.lcalmsky.app.event.application.EventService;
 import io.lcalmsky.app.event.domain.entity.Event;
 import io.lcalmsky.app.event.form.EventForm;
+import io.lcalmsky.app.event.infra.repository.EventRepository;
 import io.lcalmsky.app.event.validator.EventValidator;
 import io.lcalmsky.app.study.application.StudyService;
 import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,8 @@ public class EventController {
 
     private final StudyService studyService;
     private final EventService eventService;
+    private final EventRepository eventRepository;
+    private final StudyRepository studyRepository;
     private final EventValidator eventValidator;
 
     @InitBinder("eventForm")
@@ -50,5 +54,14 @@ public class EventController {
         }
         Event event = eventService.createEvent(study, eventForm, account);
         return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
+    }
+
+    @GetMapping("/events/{id}")
+    public String getEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 모임은 존재하지 않습니다.")));
+        model.addAttribute(studyRepository.findStudyWithManagersByPath(path));
+        return "event/view";
     }
 }
