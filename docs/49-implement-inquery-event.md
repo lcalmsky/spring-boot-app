@@ -223,20 +223,9 @@ public class Event {
 라이브러리에 대한 자세한 내용은 [여기](https://momentjs.com/)를 참고하세요.
 
 ```shell
- ~/git-repo/spring-boot-app/src/main/resources/static/ [feature/93+*] npm install moment --save
+ npm install moment --save
 
-added 1 package, and audited 19 packages in 485ms
-
-2 packages are looking for funding
-run `npm fund` for details
-
-found 0 vulnerabilities
-npm notice
-npm notice New minor version of npm available! 8.5.5 -> 8.9.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v8.9.0
-npm notice Run npm install -g npm@8.9.0 to update!
-npm notice
- ~/git-repo/spring-boot-app/src/main/resources/static/ [feature/93+*] 
+added 1 package, and audited 19 packages in 485ms 
 ```
 
 ## 뷰 작성
