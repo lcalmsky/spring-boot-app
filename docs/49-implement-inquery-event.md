@@ -994,7 +994,7 @@ added 1 package, and audited 19 packages in 485ms
 
 ![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/49-02.png)
 
-이렇게 모임 화면이로 이동됩니다.
+이렇게 모임 화면으로 이동됩니다.
 
 ---
 
