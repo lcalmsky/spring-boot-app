@@ -1,7 +1,11 @@
 package io.lcalmsky.app.event.form;
 
+import io.lcalmsky.app.event.domain.entity.Event;
 import io.lcalmsky.app.event.domain.entity.EventType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,4 +38,15 @@ public class EventForm {
     @Min(2)
     private Integer limitOfEnrollments = 2;
 
+    public static EventForm from(Event event) {
+        EventForm eventForm = new EventForm();
+        eventForm.title = event.getTitle();
+        eventForm.description = event.getDescription();
+        eventForm.eventType = event.getEventType();
+        eventForm.endEnrollmentDateTime = event.getEndEnrollmentDateTime();
+        eventForm.startDateTime = event.getStartDateTime();
+        eventForm.endDateTime = event.getEndDateTime();
+        eventForm.limitOfEnrollments = event.getLimitOfEnrollments();
+        return eventForm;
+    }
 }
