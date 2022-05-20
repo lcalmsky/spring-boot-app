@@ -111,4 +111,20 @@ public class Event {
                 .count();
         return this.limitOfEnrollments - accepted;
     }
+
+    public Long getNumberOfAcceptedEnrollments() {
+        return this.enrollments.stream()
+                .filter(Enrollment::isAccepted)
+                .count();
+    }
+
+    public void updateFrom(EventForm eventForm) {
+        this.title = eventForm.getTitle();
+        this.description = eventForm.getDescription();
+        this.eventType = eventForm.getEventType();
+        this.startDateTime = eventForm.getStartDateTime();
+        this.endDateTime = eventForm.getEndDateTime();
+        this.limitOfEnrollments = eventForm.getLimitOfEnrollments();
+        this.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+    }
 }

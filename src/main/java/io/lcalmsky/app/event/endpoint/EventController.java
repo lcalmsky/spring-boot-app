@@ -87,4 +87,33 @@ public class EventController {
         model.addAttribute("oldEvents", oldEvents);
         return "study/events";
     }
+
+    @GetMapping("/events/{id}/edit")
+    public String updateEventForm(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
+        Study study = studyService.getStudyToUpdate(account, path);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
+        model.addAttribute(study);
+        model.addAttribute(account);
+        model.addAttribute(event);
+        model.addAttribute(EventForm.from(event));
+        return "event/update-form";
+    }
+
+    @PostMapping("/events/{id}/edit")
+    public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, @Valid EventForm eventForm, Errors errors, Model model) {
+        Study study = studyService.getStudyToUpdate(account, path);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
+        eventForm.setEventType(event.getEventType());
+        eventValidator.validateUpdateForm(eventForm, event, errors);
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute(event);
+            return "event/update-form";
+        }
+        eventService.updateEvent(event, eventForm);
+        return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
+    }
 }
