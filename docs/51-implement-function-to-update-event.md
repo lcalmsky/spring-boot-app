@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 6e10ea8)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 0f966b5)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout 6e10ea8
+> > git checkout 0f966b5
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -24,7 +24,7 @@
 
 수정 화면에 진입할 수 있는 엔드포인트와 수정 기능을 구현할 엔드포인트를 `EventController`에 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/event/endpoint/EventController.java`
+`/src/main/java/io/lcalmsky/app/event/endpoint/EventController.java`
 
 ```java
 // 생략
@@ -199,7 +199,7 @@ public class EventController {
 
 이 역할을 `EventForm`에게 위임하였습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/event/form/EventForm.java`
+`/src/main/java/io/lcalmsky/app/event/form/EventForm.java`
 
 ```java
 // 생략
@@ -287,7 +287,7 @@ public class EventForm {
 
 모임을 수정하는 기능을 `EventService`에 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/event/application/EventService.java`
+`/src/main/java/io/lcalmsky/app/event/application/EventService.java`
 
 ```java
 // 생략
@@ -343,7 +343,7 @@ public class EventService {
 
 `Event Entity`를 수정합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/event/domain/entity/Event.java`
+`/src/main/java/io/lcalmsky/app/event/domain/entity/Event.java`
 
 ```java
 // 생략
@@ -519,7 +519,7 @@ public class Event {
 
 `EventForm`을 검증할 `validator`에 모임 인원수를 조작했을 때 기존 멤버 수 보다 적어지지 않게 검증하는 로직을 추가합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/event/validator/EventValidator.java`
+`/src/main/java/io/lcalmsky/app/event/validator/EventValidator.java`
 
 ```java
 // 생략
@@ -599,7 +599,7 @@ public class EventValidator implements Validator {
 
 먼저 `event/form.html` 파일 중 공통된 부분을 `fragment`로 추출하겠습니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/event/form.html`
+`/src/main/resources/templates/event/form.html`
 
 ```html
 <!DOCTYPE html>
@@ -624,7 +624,7 @@ public class EventValidator implements Validator {
 
 `event` 경로 하위에 `form.html`을 복사하여 `update-form.html`을 생성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/event/update-form.html`
+`/src/main/resources/templates/event/update-form.html`
 
 ```html
 <!DOCTYPE html>
@@ -647,7 +647,7 @@ public class EventValidator implements Validator {
 
 마지막으로 기존 내용을 `fragments.html` 파일로 추출합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/fragments.html`
+`/src/main/resources/templates/fragments.html`
 
 ```html
 <!DOCTYPE html>
