@@ -1,3 +1,5 @@
 spring:
-  profiles:
-    active: local
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
