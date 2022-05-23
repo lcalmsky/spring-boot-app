@@ -116,4 +116,12 @@ public class EventController {
         eventService.updateEvent(event, eventForm);
         return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
     }
+
+    @DeleteMapping("/events/{id}")
+    public String deleteEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        eventService.deleteEvent(eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")));
+        return "redirect:/study/" + study.getEncodedPath() + "/events";
+    }
 }
