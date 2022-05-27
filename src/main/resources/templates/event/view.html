@@ -22,7 +22,7 @@
                         <i class="fa fa-plus-circle"></i> 참가 신청
                     </button>
                     <button th:if="${event.isDisenrollableFor(#authentication.principal)}"
-                            class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#disenroll">
+                            class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#leave">
                         <i class="fa fa-minus-circle"></i> 참가 신청 취소
                     </button>
                     <span class="text-success" th:if="${event.isAttended(#authentication.principal)}" disabled>
@@ -30,13 +30,12 @@
                     </span>
                 </span>
             </div>
-            <div class="modal fade" id="disenroll" tabindex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
+            <div class="modal fade" id="leave" tabindex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="leaveTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             </button>
                         </div>
                         <div class="modal-body">
@@ -58,8 +57,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="enrollmentTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             </button>
                         </div>
                         <div class="modal-body">
@@ -190,8 +188,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="cancelTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             </button>
                         </div>
                         <div class="modal-body">

@@ -124,4 +124,20 @@ public class EventController {
                 .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")));
         return "redirect:/study/" + study.getEncodedPath() + "/events";
     }
+
+    @PostMapping("/events/{id}/enroll")
+    public String enroll(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.enroll(eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/leave")
+    public String leave(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+        Study study = studyService.getStudyToEnroll(path);
+        eventService.leave(eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+    }
 }
