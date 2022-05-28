@@ -48,7 +48,7 @@ public class EventController {
     }
 
     @PostMapping("/new-event")
-    public String createNewEvent(@CurrentUser Account account, @PathVariable String path, @Valid EventForm eventForm, Errors errors, Model model) {
+    public String createNewEvent(@CurrentUser Account account, @PathVariable String path, @Valid @RequestBody EventForm eventForm, Errors errors, Model model) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         if (errors.hasErrors()) {
             model.addAttribute(account);
@@ -101,7 +101,7 @@ public class EventController {
     }
 
     @PostMapping("/events/{id}/edit")
-    public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, @Valid EventForm eventForm, Errors errors, Model model) {
+    public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, @Valid @RequestBody EventForm eventForm, Errors errors, Model model) {
         Study study = studyService.getStudyToUpdate(account, path);
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
@@ -114,7 +114,7 @@ public class EventController {
             return "event/update-form";
         }
         eventService.updateEvent(event, eventForm);
-        return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
     }
 
     @DeleteMapping("/events/{id}")
