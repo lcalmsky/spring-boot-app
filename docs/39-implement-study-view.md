@@ -43,15 +43,15 @@ public class StudyController {
 <summary>StudyController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.form.validator.StudyFormValidator;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.endpoint.form.validator.StudyFormValidator;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -112,9 +112,9 @@ public class StudyController {
 `/src/main/java/io/lcalmsky/app/study/infra/repository/StudyRepository.java`
 
 ```java
-package io.lcalmsky.app.study.infra.repository;
+package io.lcalmsky.app.modules.study.infra.repository;
 
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -533,13 +533,13 @@ public class Study {
 <summary>수정된 Study.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -638,9 +638,9 @@ public class Study {
 `/src/main/java/io/lcalmsky/app/study/infra/repository/StudyRepository.java`
 
 ```java
-package io.lcalmsky.app.study.infra.repository;
+package io.lcalmsky.app.modules.study.infra.repository;
 
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -808,14 +808,14 @@ class StudyControllerTest {
 <summary>StudyControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

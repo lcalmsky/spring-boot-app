@@ -37,11 +37,11 @@ public class SettingsController {
 <summary>SettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -110,9 +110,9 @@ public class Profile {
 <summary>Profile.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -156,11 +156,11 @@ public class Profile {
 먼저 전체 코드를 확인해보겠습니다.
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -273,8 +273,8 @@ public @interface WithAccount {
 ```java
 package io.lcalmsky.app;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -323,11 +323,11 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
 ### 정상 케이스
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -379,11 +379,11 @@ class SettingsControllerTest {
 ### 비정상 케이스(입력값)
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -438,10 +438,10 @@ class SettingsControllerTest {
 ### 프로필 조회
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

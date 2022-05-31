@@ -435,7 +435,7 @@ found 0 vulnerabilities
 security 설정에서 해당 경로를 접근할 수 있게 수정해줘야하기 때문인데요, 아래 처럼 수정해줍니다.
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

@@ -31,10 +31,11 @@
 `/src/main/java/io/lcalmsky/app/event/domain/entity/Event.java`
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
@@ -46,6 +47,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -58,41 +60,41 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(of = "id")
 public class Event {
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  @ManyToOne
-  private Study study;
+    @ManyToOne
+    private Study study;
 
-  @ManyToOne
-  private Account createdBy;
+    @ManyToOne
+    private Account createdBy;
 
-  @Column(nullable = false)
-  private String title;
+    @Column(nullable = false)
+    private String title;
 
-  @Lob
-  private String description;
+    @Lob
+    private String description;
 
-  @Column(nullable = false)
-  private LocalDateTime createdDateTime;
+    @Column(nullable = false)
+    private LocalDateTime createdDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime endEnrollmentDateTime;
+    @Column(nullable = false)
+    private LocalDateTime endEnrollmentDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime startDateTime;
+    @Column(nullable = false)
+    private LocalDateTime startDateTime;
 
-  @Column(nullable = false)
-  private LocalDateTime endDateTime;
+    @Column(nullable = false)
+    private LocalDateTime endDateTime;
 
-  private Integer limitOfEnrollments;
+    private Integer limitOfEnrollments;
 
-  @OneToMany(mappedBy = "event")
-  private List<Enrollment> enrollments;
+    @OneToMany(mappedBy = "event")
+    private List<Enrollment> enrollments;
 
-  @Enumerated(EnumType.STRING)
-  private EventType eventType;
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
 
 }
 ```
@@ -102,14 +104,16 @@ public class Event {
 `/src/main/java/io/lcalmsky/app/event/domain/entity/Enrollment.java`
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -123,21 +127,21 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "id")
 public class Enrollment {
 
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  @ManyToOne
-  private Event event;
+    @ManyToOne
+    private Event event;
 
-  @ManyToOne
-  private Account account;
+    @ManyToOne
+    private Account account;
 
-  private LocalDateTime enrolledAt;
+    private LocalDateTime enrolledAt;
 
-  private boolean accepted;
+    private boolean accepted;
 
-  private boolean attend;
+    private boolean attend;
 }
 ```
 

@@ -29,9 +29,9 @@
 `/src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -427,7 +427,7 @@ public class Profile {
 // 생략
 public class Account extends AuditingEntity {
     // 생략
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }

@@ -65,14 +65,14 @@ public class StudySettingsController {
 <summary>StudySettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -189,13 +189,13 @@ public class StudyService {
 <summary>StudyService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.application;
+package io.lcalmsky.app.modules.study.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -287,14 +287,14 @@ public class Study {
 <summary>Study.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -630,15 +630,15 @@ server:
 배너 이미지 수정 화면 조회, 수정, 사용 여부 변경 등을 테스트할 수 있도록 테스트 케이스들을 작성합니다.
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -681,7 +681,7 @@ class StudySettingsControllerTest {
     void afterEach() {
         studyRepository.deleteAll();
     }
-    
+
     // 생략
 
     @Test
@@ -737,15 +737,15 @@ class StudySettingsControllerTest {
 <summary>StudySettingsControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

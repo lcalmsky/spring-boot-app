@@ -63,18 +63,18 @@ public class EventController {
 <summary>EventController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.event.validator.EventValidator;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.event.validator.EventValidator;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -92,119 +92,119 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventController {
 
-    private final StudyService studyService;
-    private final EventService eventService;
-    private final EventRepository eventRepository;
-    private final StudyRepository studyRepository;
-    private final EventValidator eventValidator;
+  private final StudyService studyService;
+  private final EventService eventService;
+  private final EventRepository eventRepository;
+  private final StudyRepository studyRepository;
+  private final EventValidator eventValidator;
 
-    @InitBinder("eventForm")
-    public void initBinder(WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(eventValidator);
-    }
+  @InitBinder("eventForm")
+  public void initBinder(WebDataBinder webDataBinder) {
+    webDataBinder.addValidators(eventValidator);
+  }
 
-    @GetMapping("/new-event")
-    public String newEventForm(@CurrentUser Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudyToUpdateStatus(account, path);
-        model.addAttribute(study);
-        model.addAttribute(account);
-        model.addAttribute(new EventForm());
-        return "event/form";
-    }
+  @GetMapping("/new-event")
+  public String newEventForm(@CurrentUser Account account, @PathVariable String path, Model model) {
+    Study study = studyService.getStudyToUpdateStatus(account, path);
+    model.addAttribute(study);
+    model.addAttribute(account);
+    model.addAttribute(new EventForm());
+    return "event/form";
+  }
 
-    @PostMapping("/new-event")
-    public String createNewEvent(@CurrentUser Account account, @PathVariable String path, @Valid EventForm eventForm, Errors errors, Model model) {
-        Study study = studyService.getStudyToUpdateStatus(account, path);
-        if (errors.hasErrors()) {
-            model.addAttribute(account);
-            model.addAttribute(study);
-            return "event/form";
-        }
-        Event event = eventService.createEvent(study, eventForm, account);
-        return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
+  @PostMapping("/new-event")
+  public String createNewEvent(@CurrentUser Account account, @PathVariable String path, @Valid EventForm eventForm, Errors errors, Model model) {
+    Study study = studyService.getStudyToUpdateStatus(account, path);
+    if (errors.hasErrors()) {
+      model.addAttribute(account);
+      model.addAttribute(study);
+      return "event/form";
     }
+    Event event = eventService.createEvent(study, eventForm, account);
+    return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
+  }
 
-    @GetMapping("/events/{id}")
-    public String getEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
-        model.addAttribute(account);
-        model.addAttribute(eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 모임은 존재하지 않습니다.")));
-        model.addAttribute(studyRepository.findStudyWithManagersByPath(path));
-        return "event/view";
-    }
+  @GetMapping("/events/{id}")
+  public String getEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
+    model.addAttribute(account);
+    model.addAttribute(eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 모임은 존재하지 않습니다.")));
+    model.addAttribute(studyRepository.findStudyWithManagersByPath(path));
+    return "event/view";
+  }
 
-    @GetMapping("/events")
-    public String viewStudyEvents(@CurrentUser Account account, @PathVariable String path, Model model) {
-        Study study = studyService.getStudy(path);
-        model.addAttribute(account);
-        model.addAttribute(study);
-        List<Event> events = eventRepository.findByStudyOrderByStartDateTime(study);
-        List<Event> newEvents = new ArrayList<>();
-        List<Event> oldEvents = new ArrayList<>();
-        for (Event event : events) {
-            if (event.getEndDateTime().isBefore(LocalDateTime.now())) {
-                oldEvents.add(event);
-            } else {
-                newEvents.add(event);
-            }
-        }
-        model.addAttribute("newEvents", newEvents);
-        model.addAttribute("oldEvents", oldEvents);
-        return "study/events";
+  @GetMapping("/events")
+  public String viewStudyEvents(@CurrentUser Account account, @PathVariable String path, Model model) {
+    Study study = studyService.getStudy(path);
+    model.addAttribute(account);
+    model.addAttribute(study);
+    List<Event> events = eventRepository.findByStudyOrderByStartDateTime(study);
+    List<Event> newEvents = new ArrayList<>();
+    List<Event> oldEvents = new ArrayList<>();
+    for (Event event : events) {
+      if (event.getEndDateTime().isBefore(LocalDateTime.now())) {
+        oldEvents.add(event);
+      } else {
+        newEvents.add(event);
+      }
     }
+    model.addAttribute("newEvents", newEvents);
+    model.addAttribute("oldEvents", oldEvents);
+    return "study/events";
+  }
 
-    @GetMapping("/events/{id}/edit")
-    public String updateEventForm(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
-        model.addAttribute(study);
-        model.addAttribute(account);
-        model.addAttribute(event);
-        model.addAttribute(EventForm.from(event));
-        return "event/update-form";
-    }
+  @GetMapping("/events/{id}/edit")
+  public String updateEventForm(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, Model model) {
+    Study study = studyService.getStudyToUpdate(account, path);
+    Event event = eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
+    model.addAttribute(study);
+    model.addAttribute(account);
+    model.addAttribute(event);
+    model.addAttribute(EventForm.from(event));
+    return "event/update-form";
+  }
 
-    @PostMapping("/events/{id}/edit")
-    public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, @Valid EventForm eventForm, Errors errors, Model model) {
-        Study study = studyService.getStudyToUpdate(account, path);
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
-        eventForm.setEventType(event.getEventType());
-        eventValidator.validateUpdateForm(eventForm, event, errors);
-        if (errors.hasErrors()) {
-            model.addAttribute(account);
-            model.addAttribute(study);
-            model.addAttribute(event);
-            return "event/update-form";
-        }
-        eventService.updateEvent(event, eventForm);
-        return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
+  @PostMapping("/events/{id}/edit")
+  public String updateEventSubmit(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id, @Valid EventForm eventForm, Errors errors, Model model) {
+    Study study = studyService.getStudyToUpdate(account, path);
+    Event event = eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다."));
+    eventForm.setEventType(event.getEventType());
+    eventValidator.validateUpdateForm(eventForm, event, errors);
+    if (errors.hasErrors()) {
+      model.addAttribute(account);
+      model.addAttribute(study);
+      model.addAttribute(event);
+      return "event/update-form";
     }
+    eventService.updateEvent(event, eventForm);
+    return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
+  }
 
-    @DeleteMapping("/events/{id}")
-    public String deleteEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
-        Study study = studyService.getStudyToUpdateStatus(account, path);
-        eventService.deleteEvent(eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")));
-        return "redirect:/study/" + study.getEncodedPath() + "/events";
-    }
+  @DeleteMapping("/events/{id}")
+  public String deleteEvent(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+    Study study = studyService.getStudyToUpdateStatus(account, path);
+    eventService.deleteEvent(eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")));
+    return "redirect:/study/" + study.getEncodedPath() + "/events";
+  }
 
-    @PostMapping("/events/{id}/enroll")
-    public String enroll(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
-        Study study = studyService.getStudyToEnroll(path);
-        eventService.enroll(eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
-        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
-    }
+  @PostMapping("/events/{id}/enroll")
+  public String enroll(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+    Study study = studyService.getStudyToEnroll(path);
+    eventService.enroll(eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
+    return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+  }
 
-    @PostMapping("/events/{id}/leave")
-    public String leave(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
-        Study study = studyService.getStudyToEnroll(path);
-        eventService.leave(eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
-        return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
-    }
+  @PostMapping("/events/{id}/leave")
+  public String leave(@CurrentUser Account account, @PathVariable String path, @PathVariable Long id) {
+    Study study = studyService.getStudyToEnroll(path);
+    eventService.leave(eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("모임이 존재하지 않습니다.")), account);
+    return "redirect:/study/" + study.getEncodedPath() + "/events/" + id;
+  }
 }
 ```
 
@@ -264,15 +264,15 @@ public class EventService {
 <summary>EventService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.application;
+package io.lcalmsky.app.modules.event.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.domain.entity.Enrollment;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EnrollmentRepository;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.domain.entity.Enrollment;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EnrollmentRepository;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -284,37 +284,37 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class EventService {
 
-    private final EventRepository eventRepository;
-    private final EnrollmentRepository enrollmentRepository;
+  private final EventRepository eventRepository;
+  private final EnrollmentRepository enrollmentRepository;
 
-    public Event createEvent(Study study, EventForm eventForm, Account account) {
-        Event event = Event.from(eventForm, account, study);
-        return eventRepository.save(event);
-    }
+  public Event createEvent(Study study, EventForm eventForm, Account account) {
+    Event event = Event.from(eventForm, account, study);
+    return eventRepository.save(event);
+  }
 
-    public void updateEvent(Event event, EventForm eventForm) {
-        event.updateFrom(eventForm);
-        event.acceptWaitingList();
-    }
+  public void updateEvent(Event event, EventForm eventForm) {
+    event.updateFrom(eventForm);
+    event.acceptWaitingList();
+  }
 
-    public void deleteEvent(Event event) {
-        eventRepository.delete(event);
-    }
+  public void deleteEvent(Event event) {
+    eventRepository.delete(event);
+  }
 
-    public void enroll(Event event, Account account) {
-        if (!enrollmentRepository.existsByEventAndAccount(event, account)) {
-            Enrollment enrollment = Enrollment.of(LocalDateTime.now(), event.isAbleToAcceptWaitingEnrollment(), account);
-            event.addEnrollment(enrollment);
-            enrollmentRepository.save(enrollment);
-        }
+  public void enroll(Event event, Account account) {
+    if (!enrollmentRepository.existsByEventAndAccount(event, account)) {
+      Enrollment enrollment = Enrollment.of(LocalDateTime.now(), event.isAbleToAcceptWaitingEnrollment(), account);
+      event.addEnrollment(enrollment);
+      enrollmentRepository.save(enrollment);
     }
+  }
 
-    public void leave(Event event, Account account) {
-        Enrollment enrollment = enrollmentRepository.findByEventAndAccount(event, account);
-        event.removeEnrollment(enrollment);
-        enrollmentRepository.delete(enrollment);
-        event.acceptNextIfAvailable();
-    }
+  public void leave(Event event, Account account) {
+    Enrollment enrollment = enrollmentRepository.findByEventAndAccount(event, account);
+    event.removeEnrollment(enrollment);
+    enrollmentRepository.delete(enrollment);
+    event.acceptNextIfAvailable();
+  }
 }
 
 ```
@@ -388,12 +388,12 @@ public class Event {
 <summary>Event.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -414,147 +414,147 @@ import java.util.stream.Collectors;
 @Getter
 @ToString
 public class Event {
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    @ManyToOne
-    private Study study;
+  @ManyToOne
+  private Study study;
 
-    @ManyToOne
-    private Account createdBy;
+  @ManyToOne
+  private Account createdBy;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String title;
 
-    @Lob
-    private String description;
+  @Lob
+  private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime createdDateTime;
+  @Column(nullable = false)
+  private LocalDateTime createdDateTime;
 
-    @Column(nullable = false)
-    private LocalDateTime endEnrollmentDateTime;
+  @Column(nullable = false)
+  private LocalDateTime endEnrollmentDateTime;
 
-    @Column(nullable = false)
-    private LocalDateTime startDateTime;
+  @Column(nullable = false)
+  private LocalDateTime startDateTime;
 
-    @Column(nullable = false)
-    private LocalDateTime endDateTime;
+  @Column(nullable = false)
+  private LocalDateTime endDateTime;
 
-    private Integer limitOfEnrollments;
+  private Integer limitOfEnrollments;
 
-    @OneToMany(mappedBy = "event") @ToString.Exclude
-    private List<Enrollment> enrollments;
+  @OneToMany(mappedBy = "event") @ToString.Exclude
+  private List<Enrollment> enrollments;
 
-    @Enumerated(EnumType.STRING)
-    private EventType eventType;
+  @Enumerated(EnumType.STRING)
+  private EventType eventType;
 
-    public static Event from(EventForm eventForm, Account account, Study study) {
-        Event event = new Event();
-        event.eventType = eventForm.getEventType();
-        event.description = eventForm.getDescription();
-        event.endDateTime = eventForm.getEndDateTime();
-        event.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
-        event.limitOfEnrollments = eventForm.getLimitOfEnrollments();
-        event.startDateTime = eventForm.getStartDateTime();
-        event.title = eventForm.getTitle();
-        event.createdBy = account;
-        event.study = study;
-        event.createdDateTime = LocalDateTime.now();
-        return event;
+  public static Event from(EventForm eventForm, Account account, Study study) {
+    Event event = new Event();
+    event.eventType = eventForm.getEventType();
+    event.description = eventForm.getDescription();
+    event.endDateTime = eventForm.getEndDateTime();
+    event.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+    event.limitOfEnrollments = eventForm.getLimitOfEnrollments();
+    event.startDateTime = eventForm.getStartDateTime();
+    event.title = eventForm.getTitle();
+    event.createdBy = account;
+    event.study = study;
+    event.createdDateTime = LocalDateTime.now();
+    return event;
+  }
+
+  public boolean isEnrollableFor(UserAccount userAccount) {
+    return isNotClosed() && !isAlreadyEnrolled(userAccount);
+  }
+
+  public boolean isDisenrollableFor(UserAccount userAccount) {
+    return isNotClosed() && isAlreadyEnrolled(userAccount);
+  }
+
+  private boolean isNotClosed() {
+    return this.endEnrollmentDateTime.isAfter(LocalDateTime.now());
+  }
+
+  private boolean isAlreadyEnrolled(UserAccount userAccount) {
+    Account account = userAccount.getAccount();
+    for (Enrollment enrollment : this.enrollments) {
+      if (enrollment.getAccount().equals(account)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public boolean isEnrollableFor(UserAccount userAccount) {
-        return isNotClosed() && !isAlreadyEnrolled(userAccount);
+  public boolean isAttended(UserAccount userAccount) {
+    Account account = userAccount.getAccount();
+    for (Enrollment enrollment : this.enrollments) {
+      if (enrollment.getAccount().equals(account) && enrollment.isAttended()) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public boolean isDisenrollableFor(UserAccount userAccount) {
-        return isNotClosed() && isAlreadyEnrolled(userAccount);
-    }
+  public int numberOfRemainSpots() {
+    int accepted = (int) this.enrollments.stream()
+            .filter(Enrollment::isAccepted)
+            .count();
+    return this.limitOfEnrollments - accepted;
+  }
 
-    private boolean isNotClosed() {
-        return this.endEnrollmentDateTime.isAfter(LocalDateTime.now());
-    }
+  public Long getNumberOfAcceptedEnrollments() {
+    return this.enrollments.stream()
+            .filter(Enrollment::isAccepted)
+            .count();
+  }
 
-    private boolean isAlreadyEnrolled(UserAccount userAccount) {
-        Account account = userAccount.getAccount();
-        for (Enrollment enrollment : this.enrollments) {
-            if (enrollment.getAccount().equals(account)) {
-                return true;
-            }
-        }
-        return false;
-    }
+  public void updateFrom(EventForm eventForm) {
+    this.title = eventForm.getTitle();
+    this.description = eventForm.getDescription();
+    this.eventType = eventForm.getEventType();
+    this.startDateTime = eventForm.getStartDateTime();
+    this.endDateTime = eventForm.getEndDateTime();
+    this.limitOfEnrollments = eventForm.getLimitOfEnrollments();
+    this.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+  }
 
-    public boolean isAttended(UserAccount userAccount) {
-        Account account = userAccount.getAccount();
-        for (Enrollment enrollment : this.enrollments) {
-            if (enrollment.getAccount().equals(account) && enrollment.isAttended()) {
-                return true;
-            }
-        }
-        return false;
-    }
+  public boolean isAbleToAcceptWaitingEnrollment() {
+    return this.eventType == EventType.FCFS && this.limitOfEnrollments > this.getNumberOfAcceptedEnrollments();
+  }
 
-    public int numberOfRemainSpots() {
-        int accepted = (int) this.enrollments.stream()
-                .filter(Enrollment::isAccepted)
-                .count();
-        return this.limitOfEnrollments - accepted;
-    }
+  public void addEnrollment(Enrollment enrollment) {
+    this.enrollments.add(enrollment);
+    enrollment.attach(this);
+  }
 
-    public Long getNumberOfAcceptedEnrollments() {
-        return this.enrollments.stream()
-                .filter(Enrollment::isAccepted)
-                .count();
-    }
+  public void removeEnrollment(Enrollment enrollment) {
+    this.enrollments.remove(enrollment);
+    enrollment.detachEvent();
+  }
 
-    public void updateFrom(EventForm eventForm) {
-        this.title = eventForm.getTitle();
-        this.description = eventForm.getDescription();
-        this.eventType = eventForm.getEventType();
-        this.startDateTime = eventForm.getStartDateTime();
-        this.endDateTime = eventForm.getEndDateTime();
-        this.limitOfEnrollments = eventForm.getLimitOfEnrollments();
-        this.endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+  public void acceptNextIfAvailable() {
+    if (this.isAbleToAcceptWaitingEnrollment()) {
+      this.firstWaitingEnrollment().ifPresent(Enrollment::accept);
     }
+  }
 
-    public boolean isAbleToAcceptWaitingEnrollment() {
-        return this.eventType == EventType.FCFS && this.limitOfEnrollments > this.getNumberOfAcceptedEnrollments();
-    }
+  private Optional<Enrollment> firstWaitingEnrollment() {
+    return this.enrollments.stream()
+            .filter(e -> !e.isAccepted())
+            .findFirst();
+  }
 
-    public void addEnrollment(Enrollment enrollment) {
-        this.enrollments.add(enrollment);
-        enrollment.attach(this);
+  public void acceptWaitingList() {
+    if (this.isAbleToAcceptWaitingEnrollment()) {
+      List<Enrollment> waitingList = this.enrollments.stream()
+              .filter(e -> !e.isAccepted())
+              .collect(Collectors.toList());
+      int numberToAccept = (int) Math.min(limitOfEnrollments - getNumberOfAcceptedEnrollments(), waitingList.size());
+      waitingList.subList(0, numberToAccept).forEach(Enrollment::accept);
     }
-
-    public void removeEnrollment(Enrollment enrollment) {
-        this.enrollments.remove(enrollment);
-        enrollment.detachEvent();
-    }
-
-    public void acceptNextIfAvailable() {
-        if (this.isAbleToAcceptWaitingEnrollment()) {
-            this.firstWaitingEnrollment().ifPresent(Enrollment::accept);
-        }
-    }
-
-    private Optional<Enrollment> firstWaitingEnrollment() {
-        return this.enrollments.stream()
-                .filter(e -> !e.isAccepted())
-                .findFirst();
-    }
-
-    public void acceptWaitingList() {
-        if (this.isAbleToAcceptWaitingEnrollment()) {
-            List<Enrollment> waitingList = this.enrollments.stream()
-                    .filter(e -> !e.isAccepted())
-                    .collect(Collectors.toList());
-            int numberToAccept = (int) Math.min(limitOfEnrollments - getNumberOfAcceptedEnrollments(), waitingList.size());
-            waitingList.subList(0, numberToAccept).forEach(Enrollment::accept);
-        }
-    }
+  }
 }
 ```
 
@@ -600,9 +600,9 @@ public class Enrollment {
 <summary>Enrollment.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -620,42 +620,42 @@ import java.time.LocalDateTime;
 @ToString
 public class Enrollment {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    @ManyToOne
-    private Event event;
+  @ManyToOne
+  private Event event;
 
-    @ManyToOne
-    private Account account;
+  @ManyToOne
+  private Account account;
 
-    private LocalDateTime enrolledAt;
+  private LocalDateTime enrolledAt;
 
-    private boolean accepted;
+  private boolean accepted;
 
-    private boolean attended;
+  private boolean attended;
 
 
-    public static Enrollment of(LocalDateTime enrolledAt, boolean isAbleToAcceptWaitingEnrollment, Account account) {
-        Enrollment enrollment = new Enrollment();
-        enrollment.enrolledAt = enrolledAt;
-        enrollment.accepted = isAbleToAcceptWaitingEnrollment;
-        enrollment.account = account;
-        return enrollment;
-    }
+  public static Enrollment of(LocalDateTime enrolledAt, boolean isAbleToAcceptWaitingEnrollment, Account account) {
+    Enrollment enrollment = new Enrollment();
+    enrollment.enrolledAt = enrolledAt;
+    enrollment.accepted = isAbleToAcceptWaitingEnrollment;
+    enrollment.account = account;
+    return enrollment;
+  }
 
-    public void accept() {
-        this.accepted = true;
-    }
+  public void accept() {
+    this.accepted = true;
+  }
 
-    public void attach(Event event) {
-        this.event = event;
-    }
+  public void attach(Event event) {
+    this.event = event;
+  }
 
-    public void detachEvent() {
-        this.event = null;
-    }
+  public void detachEvent() {
+    this.event = null;
+  }
 }
 
 ```
@@ -669,17 +669,17 @@ public class Enrollment {
 `/src/main/java/io/lcalmsky/app/event/infra/repository/EnrollmentRepository.java`
 
 ```java
-package io.lcalmsky.app.event.infra.repository;
+package io.lcalmsky.app.modules.event.infra.repository;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.domain.entity.Enrollment;
-import io.lcalmsky.app.event.domain.entity.Event;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.domain.entity.Enrollment;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    boolean existsByEventAndAccount(Event event, Account account);
+  boolean existsByEventAndAccount(Event event, Account account);
 
-    Enrollment findByEventAndAccount(Event event, Account account);
+  Enrollment findByEventAndAccount(Event event, Account account);
 }
 ```
 
@@ -702,9 +702,9 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 <summary>StudyRepository.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.infra.repository;
+package io.lcalmsky.app.modules.study.infra.repository;
 
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -713,24 +713,24 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface StudyRepository extends JpaRepository<Study, Long> {
-    boolean existsByPath(String path);
+  boolean existsByPath(String path);
 
-    @EntityGraph(value = "Study.withAll", type = EntityGraph.EntityGraphType.LOAD)
-    Study findByPath(String path);
+  @EntityGraph(value = "Study.withAll", type = EntityGraph.EntityGraphType.LOAD)
+  Study findByPath(String path);
 
-    @EntityGraph(value = "Study.withTagsAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithTagsByPath(String path);
+  @EntityGraph(value = "Study.withTagsAndManagers", type = EntityGraph.EntityGraphType.FETCH)
+  Study findStudyWithTagsByPath(String path);
 
-    @EntityGraph(value = "Study.withZonesAndManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithZonesByPath(String path);
+  @EntityGraph(value = "Study.withZonesAndManagers", type = EntityGraph.EntityGraphType.FETCH)
+  Study findStudyWithZonesByPath(String path);
 
-    @EntityGraph(value = "Study.withManagers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithManagersByPath(String path);
+  @EntityGraph(value = "Study.withManagers", type = EntityGraph.EntityGraphType.FETCH)
+  Study findStudyWithManagersByPath(String path);
 
-    @EntityGraph(value = "Study.withMembers", type = EntityGraph.EntityGraphType.FETCH)
-    Study findStudyWithMembersByPath(String path);
+  @EntityGraph(value = "Study.withMembers", type = EntityGraph.EntityGraphType.FETCH)
+  Study findStudyWithMembersByPath(String path);
 
-    Optional<Study> findStudyOnlyByPath(String path);
+  Optional<Study> findStudyOnlyByPath(String path);
 }
 ```
 
@@ -776,18 +776,18 @@ public class StudyService {
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments.html :: head"></head>
 <body>
-    <nav th:replace="fragments.html :: navigation-bar"></nav>
-    <div th:replace="fragments.html :: study-banner"></div>
-    <div class="container">
-        <div class="row py-4 text-left justify-content-center bg-light">
-            <div class="col-6">
+  <nav th:replace="fragments.html :: navigation-bar"></nav>
+  <div th:replace="fragments.html :: study-banner"></div>
+  <div class="container">
+    <div class="row py-4 text-left justify-content-center bg-light">
+      <div class="col-6">
                 <span class="h2">
                 <a href="#" class="text-decoration-none" th:href="@{'/study/' + ${study.path}}">
                     <span th:text="${study.title}">스터디 이름</span>
                 </a> / </span>
-                <span class="h2" th:text="${event.title}"></span>
-            </div>
-            <div class="col-4 text-end justify-content-end">
+        <span class="h2" th:text="${event.title}"></span>
+      </div>
+      <div class="col-4 text-end justify-content-end">
                 <span sec:authorize="isAuthenticated()">
                     <button th:if="${event.isEnrollableFor(#authentication.principal)}"
                             class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#enroll">
@@ -801,186 +801,191 @@ public class StudyService {
                         <i class="fa fa-check-circle"></i> 참석 완료
                     </span>
                 </span>
+      </div>
+      <div class="modal fade" id="leave" tabindex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="leaveTitle" th:text="${event.title}"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              </button>
             </div>
-            <div class="modal fade" id="leave" tabindex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="leaveTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>모임 참가 신청을 취소하시겠습니까?</p>
-                            <p><strong>확인</strong>하시면 본 참가 신청을 취소하고 다른 대기자에게 참석 기회를 줍니다.</p>
-                            <p>감사합니다.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/leave'}" method="post">
-                                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body">
+              <p>모임 참가 신청을 취소하시겠습니까?</p>
+              <p><strong>확인</strong>하시면 본 참가 신청을 취소하고 다른 대기자에게 참석 기회를 줍니다.</p>
+              <p>감사합니다.</p>
             </div>
-            <div class="modal fade" id="enroll" tabindex="-1" role="dialog" aria-labelledby="enrollmentTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="enrollmentTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>모임에 참석하시겠습니까? 일정을 캘린더에 등록해 두시면 좋습니다.</p>
-                            <p><strong>확인</strong> 버튼을 클릭하면 모임 참가 신청을 합니다.</p>
-                            <p>감사합니다.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enroll'}" method="post">
-                                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/leave'}" method="post">
+                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
+              </form>
             </div>
+          </div>
         </div>
-        <div class="row px-3 justify-content-center">
-            <div class="col-7 pt-3">
-                <dt class="font-weight-light">상세 모임 설명</dt>
-                <dd th:utext="${event.description}"></dd>
-
-                <dt class="font-weight-light">모임 참가 신청 (<span th:text="${event.enrollments.size()}"></span>)</dt>
-                <dd>
-                    <table class="table table-borderless table-sm" th:if="${event.enrollments.size() > 0}">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">참석자</th>
-                            <th scope="col">참가 신청 일시</th>
-                            <th scope="col">참가 상태</th>
-                            <th th:if="${study.isManager(#authentication.principal)}" scope="col">
-                                참가 신청 관리
-                            </th>
-                            <th th:if="${study.isManager(#authentication.principal)}" scope="col">
-                                출석 체크
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="enroll: ${event.enrollments}">
-                            <th scope="row" th:text="${enrollStat.count}"></th>
-                            <td>
-                                <a th:href="@{'/profile/' + ${enroll.account.nickname}}"
-                                   class="text-decoration-none">
-                                    <svg th:if="${#strings.isEmpty(enroll.account?.profile?.image)}" data-jdenticon-value="nickname"
-                                         th:data-jdenticon-value="${enroll.account.nickname}" width="24" height="24" class="rounded border bg-light"></svg>
-                                    <img th:if="${!#strings.isEmpty(enroll.account?.profile?.image)}"
-                                         th:src="${enroll.account?.profile?.image}" width="24" height="24" class="rounded border"/>
-                                    <span th:text="${enroll.account.nickname}"></span>
-                                </a>
-                            </td>
-                            <td>
-                                <span class="date-time" th:text="${enroll.enrolledAt}"></span>
-                            </td>
-                            <td>
-                                <span th:if="${enroll.accepted}">확정</span>
-                                <span th:if="${!enroll.accepted}">대기중</span>
-                            </td>
-                            <td th:if="${study.isManager(#authentication.principal)}">
-                                <a th:if="${event.isAcceptable(enroll)}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/accept'}" >신청 수락</a>
-                                <a th:if="${event.isRejectable(enroll)}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/reject'}">취소</a>
-                            </td>
-                            <td th:if="${study.isManager(#authentication.principal)}">
-                                <a th:if="${enroll.accepted && !enroll.attended}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/checkin'}">체크인</a>
-                                <a th:if="${enroll.accepted && enroll.attended}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/cancel-checkin'}">체크인 취소</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </dd>
+      </div>
+      <div class="modal fade" id="enroll" tabindex="-1" role="dialog" aria-labelledby="enrollmentTitle"
+           aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="enrollmentTitle" th:text="${event.title}"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              </button>
             </div>
-            <dl class="col-3 pt-3 text-right">
-                <dt class="font-weight-light">모집 방법</dt>
-                <dd>
-                    <span th:if="${event.eventType == T(io.lcalmsky.app.event.domain.entity.EventType).FCFS}">선착순</span>
-                    <span th:if="${event.eventType == T(io.lcalmsky.app.event.domain.entity.EventType).CONFIRMATIVE}">관리자 확인</span>
-                </dd>
-
-                <dt class="font-weight-light">모집 인원</dt>
-                <dd>
-                    <span th:text="${event.limitOfEnrollments}"></span>명
-                </dd>
-
-                <dt class="font-weight-light">참가 신청 마감 일시</dt>
-                <dd>
-                    <span class="date" th:text="${event.endEnrollmentDateTime}"></span>
-                    <span class="weekday" th:text="${event.endEnrollmentDateTime}"></span><br/>
-                    <span class="time" th:text="${event.endEnrollmentDateTime}"></span>
-                </dd>
-
-                <dt class="font-weight-light">모임 일시</dt>
-                <dd>
-                    <span class="date" th:text="${event.startDateTime}"></span>
-                    <span class="weekday" th:text="${event.startDateTime}"></span><br/>
-                    <span class="time" th:text="${event.startDateTime}"></span> -
-                    <span class="time" th:text="${event.endDateTime}"></span>
-                </dd>
-
-                <dt class="font-weight-light">모임장</dt>
-                <dd>
-                    <a th:href="@{'/profile/' + ${event.createdBy?.nickname}}" class="text-decoration-none">
-                        <svg th:if="${#strings.isEmpty(event.createdBy?.profile?.image)}"
-                             th:data-jdenticon-value="${event.createdBy?.nickname}" width="24" height="24" class="rounded border bg-light"></svg>
-                        <img th:if="${!#strings.isEmpty(event.createdBy?.profile?.image)}"
-                             th:src="${event.createdBy?.profile?.image}" width="24" height="24" class="rounded border"/>
-                        <span th:text="${event.createdBy?.nickname}"></span>
-                    </a>
-                </dd>
-
-                <dt th:if="${study.isManager(#authentication.principal)}" class="font-weight-light">모임 관리</dt>
-                <dd th:if="${study.isManager(#authentication.principal)}">
-                    <a class="btn btn-outline-primary btn-sm my-1"
-                       th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}" >
-                        모임 수정
-                    </a> <br/>
-                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel">
-                        모임 취소
-                    </button>
-                </dd>
-            </dl>
-            <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="cancelTitle" th:text="${event.title}"></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>모임을 취소 하시겠습니까?</p>
-                            <p><strong>확인</strong>하시면 본 모임 및 참가 신청 관련 데이터를 삭제합니다.</p>
-                            <p>감사합니다.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}" th:method="delete">
-                                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body">
+              <p>모임에 참석하시겠습니까? 일정을 캘린더에 등록해 두시면 좋습니다.</p>
+              <p><strong>확인</strong> 버튼을 클릭하면 모임 참가 신청을 합니다.</p>
+              <p>감사합니다.</p>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enroll'}" method="post">
+                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div th:replace="fragments.html :: footer"></div>
+      </div>
     </div>
-    <script th:replace="fragments.html :: date-time"></script>
+    <div class="row px-3 justify-content-center">
+      <div class="col-7 pt-3">
+        <dt class="font-weight-light">상세 모임 설명</dt>
+        <dd th:utext="${event.description}"></dd>
+
+        <dt class="font-weight-light">모임 참가 신청 (<span th:text="${event.enrollments.size()}"></span>)</dt>
+        <dd>
+          <table class="table table-borderless table-sm" th:if="${event.enrollments.size() > 0}">
+            <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">참석자</th>
+              <th scope="col">참가 신청 일시</th>
+              <th scope="col">참가 상태</th>
+              <th th:if="${study.isManager(#authentication.principal)}" scope="col">
+                참가 신청 관리
+              </th>
+              <th th:if="${study.isManager(#authentication.principal)}" scope="col">
+                출석 체크
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="enroll: ${event.enrollments}">
+              <th scope="row" th:text="${enrollStat.count}"></th>
+              <td>
+                <a th:href="@{'/profile/' + ${enroll.account.nickname}}"
+                   class="text-decoration-none">
+                  <svg th:if="${#strings.isEmpty(enroll.account?.profile?.image)}" data-jdenticon-value="nickname"
+                       th:data-jdenticon-value="${enroll.account.nickname}" width="24" height="24"
+                       class="rounded border bg-light"></svg>
+                  <img th:if="${!#strings.isEmpty(enroll.account?.profile?.image)}"
+                       th:src="${enroll.account?.profile?.image}" width="24" height="24" class="rounded border"/>
+                  <span th:text="${enroll.account.nickname}"></span>
+                </a>
+              </td>
+              <td>
+                <span class="date-time" th:text="${enroll.enrolledAt}"></span>
+              </td>
+              <td>
+                <span th:if="${enroll.accepted}">확정</span>
+                <span th:if="${!enroll.accepted}">대기중</span>
+              </td>
+              <td th:if="${study.isManager(#authentication.principal)}">
+                <a th:if="${event.isAcceptable(enroll)}" href="#" class="text-decoration-none"
+                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/accept'}">신청
+                  수락</a>
+                <a th:if="${event.isRejectable(enroll)}" href="#" class="text-decoration-none"
+                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/reject'}">취소</a>
+              </td>
+              <td th:if="${study.isManager(#authentication.principal)}">
+                <a th:if="${enroll.accepted && !enroll.attended}" href="#" class="text-decoration-none"
+                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/checkin'}">체크인</a>
+                <a th:if="${enroll.accepted && enroll.attended}" href="#" class="text-decoration-none"
+                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/cancel-checkin'}">체크인
+                  취소</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </dd>
+      </div>
+      <dl class="col-3 pt-3 text-right">
+        <dt class="font-weight-light">모집 방법</dt>
+        <dd>
+          <span th:if="${event.eventType == T(io.lcalmsky.app.modules.event.domain.entity.EventType).FCFS}">선착순</span>
+          <span th:if="${event.eventType == T(io.lcalmsky.app.modules.event.domain.entity.EventType).CONFIRMATIVE}">관리자 확인</span>
+        </dd>
+
+        <dt class="font-weight-light">모집 인원</dt>
+        <dd>
+          <span th:text="${event.limitOfEnrollments}"></span>명
+        </dd>
+
+        <dt class="font-weight-light">참가 신청 마감 일시</dt>
+        <dd>
+          <span class="date" th:text="${event.endEnrollmentDateTime}"></span>
+          <span class="weekday" th:text="${event.endEnrollmentDateTime}"></span><br/>
+          <span class="time" th:text="${event.endEnrollmentDateTime}"></span>
+        </dd>
+
+        <dt class="font-weight-light">모임 일시</dt>
+        <dd>
+          <span class="date" th:text="${event.startDateTime}"></span>
+          <span class="weekday" th:text="${event.startDateTime}"></span><br/>
+          <span class="time" th:text="${event.startDateTime}"></span> -
+          <span class="time" th:text="${event.endDateTime}"></span>
+        </dd>
+
+        <dt class="font-weight-light">모임장</dt>
+        <dd>
+          <a th:href="@{'/profile/' + ${event.createdBy?.nickname}}" class="text-decoration-none">
+            <svg th:if="${#strings.isEmpty(event.createdBy?.profile?.image)}"
+                 th:data-jdenticon-value="${event.createdBy?.nickname}" width="24" height="24"
+                 class="rounded border bg-light"></svg>
+            <img th:if="${!#strings.isEmpty(event.createdBy?.profile?.image)}"
+                 th:src="${event.createdBy?.profile?.image}" width="24" height="24" class="rounded border"/>
+            <span th:text="${event.createdBy?.nickname}"></span>
+          </a>
+        </dd>
+
+        <dt th:if="${study.isManager(#authentication.principal)}" class="font-weight-light">모임 관리</dt>
+        <dd th:if="${study.isManager(#authentication.principal)}">
+          <a class="btn btn-outline-primary btn-sm my-1"
+             th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}">
+            모임 수정
+          </a> <br/>
+          <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel">
+            모임 취소
+          </button>
+        </dd>
+      </dl>
+      <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cancelTitle" th:text="${event.title}"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>모임을 취소 하시겠습니까?</p>
+              <p><strong>확인</strong>하시면 본 모임 및 참가 신청 관련 데이터를 삭제합니다.</p>
+              <p>감사합니다.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}" th:method="delete">
+                <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div th:replace="fragments.html :: footer"></div>
+  </div>
+  <script th:replace="fragments.html :: date-time"></script>
 </body>
 </html>
 ```

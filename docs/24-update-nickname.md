@@ -21,7 +21,7 @@
 `/src/main/java/io/lcalmsky/app/settings/controller/NicknameForm.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -56,10 +56,10 @@ public class NicknameForm {
 `/src/main/java/io/lcalmsky/app/settings/controller/NicknameFormValidator.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -97,7 +97,7 @@ public class NicknameFormValidator implements Validator {
 <summary>PasswordFormValidator.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -129,11 +129,11 @@ public class PasswordFormValidator implements Validator {
 `/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -198,11 +198,11 @@ public class SettingsController {
 <summary>SettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -349,14 +349,14 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.settings.controller.Profile;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -482,10 +482,10 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
-import io.lcalmsky.app.settings.controller.NotificationForm;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -549,7 +549,7 @@ public class Account extends AuditingEntity {
         }
     }
 
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }
@@ -849,11 +849,11 @@ class SettingsControllerTest {
 <summary>SettingsControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

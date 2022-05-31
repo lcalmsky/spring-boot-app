@@ -44,12 +44,12 @@ public class Event {
 <summary>Event.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -270,18 +270,18 @@ public class EventController {
 <summary>EventController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.event.validator.EventValidator;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.event.validator.EventValidator;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -424,22 +424,22 @@ public class EventController {
 계정이 여러 개 필요하므로 API를 호출하는 주 계정(jaime)을 잘 생각해서 작성해야 합니다.
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.domain.entity.EventType;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EnrollmentRepository;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.domain.entity.EventType;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EnrollmentRepository;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

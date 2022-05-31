@@ -25,13 +25,13 @@
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,13 +66,13 @@ public class AccountController {
 <summary>AccountController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -253,9 +253,9 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
 import lombok.*;
 import org.hibernate.Hibernate;
 

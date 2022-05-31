@@ -73,17 +73,17 @@ public class SettingsController {
 <summary>SettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.zone.infra.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -288,7 +288,7 @@ public class SettingsController {
 `/src/main/java/io/lcalmsky/app/settings/controller/ZoneForm.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -336,11 +336,11 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -420,7 +420,7 @@ public class Account extends AuditingEntity {
         }
     }
 
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }
@@ -538,16 +538,16 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.settings.controller.Profile;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -694,7 +694,7 @@ public class AccountService implements UserDetailsService {
 `/src/main/java/io/lcalmsky/app/account/domain/entity/Zone.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.*;
 
@@ -709,7 +709,7 @@ import javax.persistence.Id;
 @Builder
 @Getter
 public class Zone {
- 
+
     // 생략
     @Override
     public String toString() {
@@ -722,7 +722,7 @@ public class Zone {
 <summary>Zone.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.*;
 
@@ -774,9 +774,9 @@ public class Zone {
 `/src/main/java/io/lcalmsky/app/zone/infra/repository/ZoneRepository.java`
 
 ```java
-package io.lcalmsky.app.zone.infra.repository;
+package io.lcalmsky.app.modules.zone.infra.repository;
 
-import io.lcalmsky.app.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

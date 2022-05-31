@@ -50,7 +50,7 @@ Tag 클래스를 생성하고 아래처럼 작성합니다.
 `/src/main/java/io/lcalmsky/app/account/domain/entity/Tag.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -101,10 +101,10 @@ JoinTable 등의 정보를 추가로 줄 수 있지만 기본 애너테이션의
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
-import io.lcalmsky.app.settings.controller.NotificationForm;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -172,7 +172,7 @@ public class Account extends AuditingEntity {
         }
     }
 
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }

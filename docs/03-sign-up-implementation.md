@@ -34,7 +34,7 @@ dependencies {
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +55,7 @@ public class AccountController {
     }
 
     @PostMapping("/sign-up")
-    public String signUpSubmit(/* (1) */@Valid /* (2) */@ModelAttribute SignUpForm signUpForm, /* (3) */Errors errors) {
+    public String signUpSubmit(/* (1) */@Valid /* (2) */ @ModelAttribute SignUpForm signUpForm, /* (3) */Errors errors) {
         if (errors.hasErrors()) { // (4)
             return "account/sign-up";
         }
@@ -75,7 +75,7 @@ public class AccountController {
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/SignUpForm.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -83,6 +83,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+
 @Data
 public class SignUpForm {
     @NotBlank // (1)
@@ -165,10 +166,10 @@ public class SignUpForm {
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/validator/SignUpFormValidator.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller.validator;
+package io.lcalmsky.app.modules.account.endpoint.controller.validator;
 
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -210,9 +211,9 @@ public class SignUpFormValidator implements Validator { // (1)
 `src/main/java/io/lcalmsky/app/account/infra/repository/AccountRepository.java`
 
 ```java
-package io.lcalmsky.app.account.infra.repository;
+package io.lcalmsky.app.modules.account.infra.repository;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -239,9 +240,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> { // (2)
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -261,7 +262,7 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator; // (1)
 
     // 생략
-    
+
     @PostMapping("/sign-up")
     public String signUpSubmit(@Valid @ModelAttribute SignUpForm signUpForm, Errors errors) {
         if (errors.hasErrors()) {
@@ -283,9 +284,9 @@ public class AccountController {
 위에서 작성한 방식을 아래처럼 처리할 수도 있습니다.
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -310,7 +311,7 @@ public class AccountController {
     }
 
     // 생략
-    
+
     @PostMapping("/sign-up")
     public String signUpSubmit(@Valid @ModelAttribute SignUpForm signUpForm, Errors errors) {
         if (errors.hasErrors()) {
@@ -394,11 +395,11 @@ spring:
 `src/main/java/io/lcalmsky/app/account/endpoint/controller/AccountController.java`
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -479,7 +480,7 @@ public class AccountController {
 `src/main/java/io/lcalmsky/app/account/infra/email/ConsoleMailSender.java`
 
 ```java
-package io.lcalmsky.app.account.infra.email;
+package io.lcalmsky.app.modules.account.infra.email;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -541,10 +542,10 @@ public class ConsoleMailSender implements JavaMailSender { // (4)
 `src/main/java/io/lcalmsky/app/account/domain/entity/Account.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.account.domain.support.ListStringConverter;
-import io.lcalmsky.app.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;

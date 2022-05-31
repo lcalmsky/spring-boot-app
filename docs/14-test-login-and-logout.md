@@ -50,10 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 먼저 이메일로 로그인 테스트를 작성해보겠습니다.
 
 ```java
-package io.lcalmsky.app.main.endpoint.controller;
+package io.lcalmsky.app.modules.main.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,11 +144,11 @@ void login_with_nickname() throws Exception {
 최종적으로 아래 처럼 수정하였습니다.
 
 ```java
-package io.lcalmsky.app.main.endpoint.controller;
+package io.lcalmsky.app.modules.main.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -263,11 +263,11 @@ void logout() throws Exception {
 <summary>MainControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.main.endpoint.controller;
+package io.lcalmsky.app.modules.main.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -143,7 +143,7 @@ public class ConsoleMailSender implements JavaMailSender {
 <summary>ConsoleMailSender.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.infra.email;
+package io.lcalmsky.app.modules.account.infra.email;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

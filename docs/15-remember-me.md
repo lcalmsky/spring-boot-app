@@ -145,9 +145,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 <summary>SecurityConfig.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
-import io.lcalmsky.app.account.application.AccountService;
+import io.lcalmsky.app.modules.account.application.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -232,7 +232,7 @@ public class JdbcTokenRepositoryImpl extends JdbcDaoSupport implements Persisten
 `/src/main/java/io/lcalmsky/app/account/domain/entity/PersistentLogins.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.Getter;
 
@@ -258,7 +258,7 @@ public class PersistentLogins {
 
     @Column(name = "last_used", length = 64)
     private LocalDateTime lastUsed;
-    
+
 }
 ```
 
@@ -360,7 +360,7 @@ The dependencies of some of the beans in the application context form a cycle:
 `/src/main/java/io/lcalmsky/app/config/AppConfig.java`
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -382,9 +382,9 @@ public class AppConfig {
 /src/main/java/io/lcalmsky/app/config/SecurityConfig.java
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
-import io.lcalmsky.app.account.application.AccountService;
+import io.lcalmsky.app.modules.account.application.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -439,7 +439,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/node_modules/**", "/images/**")
                 .antMatchers("/h2-console/**");
     }
-    
+
     // PasswordEncoder 빈 삭제
 }
 ```

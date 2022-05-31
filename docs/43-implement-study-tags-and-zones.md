@@ -21,22 +21,22 @@
 `/src/main/java/io/lcalmsky/app/study/endpoint/StudySettingsController.java`
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.settings.controller.TagForm;
-import io.lcalmsky.app.settings.controller.ZoneForm;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.application.TagService;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.TagForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.ZoneForm;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.application.TagService;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.zone.infra.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -132,23 +132,23 @@ public class StudySettingsController {
 <summary>StudySettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.settings.controller.TagForm;
-import io.lcalmsky.app.settings.controller.ZoneForm;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.application.TagService;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.TagForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.ZoneForm;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.application.TagService;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.zone.infra.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -269,7 +269,7 @@ public class StudySettingsController {
         model.addAttribute(account);
         model.addAttribute(study);
         model.addAttribute("zones", study.getZones().stream()
-                .map(Zone::toString )
+                .map(Zone::toString)
                 .collect(Collectors.toList()));
         model.addAttribute("whitelist", objectMapper.writeValueAsString(zoneRepository.findAll().stream()
                 .map(Zone::toString)
@@ -306,10 +306,10 @@ public class StudySettingsController {
 `/src/main/java/io/lcalmsky/app/tag/application/TagService.java`
 
 ```java
-package io.lcalmsky.app.tag.application;
+package io.lcalmsky.app.modules.tag.application;
 
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -337,13 +337,13 @@ public class TagService {
 `/src/main/java/io/lcalmsky/app/study/application/StudyService.java`
 
 ```java
-package io.lcalmsky.app.study.application;
+package io.lcalmsky.app.modules.study.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -356,7 +356,7 @@ public class StudyService {
     private final StudyRepository studyRepository;
 
     // 생략
-    
+
     public Study getStudy(Account account, String path) {
         Study study = studyRepository.findByPath(path);
         checkStudyExists(path, study);
@@ -391,7 +391,7 @@ public class StudyService {
     }
 
     // 생략
-    
+
     public void addTag(Study study, Tag tag) {
         study.addTag(tag);
     }
@@ -470,15 +470,15 @@ public class StudyService {
 <summary>StudyService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.application;
+package io.lcalmsky.app.modules.study.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -570,23 +570,20 @@ public class StudyService {
 `/src/main/java/io/lcalmsky/app/study/domain/entity/Study.java`
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @NamedEntityGraph(name = "Study.withAll", attributeNodes = {
@@ -631,14 +628,14 @@ public class Study {
 <summary>Study.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -776,9 +773,9 @@ public class Study {
 `/src/main/java/io/lcalmsky/app/study/infra/repository/StudyRepository.java`
 
 ```java
-package io.lcalmsky.app.study.infra.repository;
+package io.lcalmsky.app.modules.study.infra.repository;
 
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -1151,22 +1148,22 @@ public class ZoneForm {
 `/src/test/java/io/lcalmsky/app/study/endpoint/StudySettingsControllerTest.java`
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.TagForm;
-import io.lcalmsky.app.settings.controller.ZoneForm;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.TagForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.ZoneForm;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.zone.infra.repository.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

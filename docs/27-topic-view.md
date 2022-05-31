@@ -21,7 +21,7 @@
 `/src/main/java/io/lcalmsky/app/account/domain/entity/Tag.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -113,11 +113,11 @@ public class SettingsController {
 <summary>SettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

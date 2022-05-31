@@ -46,7 +46,7 @@ public UsernamePasswordAuthenticationToken(Object principal, Object credentials,
 `account.support` 패키지 내에 `CurrentUser` 애너테이션을 작성합니다.
 
 ```java
-package io.lcalmsky.app.account.support;
+package io.lcalmsky.app.modules.account.support;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -72,10 +72,10 @@ public @interface CurrentUser {
 처리하는 도메인이 다르므로 `main`이라는 패키지를 생성한 뒤 `endpoint.controller` 패키지 하위에 `MainController` 클래스를 작성합니다.
 
 ```java
-package io.lcalmsky.app.main.endpoint.controller;
+package io.lcalmsky.app.modules.main.endpoint.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -118,9 +118,9 @@ public class MainController {
 `UserDetailsService`를 구현하고있는 `User`를 상속해야 합니다.
 
 ```java
-package io.lcalmsky.app.account.domain;
+package io.lcalmsky.app.modules.account.domain;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

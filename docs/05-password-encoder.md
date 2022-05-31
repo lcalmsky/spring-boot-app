@@ -24,7 +24,7 @@ PasswordEncoder를 빈 등록해주면 되는데 직접 사용할 알고리즘�
 `src/main/java/io/lcalmsky/app/config/SecurityConfig.java`
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 생략
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder(); // (1)
@@ -57,11 +57,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 `src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -143,9 +143,9 @@ void signUpSubmit() throws Exception {
 `src/main/java/io/lcalmsky/app/account/infra/repository/AccountRepository.java`
 
 ```java
-package io.lcalmsky.app.account.infra.repository;
+package io.lcalmsky.app.modules.account.infra.repository;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
