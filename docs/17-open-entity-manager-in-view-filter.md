@@ -120,13 +120,13 @@ public String verifyEmail(String token, String email, Model model) {
 <summary>AccountController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -217,12 +217,12 @@ public class AccountController {
 AccountService도 수정해줍니다.
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -236,7 +236,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -254,7 +253,7 @@ public class AccountService implements UserDetailsService {
         sendVerificationEmail(newAccount);
         return newAccount;
     }
-    
+
     // 생략
 
     @Override
@@ -284,12 +283,12 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -413,7 +412,7 @@ public class AccountService implements UserDetailsService {
 `/src/main/java/io/lcalmsky/app/account/domain/support/ListStringConverter.java`
 
 ```java
-package io.lcalmsky.app.account.domain.support;
+package io.lcalmsky.app.modules.account.domain.support;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

@@ -36,11 +36,11 @@
 `/src/main/java/io/lcalmsky/app/study/domain/entity/Study.java`
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

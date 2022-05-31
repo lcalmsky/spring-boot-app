@@ -21,11 +21,11 @@ Profile 폼을 통해 받은 데이터로 프로필을 수정하고 페이지를
 `/src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,13 +91,13 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.Profile;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -197,7 +197,7 @@ public class AccountService implements UserDetailsService {
 // 생략
 public class Account extends AuditingEntity {
     // 생략
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }
@@ -257,13 +257,13 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.Profile;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

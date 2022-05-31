@@ -19,16 +19,16 @@
 `/src/main/java/io/lcalmsky/app/event/endpoint/EventController.java`
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.validator.EventValidator;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.validator.EventValidator;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +51,7 @@ public class EventController {
     public void initBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(eventValidator);
     }
-    
+
     // 생략
 
     @PostMapping("/new-event")
@@ -75,16 +75,16 @@ public class EventController {
 <summary>EventController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.validator.EventValidator;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.validator.EventValidator;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -141,13 +141,13 @@ public class EventController {
 `/src/main/java/io/lcalmsky/app/event/application/EventService.java`
 
 ```java
-package io.lcalmsky.app.event.application;
+package io.lcalmsky.app.modules.event.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -203,11 +203,11 @@ public class Event {
 <summary>Event.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.domain.entity;
+package io.lcalmsky.app.modules.event.domain.entity;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -286,9 +286,9 @@ public class Event {
 `/src/main/java/io/lcalmsky/app/event/infra/repository/EventRepository.java`
 
 ```java
-package io.lcalmsky.app.event.infra.repository;
+package io.lcalmsky.app.modules.event.infra.repository;
 
-import io.lcalmsky.app.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -304,9 +304,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 `/src/main/java/io/lcalmsky/app/event/validator/EventValidator.java`
 
 ```java
-package io.lcalmsky.app.event.validator;
+package io.lcalmsky.app.modules.event.validator;
 
-import io.lcalmsky.app.event.form.EventForm;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

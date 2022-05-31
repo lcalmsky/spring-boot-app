@@ -19,10 +19,10 @@
 `src/main/java/io/lcalmsky/app/settings/controller/SettingsController.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,9 +50,9 @@ public class SettingsController {
 `src/main/java/io/lcalmsky/app/settings/controller/Profile.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -127,9 +127,9 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -192,6 +192,7 @@ public class Account extends AuditingEntity {
             notificationSetting = new NotificationSetting();
         }
     }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString
@@ -205,6 +206,7 @@ public class Account extends AuditingEntity {
         @Lob @Basic(fetch = FetchType.EAGER)
         private String image;
     }
+
     @Embeddable
     @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
     @Builder @Getter @ToString

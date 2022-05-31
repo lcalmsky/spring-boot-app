@@ -52,15 +52,15 @@ public class StudyController {
 <summary>StudyController.java</summary>
 
 ```java
-package io.lcalmsky.app.study.endpoint;
+package io.lcalmsky.app.modules.study.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.form.validator.StudyFormValidator;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.endpoint.form.validator.StudyFormValidator;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -161,15 +161,15 @@ public class StudyService {
 <summary>StudyService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.application;
+package io.lcalmsky.app.modules.study.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -353,14 +353,14 @@ public class Study {
 <summary>Study.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.domain.entity;
+package io.lcalmsky.app.modules.study.domain.entity;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.study.form.StudyDescriptionForm;
-import io.lcalmsky.app.study.form.StudyForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -582,9 +582,9 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 <summary>StudyRepository.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.study.infra.repository;
+package io.lcalmsky.app.modules.study.infra.repository;
 
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -1147,8 +1147,8 @@ value() 메서드의 반환 타입을 배열로 수정하였고 기본 값도 �
 ```java
 package io.lcalmsky.app;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

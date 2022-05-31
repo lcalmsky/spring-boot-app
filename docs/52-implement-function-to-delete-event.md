@@ -45,18 +45,18 @@ public class EventController {
 <summary>EventController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.application.EventService;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.event.validator.EventValidator;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
-import io.lcalmsky.app.study.infra.repository.StudyRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.event.validator.EventValidator;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -161,7 +161,7 @@ public class EventController {
             return "event/update-form";
         }
         eventService.updateEvent(event, eventForm);
-        return "redirect:/study/" + study.getEncodedPath() +  "/events/" + event.getId();
+        return "redirect:/study/" + study.getEncodedPath() + "/events/" + event.getId();
     }
 
     @DeleteMapping("/events/{id}")
@@ -211,13 +211,13 @@ public class EventService {
 <summary>EventService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.event.application;
+package io.lcalmsky.app.modules.event.application;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.event.domain.entity.Event;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.event.infra.repository.EventRepository;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -293,7 +293,8 @@ public class EventService {
                     </span>
                 </span>
             </div>
-            <div class="modal fade" id="disenroll" tabindex="-1" role="dialog" aria-labelledby="leaveTitle" aria-hidden="true">
+            <div class="modal fade" id="disenroll" tabindex="-1" role="dialog" aria-labelledby="leaveTitle"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -309,14 +310,16 @@ public class EventService {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/leave'}" method="post">
+                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/leave'}"
+                                  method="post">
                                 <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="enroll" tabindex="-1" role="dialog" aria-labelledby="enrollmentTitle" aria-hidden="true">
+            <div class="modal fade" id="enroll" tabindex="-1" role="dialog" aria-labelledby="enrollmentTitle"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -332,7 +335,8 @@ public class EventService {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enroll'}" method="post">
+                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enroll'}"
+                                  method="post">
                                 <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
                             </form>
                         </div>
@@ -368,10 +372,13 @@ public class EventService {
                             <td>
                                 <a th:href="@{'/profile/' + ${enroll.account.nickname}}"
                                    class="text-decoration-none">
-                                    <svg th:if="${#strings.isEmpty(enroll.account?.profile?.image)}" data-jdenticon-value="nickname"
-                                         th:data-jdenticon-value="${enroll.account.nickname}" width="24" height="24" class="rounded border bg-light"></svg>
+                                    <svg th:if="${#strings.isEmpty(enroll.account?.profile?.image)}"
+                                         data-jdenticon-value="nickname"
+                                         th:data-jdenticon-value="${enroll.account.nickname}" width="24" height="24"
+                                         class="rounded border bg-light"></svg>
                                     <img th:if="${!#strings.isEmpty(enroll.account?.profile?.image)}"
-                                         th:src="${enroll.account?.profile?.image}" width="24" height="24" class="rounded border"/>
+                                         th:src="${enroll.account?.profile?.image}" width="24" height="24"
+                                         class="rounded border"/>
                                     <span th:text="${enroll.account.nickname}"></span>
                                 </a>
                             </td>
@@ -384,7 +391,8 @@ public class EventService {
                             </td>
                             <td th:if="${study.isManager(#authentication.principal)}">
                                 <a th:if="${event.isAcceptable(enroll)}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/accept'}" >신청 수락</a>
+                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/accept'}">신청
+                                    수락</a>
                                 <a th:if="${event.isRejectable(enroll)}" href="#" class="text-decoration-none"
                                    th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/reject'}">취소</a>
                             </td>
@@ -392,7 +400,8 @@ public class EventService {
                                 <a th:if="${enroll.accepted && !enroll.attended}" href="#" class="text-decoration-none"
                                    th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/checkin'}">체크인</a>
                                 <a th:if="${enroll.accepted && enroll.attended}" href="#" class="text-decoration-none"
-                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/cancel-checkin'}">체크인 취소</a>
+                                   th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/enrollments/' + ${enroll.id} + '/cancel-checkin'}">체크인
+                                    취소</a>
                             </td>
                         </tr>
                         </tbody>
@@ -402,8 +411,8 @@ public class EventService {
             <dl class="col-3 pt-3 text-right">
                 <dt class="font-weight-light">모집 방법</dt>
                 <dd>
-                    <span th:if="${event.eventType == T(io.lcalmsky.app.event.domain.entity.EventType).FCFS}">선착순</span>
-                    <span th:if="${event.eventType == T(io.lcalmsky.app.event.domain.entity.EventType).CONFIRMATIVE}">관리자 확인</span>
+                    <span th:if="${event.eventType == T(io.lcalmsky.app.modules.event.domain.entity.EventType).FCFS}">선착순</span>
+                    <span th:if="${event.eventType == T(io.lcalmsky.app.modules.event.domain.entity.EventType).CONFIRMATIVE}">관리자 확인</span>
                 </dd>
 
                 <dt class="font-weight-light">모집 인원</dt>
@@ -430,7 +439,8 @@ public class EventService {
                 <dd>
                     <a th:href="@{'/profile/' + ${event.createdBy?.nickname}}" class="text-decoration-none">
                         <svg th:if="${#strings.isEmpty(event.createdBy?.profile?.image)}"
-                             th:data-jdenticon-value="${event.createdBy?.nickname}" width="24" height="24" class="rounded border bg-light"></svg>
+                             th:data-jdenticon-value="${event.createdBy?.nickname}" width="24" height="24"
+                             class="rounded border bg-light"></svg>
                         <img th:if="${!#strings.isEmpty(event.createdBy?.profile?.image)}"
                              th:src="${event.createdBy?.profile?.image}" width="24" height="24" class="rounded border"/>
                         <span th:text="${event.createdBy?.nickname}"></span>
@@ -440,7 +450,7 @@ public class EventService {
                 <dt th:if="${study.isManager(#authentication.principal)}" class="font-weight-light">모임 관리</dt>
                 <dd th:if="${study.isManager(#authentication.principal)}">
                     <a class="btn btn-outline-primary btn-sm my-1"
-                       th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}" >
+                       th:href="@{'/study/' + ${study.path} + '/events/' + ${event.id} + '/edit'}">
                         모임 수정
                     </a> <br/>
                     <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel">
@@ -448,7 +458,8 @@ public class EventService {
                     </button>
                 </dd>
             </dl>
-            <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle" aria-hidden="true">
+            <div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelTitle"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -464,7 +475,8 @@ public class EventService {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}" th:method="delete">
+                            <form th:action="@{'/study/' + ${study.path} + '/events/' + ${event.id}}"
+                                  th:method="delete">
                                 <button class="btn btn-primary" type="submit" aria-describedby="submitHelp">확인</button>
                             </form>
                         </div>

@@ -50,15 +50,15 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.settings.controller.Profile;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -211,11 +211,11 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.domain.entity.AuditingEntity;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -296,7 +296,7 @@ public class Account extends AuditingEntity {
         }
     }
 
-    public void updateProfile(io.lcalmsky.app.settings.controller.Profile profile) {
+    public void updateProfile(io.lcalmsky.app.modules.account.endpoint.controller.form.Profile profile) {
         if (this.profile == null) {
             this.profile = new Profile();
         }
@@ -482,15 +482,15 @@ class SettingsControllerTest {
 <summary>SettingsControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lcalmsky.app.WithAccount;
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.account.WithAccount;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

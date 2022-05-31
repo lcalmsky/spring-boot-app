@@ -21,7 +21,7 @@
 `/src/main/java/io/lcalmsky/app/tag/domain/entity/Tag.java`
 
 ```java
-package io.lcalmsky.app.tag.domain.entity;
+package io.lcalmsky.app.modules.tag.domain.entity;
 
 import lombok.*;
 
@@ -125,7 +125,7 @@ public String updateTags(@CurrentUser Account account, Model model) {
 `/src/main/java/io/lcalmsky/app/settings/controller/TagForm.java`
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -149,9 +149,9 @@ public class TagForm {
 `/src/main/java/io/lcalmsky/app/tag/infra/repository/TagRepository.java`
 
 ```java
-package io.lcalmsky.app.tag.infra.repository;
+package io.lcalmsky.app.modules.tag.infra.repository;
 
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -215,13 +215,13 @@ public void removeTag(@CurrentUser Account account, @RequestBody TagForm tagForm
 <summary>SettingsController.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.settings.controller;
+package io.lcalmsky.app.modules.settings.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.tag.infra.repository.TagRepository;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.tag.infra.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -406,15 +406,15 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.tag.domain.entity.Tag;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.settings.controller.Profile;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

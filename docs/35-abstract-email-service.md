@@ -21,7 +21,7 @@
 `/src/main/java/io/lcalmsky/app/mail/EmailService.java`
 
 ```java
-package io.lcalmsky.app.mail;
+package io.lcalmsky.app.infra.mail;
 
 public interface EmailService {
     void sendEmail(EmailMessage emailMessage);
@@ -35,7 +35,7 @@ public interface EmailService {
 `/src/main/java/io/lcalmsky/app/mail/EmailMessage.java`
 
 ```java
-package io.lcalmsky.app.mail;
+package io.lcalmsky.app.infra.mail;
 
 import lombok.*;
 
@@ -63,7 +63,7 @@ public class EmailMessage {
 `/src/main/java/io/lcalmsky/app/mail/ConsoleEmailService.java`
 
 ```java
-package io.lcalmsky.app.mail;
+package io.lcalmsky.app.infra.mail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -89,7 +89,7 @@ public class ConsoleEmailService implements EmailService {
 `/src/main/java/io/lcalmsky/app/mail/HtmlEmailService.java`
 
 ```java
-package io.lcalmsky.app.mail;
+package io.lcalmsky.app.infra.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -186,18 +186,18 @@ public class AccountService implements UserDetailsService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.mail.EmailMessage;
-import io.lcalmsky.app.mail.EmailService;
-import io.lcalmsky.app.settings.controller.NotificationForm;
-import io.lcalmsky.app.settings.controller.Profile;
-import io.lcalmsky.app.tag.domain.entity.Tag;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.infra.mail.EmailMessage;
+import io.lcalmsky.app.infra.mail.EmailService;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.NotificationForm;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.Profile;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -385,12 +385,12 @@ class AccountControllerTest {
 <summary>AccountControllerTest.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.mail.EmailMessage;
-import io.lcalmsky.app.mail.EmailService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.infra.mail.EmailMessage;
+import io.lcalmsky.app.infra.mail.EmailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 <summary>SecurityConfig.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -106,10 +106,10 @@ MainController 클래스를 아래 처럼 수정해줍니다.
 `src/main/java/io/lcalmsky/app/main/endpoint/controller/MainController.java`
 
 ```java
-package io.lcalmsky.app.main.endpoint.controller;
+package io.lcalmsky.app.modules.main.endpoint.controller;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -351,12 +351,12 @@ public class MainController {
 `/src/main/java/io/lcalmsky/app/account/application/AccountService.java`
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -370,7 +370,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -378,7 +377,7 @@ import java.util.Optional;
 public class AccountService implements UserDetailsService { // (1)
 
     private final AccountRepository accountRepository;
-    
+
     // 생략
 
     @Override

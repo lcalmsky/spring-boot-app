@@ -99,7 +99,7 @@ check-email 페이지는 인증이 된 상태에서만 접근 가능해야하기
 `SecurityConfig.java`
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -161,13 +161,13 @@ public class AccountController {
 <summary>AccountContoller.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.endpoint.controller;
+package io.lcalmsky.app.modules.account.endpoint.controller;
 
-import io.lcalmsky.app.account.application.AccountService;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.validator.SignUpFormValidator;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
-import io.lcalmsky.app.account.support.CurrentUser;
+import io.lcalmsky.app.modules.account.application.AccountService;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.validator.SignUpFormValidator;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -281,10 +281,10 @@ public class Account extends AuditingEntity {
 <summary>Account.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
-import io.lcalmsky.app.account.domain.support.ListStringConverter;
-import io.lcalmsky.app.domain.entity.AuditingEntity;
+import io.lcalmsky.app.modules.account.domain.support.ListStringConverter;
+import io.lcalmsky.app.modules.account.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -393,12 +393,12 @@ public class AccountService {
 <summary>AccountService.java 전체 보기</summary>
 
 ```java
-package io.lcalmsky.app.account.application;
+package io.lcalmsky.app.modules.account.application;
 
-import io.lcalmsky.app.account.domain.UserAccount;
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.endpoint.controller.SignUpForm;
-import io.lcalmsky.app.account.infra.repository.AccountRepository;
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

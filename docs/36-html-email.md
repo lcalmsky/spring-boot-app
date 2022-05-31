@@ -134,7 +134,7 @@ app:
 `/src/main/java/io/lcalmsky/app/config/AppProperties.java`
 
 ```java
-package io.lcalmsky.app.config;
+package io.lcalmsky.app.infra.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

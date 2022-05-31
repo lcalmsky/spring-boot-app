@@ -41,7 +41,7 @@
 `/src/main/java/io/lcalmsky/app/account/domain/entity/Zone.java`
 
 ```java
-package io.lcalmsky.app.account.domain.entity;
+package io.lcalmsky.app.modules.account.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -192,9 +192,9 @@ Yongin,용인시,Gyeonggi
 `/src/main/java/io/lcalmsky/app/zone/infra/repository/ZoneRepository.java`
 
 ```java
-package io.lcalmsky.app.zone.infra.repository;
+package io.lcalmsky.app.modules.zone.infra.repository;
 
-import io.lcalmsky.app.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ZoneRepository extends JpaRepository<Zone, Long> {
@@ -211,10 +211,10 @@ public interface ZoneRepository extends JpaRepository<Zone, Long> {
 `/src/main/java/io/lcalmsky/app/zone/application/ZoneService.java`
 
 ```java
-package io.lcalmsky.app.zone;
+package io.lcalmsky.app.modules.zone;
 
-import io.lcalmsky.app.account.domain.entity.Zone;
-import io.lcalmsky.app.zone.infra.repository.ZoneRepository;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.zone.infra.repository.ZoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

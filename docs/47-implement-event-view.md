@@ -19,13 +19,13 @@
 `/src/main/java/io/lcalmsky/app/event/endpoint/EventController.java`
 
 ```java
-package io.lcalmsky.app.event.endpoint;
+package io.lcalmsky.app.modules.event.endpoint;
 
-import io.lcalmsky.app.account.domain.entity.Account;
-import io.lcalmsky.app.account.support.CurrentUser;
-import io.lcalmsky.app.event.form.EventForm;
-import io.lcalmsky.app.study.application.StudyService;
-import io.lcalmsky.app.study.domain.entity.Study;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.study.application.StudyService;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,9 +62,9 @@ public class EventController {
 `/src/main/java/io/lcalmsky/app/event/form/EventForm.java`
 
 ```java
-package io.lcalmsky.app.event.form;
+package io.lcalmsky.app.modules.event.endpoint.form;
 
-import io.lcalmsky.app.event.domain.entity.EventType;
+import io.lcalmsky.app.modules.event.domain.entity.EventType;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -94,7 +94,7 @@ public class EventForm {
 
     @Min(2)
     private Integer limitOfEnrollments = 2;
-    
+
 }
 ```
 
