@@ -1,5 +1,6 @@
 package io.lcalmsky.app.modules.main.endpoint.controller;
 
+import io.lcalmsky.app.infra.IntegrationTest;
 import io.lcalmsky.app.modules.account.application.AccountService;
 import io.lcalmsky.app.modules.account.endpoint.controller.form.SignUpForm;
 import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
@@ -8,8 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -19,8 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@IntegrationTest
 class MainControllerTest {
 
     @Autowired MockMvc mockMvc;

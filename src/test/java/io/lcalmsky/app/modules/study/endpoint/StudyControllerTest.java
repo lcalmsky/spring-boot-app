@@ -1,5 +1,6 @@
 package io.lcalmsky.app.modules.study.endpoint;
 
+import io.lcalmsky.app.infra.IntegrationTest;
 import io.lcalmsky.app.modules.account.WithAccount;
 import io.lcalmsky.app.modules.account.domain.entity.Account;
 import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
@@ -10,10 +11,7 @@ import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,9 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@Transactional
-@AutoConfigureMockMvc
+@IntegrationTest
 class StudyControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired AccountRepository accountRepository;

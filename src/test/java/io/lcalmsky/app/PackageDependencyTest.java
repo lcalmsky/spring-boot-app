@@ -8,10 +8,9 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 @AnalyzeClasses(packagesOf = App.class)
-public class PackageDependencyTests {
+public class PackageDependencyTest {
     public static final String STUDY = "..modules.study..";
     public static final String EVENT = "..modules.event..";
     public static final String ACCOUNT = "..modules.account..";
