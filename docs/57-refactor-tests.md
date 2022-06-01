@@ -1,3 +1,173 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
+> 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 4cbf9ad)
+> ```shell
+> > git clone https://github.com/lcalmsky/spring-boot-app.git
+> > git checkout 4cbf9ad
+> ```
+> ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
+
+## Overview
+
+테스트 코드를 리팩터링합니다.
+
+## 커스텀 애너테이션
+
+통합 테스트를 위해 사용하는 공통 애너테이션은 다음과 같습니다.
+
+* `@Transactional`
+* `@SpringBootTest` 
+* `@AutoConfigureMockMvc`
+
+이 세 가지는 반드시 사용되므로 하나의 커스텀 애너테이션으로 묶어줄 수 있습니다.
+
+`infra` 패키지 하위에 `IntegrationTest` 클래스를 생성하였습니다.
+
+`/src/test/java/io/lcalmsky/app/infra/IntegrationTest.java`
+
+```java
+package io.lcalmsky.app.infra;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Transactional
+@SpringBootTest
+@AutoConfigureMockMvc
+public @interface IntegrationTest {
+
+}
+```
+
+이제 기존 테스트 클래스에 적용해보겠습니다.
+
+```java
+@IntegrationTest
+class StudySettingsControllerTest {
+    // 생략
+}
+```
+
+```java
+@IntegrationTest
+class StudyControllerTest {
+    // 생략
+}
+```
+
+```java
+@IntegrationTest
+class SettingsControllerTest {
+    // 생략
+}
+```
+
+```java
+@IntegrationTest
+class MainControllerTest {
+    // 생략
+}
+```
+
+```java
+@IntegrationTest
+class EventControllerTest {
+    // 생략
+}
+```
+
+```java
+@IntegrationTest
+class AccountControllerTest {
+    // 생략
+}
+```
+
+모두 적용했으니 전체 테스트를 돌려 잘 동작하는지 확인해보겠습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/57-01.png)
+
+## Object Mother
+
+마틴 파울러가 설명한 [Object Mother](https://martinfowler.com/bliki/ObjectMother.html)는 테스트에 사용하는 예제 객체를 만드는 데 도움이 되도록 테스트에 사용되는 클래스입니다.
+
+계정이나 스터디, 모임 등을 만드는 메서드들을 클래스로 추출하겠습니다.
+
+계정과 모임을 만드는 `Factory` 클래스를 각각 패키지 하위에 생성하였습니다.
+
+`/src/test/java/io/lcalmsky/app/modules/account/AccountFactory.java`
+
+```java
+package io.lcalmsky.app.modules.account;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.infra.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AccountFactory {
+    @Autowired AccountRepository accountRepository;
+
+    public Account createAccount(String nickname) {
+        return accountRepository.save(Account.with(nickname + "@example.com", nickname, "password"));
+    }
+}
+```
+
+`/src/test/java/io/lcalmsky/app/modules/event/EventFactory.java`
+
+```java
+package io.lcalmsky.app.modules.event;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.event.application.EventService;
+import io.lcalmsky.app.modules.event.domain.entity.Event;
+import io.lcalmsky.app.modules.event.domain.entity.EventType;
+import io.lcalmsky.app.modules.event.endpoint.form.EventForm;
+import io.lcalmsky.app.modules.event.infra.repository.EventRepository;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+public class EventFactory {
+    @Autowired EventRepository eventRepository;
+    @Autowired StudyRepository studyRepository;
+    @Autowired EventService eventService;
+
+    public Event createEvent(EventType eventType, Account account, String studyPath) {
+        Study study = studyRepository.findByPath(studyPath);
+        LocalDateTime now = LocalDateTime.now();
+        EventForm eventForm = EventForm.builder()
+                .description("description")
+                .eventType(eventType)
+                .endDateTime(now.plusWeeks(3))
+                .endEnrollmentDateTime(now.plusWeeks(1))
+                .limitOfEnrollments(2)
+                .startDateTime(now.plusWeeks(2))
+                .title("title")
+                .build();
+        return eventService.createEvent(study, eventForm, account);
+    }
+}
+```
+
+`EventController`에서 두 개의 `Factory`를 사용할 수 있으므로 적용해보겠습니다.
+
+```java
 package io.lcalmsky.app.modules.event.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -345,3 +515,8 @@ class EventControllerTest {
         assertTrue(enrollmentRepository.findByEventAndAccount(event, account).isAccepted());
     }
 }
+```
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/57-02.png)
+
+적용 후에도 테스트는 정상적으로 동작하는 것을 확인할 수 있습니다.
