@@ -5,9 +5,11 @@ import io.lcalmsky.app.modules.account.domain.entity.Zone;
 import io.lcalmsky.app.modules.study.domain.entity.Study;
 import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
 import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.study.event.StudyCreatedEvent;
 import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
 import io.lcalmsky.app.modules.tag.domain.entity.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class StudyService {
     private final StudyRepository studyRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Study createNewStudy(StudyForm studyForm, Account account) {
         Study study = Study.from(studyForm);
         study.addManager(account);
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
         return studyRepository.save(study);
     }
 
