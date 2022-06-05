@@ -30,4 +30,16 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
+
+    public static Notification from(String title, String link, boolean checked, LocalDateTime created, String message, Account account, NotificationType notificationType) {
+        Notification notification = new Notification();
+        notification.title = title;
+        notification.link = link;
+        notification.checked = checked;
+        notification.created = created;
+        notification.message = message;
+        notification.account = account;
+        notification.notificationType = notificationType;
+        return notification;
+    }
 }
