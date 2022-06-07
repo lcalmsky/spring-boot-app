@@ -1,3 +1,172 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
+> 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: dc5c662)
+> ```shell
+> > git clone https://github.com/lcalmsky/spring-boot-app.git
+> > git checkout dc5c662
+> ```
+> ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
+
+## Overview
+
+읽지 않은 알림이 있는 경우 내비게이션 바의 알림 아이콘을 변경하는 기능을 구현합니다.
+
+내비게이션 바는 모든 화면에 적용되기 때문에 모든 API에서 `Notification`이 있는지 체크하는 로직을 추가하는 것은 비효율적입니다.
+
+따라서 `HandlerInterceptor`로 읽지 않은 메시지가 있는지 확인하여 `Model`에 담아주는 방법을 사용합니다.
+
+`Interceptor` 적용 범위가 중요한데 리다이렉트 요청과 `static` 리소스 요청에는 적용되지 않게 해야 합니다.
+
+## Interceptor 추가
+
+notification 패키지 하위에 NotificationInterceptor 클래스를 생성합니다.
+
+`/src/main/java/io/lcalmsky/app/modules/notification/infra/interceptor/NotificationInterceptor.java`
+
+```java
+package io.lcalmsky.app.modules.notification.infra.interceptor;
+
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.notification.infra.repository.NotificationRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class NotificationInterceptor implements HandlerInterceptor {
+
+    private final NotificationRepository notificationRepository;
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (modelAndView != null && !isRedirectView(modelAndView)  // (1)
+                && authentication != null && isTypeOfUserAccount(authentication)) { // (2)
+            Account account = ((UserAccount) authentication.getPrincipal()).getAccount(); // (3)
+            long count = notificationRepository.countByAccountAndChecked(account, false); // (4)
+            modelAndView.addObject("hasNotification", count > 0); // (5)
+        }
+    }
+
+    private boolean isRedirectView(ModelAndView modelAndView) {
+        Optional<ModelAndView> optionalModelAndView = Optional.ofNullable(modelAndView);
+        return startsWithRedirect(optionalModelAndView) || isTypeOfRedirectView(optionalModelAndView);
+    }
+
+    private Boolean startsWithRedirect(Optional<ModelAndView> optionalModelAndView) {
+        return optionalModelAndView.map(ModelAndView::getViewName)
+                .map(viewName -> viewName.startsWith("redirect:"))
+                .orElse(false);
+    }
+
+    private Boolean isTypeOfRedirectView(Optional<ModelAndView> optionalModelAndView) {
+        return optionalModelAndView.map(ModelAndView::getView)
+                .map(v -> v instanceof RedirectView)
+                .orElse(false);
+    }
+
+    private boolean isTypeOfUserAccount(Authentication authentication) {
+        return authentication.getPrincipal() instanceof
+                UserAccount;
+    }
+}
+```
+
+1. 리다이렉트가 아니고
+2. 인증 정보가 존재하고 UserAccount 타입일 때
+3. Account 정보를 획득하여
+4. 알림 정보를 조회하고
+5. Model로 전달합니다.
+
+## WebMvc 설정 추가
+
+Interceptor를 등록해주기 위해 WebMvc 설정을 추가합니다.
+
+`/src/main/java/io/lcalmsky/app/infra/config/WebConfig.java`
+
+```java
+package io.lcalmsky.app.infra.config;
+
+import io.lcalmsky.app.modules.notification.infra.interceptor.NotificationInterceptor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Configuration
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer {
+    private final NotificationInterceptor notificationInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        List<String> staticResourcesPath = Stream.of(StaticResourceLocation.values())
+                .flatMap(StaticResourceLocation::getPatterns)
+                .collect(Collectors.toList());
+        staticResourcesPath.add("/node_modules/**");
+        registry.addInterceptor(notificationInterceptor)
+                .excludePathPatterns(staticResourcesPath);
+    }
+}
+```
+
+`Interceptor`에서 `redirect`를 제외시켰으므로 `static location`만 추가로 제외시켜주면 됩니다.
+
+`Interceptor`를 등록하면서 `excludePathPattern`을 이용해 `static location`일 때 `Interceptor`가 동작하지 않게 해줍니다.
+
+## Repository 수정
+
+`Interceptor`에서 알림 정보를 조회해오는 기능을 `NotificationRepository`에 추가합니다.
+
+```java
+package io.lcalmsky.app.modules.notification.infra.repository;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.notification.domain.entity.Notification;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    long countByAccountAndChecked(Account account, boolean checked);
+}
+```
+
+## 뷰 수정
+
+마지막으로 내비게이션 바의 알림 버튼을 수정합니다.
+
+`/src/main/resources/templates/fragments.html`
+
+```html
+<li class="nav-item" sec:authorize="isAuthenticated()">
+    <a class="nav-link" th:href="@{/notifications}">
+        <i th:if="${!hasNotification}" class="fa fa-bell-o" aria-hidden="true"></i>
+        <span class="text-info"><i th:if="${hasNotification}" class="fa fa-bell" aria-hidden="true"></i></span>
+    </a>
+</li>
+```
+
+hasNotification 값에 따라 표시를 다르게 해주도록 하였습니다.
+
+<details>
+<summary>fragments.html 전체 보기</summary>
+
+```html
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
@@ -586,3 +755,20 @@
 </div>
 
 </html>
+```
+
+</details>
+
+## 테스트
+
+이전 포스팅에서 새로운 스터디를 개설했었고, 알림 설정을 이메일과 웹 모두 on 시켜놨었는데요, 스터디 생성 시점에 알림이 발생하여 DB에 저장되었기 때문에 애플리케이션 실행 후 로그인만 해도 알림 버튼이 달라진 것을 확인할 수 있습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/62-01.png)
+
+알림 버튼이 파란색으로 변한 것을 확인할 수 있습니다.
+
+---
+
+아직 알림 버튼 기능을 구현하지 않았으므로 알림이 표시된 것 외에 다른 것은 확인할 수 없습니다.
+
+다음 포스팅에서 알림 목록을 조회하고 삭제하는 기능을 구현해보겠습니다.
