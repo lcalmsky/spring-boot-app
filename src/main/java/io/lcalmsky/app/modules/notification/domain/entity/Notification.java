@@ -42,4 +42,8 @@ public class Notification {
         notification.notificationType = notificationType;
         return notification;
     }
+
+    public void read() {
+        this.checked = true;
+    }
 }

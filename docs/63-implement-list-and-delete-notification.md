@@ -1,3 +1,243 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
+> 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: e400141)
+> ```shell
+> > git clone https://github.com/lcalmsky/spring-boot-app.git
+> > git checkout e400141
+> ```
+> ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
+
+## Overview
+
+알림 목록을 조회하고 삭제하는 기능을 구현합니다.
+
+알림 버튼을 클릭했을 때 읽지 않은 알림을 보여주고 읽은 알림도 확인하거나 삭제할 수 있습니다.
+
+## Endpoint 추가
+
+알림 버튼을 클릭했을 때 진입하기 위한 `Endpoint`와 읽은 알림을 조회하기 위한 `Endpoint`, 알림을 삭제하기위한 `Endpoint` 세 가지를 `NotificationController` 클래스에 추가합니다.
+
+`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/notification/endpoint/NotificationController.java`
+
+```java
+package io.lcalmsky.app.modules.notification.endpoint;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.notification.application.NotificationService;
+import io.lcalmsky.app.modules.notification.domain.entity.Notification;
+import io.lcalmsky.app.modules.notification.infra.repository.NotificationRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+@RequiredArgsConstructor
+public class NotificationController {
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+
+    @GetMapping("/notifications")
+    public String getNotifications(@CurrentUser Account account, Model model) {
+        List<Notification> notifications = notificationRepository.findByAccountAndCheckedOrderByCreatedDesc(account, false);
+        long numberOfChecked = notificationRepository.countByAccountAndChecked(account, true);
+        putCategorizedNotifications(model, notifications, numberOfChecked, notifications.size());
+        model.addAttribute("isNew", true);
+        notificationService.markAsRead(notifications);
+        return "notification/list";
+    }
+
+    @GetMapping("/notifications/old")
+    public String getOldNotifications(@CurrentUser Account account, Model model) {
+        List<Notification> notifications = notificationRepository.findByAccountAndCheckedOrderByCreatedDesc(account, true);
+        long numberOfNotChecked = notificationRepository.countByAccountAndChecked(account, false);
+        putCategorizedNotifications(model, notifications, notifications.size(), numberOfNotChecked);
+        model.addAttribute("isNew", false);
+        return "notification/list";
+    }
+
+    @DeleteMapping("/notifications")
+    public String deleteNotifications(@CurrentUser Account account) {
+        notificationRepository.deleteByAccountAndChecked(account, true);
+        return "redirect:/notifications";
+    }
+
+    private void putCategorizedNotifications(Model model, List<Notification> notifications, long numberOfChecked, long numberOfNotChecked) {
+        ArrayList<Notification> newStudyNotifications = new ArrayList<>();
+        ArrayList<Notification> eventEnrollmentNotifications = new ArrayList<>();
+        ArrayList<Notification> watchingStudyNotifications = new ArrayList<>();
+        for (Notification notification : notifications) {
+            switch (notification.getNotificationType()) {
+                case STUDY_CREATED: {
+                    newStudyNotifications.add(notification);
+                    break;
+                }
+                case EVENT_ENROLLMENT: {
+                    eventEnrollmentNotifications.add(notification);
+                    break;
+                }
+                case STUDY_UPDATED: {
+                    watchingStudyNotifications.add(notification);
+                    break;
+                }
+            }
+        }
+        model.addAttribute("numberOfNotChecked", numberOfNotChecked);
+        model.addAttribute("numberOfChecked", numberOfChecked);
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("newStudyNotifications", newStudyNotifications);
+        model.addAttribute("eventEnrollmentNotifications", eventEnrollmentNotifications);
+        model.addAttribute("watchingStudyNotifications", watchingStudyNotifications);
+    }
+}
+```
+
+새로운 알림과 기존 알림의 기능은 거의 비슷한데 쿼리를 위한 파라미터만 상이합니다.
+
+공통적인 기능을 메서드로 추출해주었습니다.
+
+나머지 특이한 사항은 없습니다.
+
+## Service서비스 수정
+
+읽지 않은 알림을 확인하였을 때 읽은 상태로 바꿔주어야 합니다.
+
+해당 기능을 `NotificationService`에 구현하였습니다.
+
+`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/notification/application/NotificationService.java`
+
+```java
+package io.lcalmsky.app.modules.notification.application;
+
+import io.lcalmsky.app.modules.notification.domain.entity.Notification;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class NotificationService {
+    public void markAsRead(List<Notification> notifications) {
+        notifications.forEach(Notification::read);
+    }
+}
+```
+
+읽지 않은 알림 리스트를 전달받아 `Notification Entity`에서 읽은 상태로 직접 바꾸도록 위임합니다.
+
+## Entity 수정
+
+```java
+// 생략
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Notification {
+    // 생략
+    public void read() {
+        this.checked = true;
+    }
+}
+```
+
+`checked` 필드를 `true`로 변환해줍니다.
+
+<details>
+<summary>Notification.java 전체 보기</summary>
+
+```java
+package io.lcalmsky.app.modules.notification.domain.entity;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Notification {
+    @Id @GeneratedValue
+    private Long id;
+
+    private String title;
+
+    private String link;
+
+    private String message;
+
+    private boolean checked;
+
+    @ManyToOne
+    private Account account;
+
+    private LocalDateTime created;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
+
+    public static Notification from(String title, String link, boolean checked, LocalDateTime created, String message, Account account, NotificationType notificationType) {
+        Notification notification = new Notification();
+        notification.title = title;
+        notification.link = link;
+        notification.checked = checked;
+        notification.created = created;
+        notification.message = message;
+        notification.account = account;
+        notification.notificationType = notificationType;
+        return notification;
+    }
+
+    public void read() {
+        this.checked = true;
+    }
+}
+```
+
+</details>
+
+## View 수정
+
+먼저 `fragments.html` 파일에 알림 메시지를 보여줄 부분을 정의하였습니다. 
+
+`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/fragments.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--생략-->
+<ul th:fragment="notification-list (notifications)" class="list-group list-group-flush">
+    <a href="#" th:href="@{${notification.link}}" th:each="notification: ${notifications}"
+       class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <small class="text-muted" th:text="${notification.title}">Noti title</small>
+            <small class="fromNow text-muted" th:text="${notification.created}">3 days ago</small>
+        </div>
+        <p th:text="${notification.message}" class="text-left mb-0 mt-1">message</p>
+    </a>
+</ul>
+
+</html>
+```
+
+<details>
+<summary>fragments.html 전체 보기</summary>
+
+```html
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
@@ -597,3 +837,121 @@
 </ul>
 
 </html>
+```
+
+</details>
+
+다음으로 알림 조회 화면을 `notification` 디렉토리 하위에 구현합니다.
+
+
+`/Users/jaime/git-repo/spring-boot-app/src/main/resources/templates/notification/list.html
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html::head"></head>
+<body class="bg-light">
+    <nav th:replace="fragments.html::navigation-bar"></nav>
+    <div class="container">
+        <div class="row py-5 text-center">
+            <div class="col-3">
+                <ul class="list-group">
+                    <a href="#" th:href="@{/notifications}" th:classappend="${isNew}? active"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        읽지 않은 알림
+                        <span th:text="${numberOfNotChecked}">3</span>
+                    </a>
+                    <a href="#" th:href="@{/notifications/old}" th:classappend="${!isNew}? active"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        읽은 알림
+                        <span th:text="${numberOfChecked}">0</span>
+                    </a>
+                </ul>
+
+                <ul class="list-group mt-4">
+                    <a href="#" th:if="${newStudyNotifications.size() > 0}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        새 스터디 알림
+                        <span th:text="${newStudyNotifications.size()}">3</span>
+                    </a>
+                    <a href="#" th:if="${eventEnrollmentNotifications.size() > 0}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        모임 참가 신청 알림
+                        <span th:text="${eventEnrollmentNotifications.size()}">0</span>
+                    </a>
+                    <a href="#" th:if="${watchingStudyNotifications.size() > 0}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        관심있는 스터디 알림
+                        <span th:text="${watchingStudyNotifications.size()}">0</span>
+                    </a>
+                </ul>
+
+                <ul class="list-group mt-4" th:if="${numberOfChecked > 0}">
+                    <form class="row" th:action="@{/notifications}" th:method="delete">
+                        <button type="submit" class="btn btn-outline-warning" aria-describedby="deleteHelp">
+                            읽은 알림 삭제
+                        </button>
+                        <small id="deleteHelp">삭제하지 않아도 한달이 지난 알림은 사라집니다.</small>
+                    </form>
+                </ul>
+            </div>
+            <div class="col-9">
+                <div class="card" th:if="${notifications.size() == 0}">
+                    <div class="card-header">
+                        알림 메시지가 없습니다.
+                    </div>
+                </div>
+
+                <div class="card" th:if="${newStudyNotifications.size() > 0}">
+                    <div class="card-header">
+                        주요 활동 지역에 관심있는 주제의 스터디가 생겼습니다.
+                    </div>
+                    <div th:replace="fragments.html::notification-list (notifications=${newStudyNotifications})"></div>
+                </div>
+
+                <div class="card mt-4" th:if="${eventEnrollmentNotifications.size() > 0}">
+                    <div class="card-header">
+                        모임 참가 신청 관련 소식이 있습니다.
+                    </div>
+                    <div th:replace="fragments.html::notification-list (notifications=${eventEnrollmentNotifications})"></div>
+                </div>
+
+                <div class="card mt-4" th:if="${watchingStudyNotifications.size() > 0}">
+                    <div class="card-header">
+                        참여중인 스터디 관련 소식이 있습니다.
+                    </div>
+                    <div th:replace="fragments.html::notification-list (notifications=${watchingStudyNotifications})"></div>
+                </div>
+            </div>
+        </div>
+        <div th:replace="fragments.html::footer"></div>
+    </div>
+    <script th:replace="fragments.html::date-time"></script>
+</body>
+</html>
+```
+
+## 테스트
+
+지난번과 마찬가지로 스터디를 생성하고 주제와 지역을 설정한 뒤 스터디를 공개합니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-01)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-02)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-03)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-04)
+
+다시 홈 화면으로 돌아가면 알림 버튼이 활성화 된 것을 확인할 수 있습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-05)
+
+알림 버튼을 클릭하면 읽지 않은 알림을 우선적으로 확인할 수 있습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-06)
+
+이 화면에서 새로고침을 해보면 읽지 않은 알림이 모두 읽은 알림으로 이동됩니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-07)
+
+알림 삭제 버튼을 누르면 알림이 모두 제거됩니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-08)
