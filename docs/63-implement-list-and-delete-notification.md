@@ -935,23 +935,23 @@ public class Notification {
 
 지난번과 마찬가지로 스터디를 생성하고 주제와 지역을 설정한 뒤 스터디를 공개합니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-01)
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-02)
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-03)
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-04)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-01.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-02.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-03.png)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-04.png)
 
 다시 홈 화면으로 돌아가면 알림 버튼이 활성화 된 것을 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-05)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-05.png)
 
 알림 버튼을 클릭하면 읽지 않은 알림을 우선적으로 확인할 수 있습니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-06)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-06.png)
 
 이 화면에서 새로고침을 해보면 읽지 않은 알림이 모두 읽은 알림으로 이동됩니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-07)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-07.png)
 
 알림 삭제 버튼을 누르면 알림이 모두 제거됩니다.
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-08)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/61-08.png)
