@@ -1,10 +1,10 @@
 ![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
 
 > 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
-> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: d68c1ae)
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 6962e94)
 > ```shell
 > > git clone https://github.com/lcalmsky/spring-boot-app.git
-> > git checkout d68c1ae
+> > git checkout 6962e94
 > ```
 > ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
 
@@ -32,7 +32,7 @@
 
 먼저 부모클래스가 될 `EnrollmentEvent`를 작성합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentEvent.java`
+`/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentEvent.java`
 
 ```java
 package io.lcalmsky.app.modules.event.event;
@@ -51,7 +51,7 @@ public class EnrollmentEvent {
 
 다음으로 모임 참가 수락과 거절에 관련된 이벤트를 `EnrollmentEvent`를 상속하여 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentAcceptedEvent.java`
+`/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentAcceptedEvent.java`
 
 ```java
 package io.lcalmsky.app.modules.event.event;
@@ -65,7 +65,7 @@ public class EnrollmentAcceptedEvent extends EnrollmentEvent{
 }
 ```
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentRejectedEvent.java`
+`/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentRejectedEvent.java`
 
 ```java
 package io.lcalmsky.app.modules.event.event;
@@ -83,7 +83,7 @@ public class EnrollmentRejectedEvent extends EnrollmentEvent{
 
 모임 관련 이벤트가 발생했을 때 이벤트를 처리해줄 이벤트 리스너를 구현합니다.
 
-`/Users/jaime/git-repo/spring-boot-app/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentEventListener.java`
+`/src/main/java/io/lcalmsky/app/modules/event/event/EnrollmentEventListener.java`
 
 ```java
 package io.lcalmsky.app.modules.event.event;
