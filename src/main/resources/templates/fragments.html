@@ -254,13 +254,13 @@
         <div class="col-10">
             <p>
                 <span th:each="tag: ${study.tags}"
-                      class="font-weight-light text-monospace badge badge-pill badge-info me-3">
-                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                      class="font-weight-light font-monospace badge rounded-pill bg-success me-3">
+                    <a th:href="@{'/search/study?keyword=' + ${tag.title}}" class="text-decoration-none text-white">
                         <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
                     </a>
                 </span>
-                <span th:each="zone: ${study.zones}" class="font-weight-light text-monospace badge badge-primary me-3">
-                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                <span th:each="zone: ${study.zones}" class="font-weight-light font-monospace badge rounded-pill bg-primary me-3">
+                    <a th:href="@{'/search/study?keyword=' + ${zone.localNameOfCity}}" class="text-decoration-none text-white">
                         <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
                     </a>
                 </span>

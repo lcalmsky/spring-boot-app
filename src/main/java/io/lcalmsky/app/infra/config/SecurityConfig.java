@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/login", "/sign-up", "/check-email-token",
-                        "/email-login", "/check-email-login", "/login-link", "/login-by-email").permitAll()
+                        "/email-login", "/check-email-login", "/login-link", "/login-by-email", "/search/study").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .anyRequest().authenticated();
         http.formLogin()
@@ -47,10 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                .mvcMatchers("/node_modules/**", "/images/**")
-                .antMatchers("/h2-console/**");
+                .mvcMatchers("/node_modules/**");
     }
 }
