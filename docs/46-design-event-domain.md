@@ -99,6 +99,19 @@ public class Event {
 }
 ```
 
+`Event Entity`에서 사용된 `EventType`은 다음과 같습니다.
+
+`/src/main/java/io/lcalmsky/app/modules/event/domain/entity/EventType.java`
+
+```java
+package io.lcalmsky.app.modules.event.domain.entity;
+
+public enum EventType {
+  FCFS, // FIRST_COME_FIRST_SERVED
+  CONFIRMATIVE;
+}
+```
+
 마찬가지로 참가 정보를 담고있는 `Enrollment Entity`를 작성합니다.
 
 `/src/main/java/io/lcalmsky/app/event/domain/entity/Enrollment.java`
