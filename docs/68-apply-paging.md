@@ -354,7 +354,7 @@ public class StudyService {
 애플리케이션을 실행하고 `/study/data`에 진입하면 데이터를 생성한 뒤 홈 화면으로 돌아오는 것을 확인할 수 있고 검색창에 `jpa`를 검색하면 다음과 같이 생성한 스터디가 검색됩니다.
 (저는 이전에 생성한 스터디를 포함하여 31개가 검색되었습니다.)
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/68-01.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/68-01.png)
 
 이제 테스트를 위해 생성했던 코드를 걷어낼 차례인데요, git을 사용하고 있기 때문에 간단히 해결할 수 있습니다.
 
@@ -648,7 +648,7 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
 
 앞서 데이터를 추가한 뒤 jpa를 검색하였을 땐 31개가 모두 노출되었는데요, 애플리케이션을 재시작하여 동일하게 jpa를 검색해보면
 
-![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/68-02.md)
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/68-02.png)
 
 원하는대로 9개만 노출되는 것을 확인할 수 있습니다.
 
