@@ -1,3 +1,625 @@
+![](https://img.shields.io/badge/spring--boot-2.5.4-red) ![](https://img.shields.io/badge/gradle-7.1.1-brightgreen) ![](https://img.shields.io/badge/java-11-blue)
+
+> 본 포스팅은 백기선님의 [스프링과 JPA 기반 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard) 강의를 참고하여 작성하였습니다.  
+> 소스 코드는 [여기](https://github.com/lcalmsky/spring-boot-app) 있습니다. (commit hash: 022e586)
+> ```shell
+> > git clone https://github.com/lcalmsky/spring-boot-app.git
+> > git checkout 022e586
+> ```
+> ℹ️ squash merge를 사용해 기존 branch를 삭제하기로 하여 앞으로는 commit hash로 포스팅 시점의 소스 코드를 공유할 예정입니다.
+
+## Overview
+
+검색화면을 개선합니다.
+
+페이지 내비게이션, 정렬 조건 등 기존에 누락된 기능들을 추가합니다.
+
+## 라이브러리 설치
+
+`/src/main/resources/static` 경로로 이동하여 `mark` 라이브러리를 설치합니다.
+
+```shell
+> cd /src/main/resources/static
+> npm install mark.js --save
+```
+
+## MainController 수정
+
+페이징 처리를 위해 `Model`로 전달할 값들을 추가합니다.
+
+`/src/main/java/io/lcalmsky/app/modules/main/endpoint/controller/MainController.java`
+
+```java
+// 생략
+@Controller
+@RequiredArgsConstructor
+public class MainController {
+    // 생략
+    @GetMapping("/search/study")
+    public String searchStudy(String keyword, Model model,
+                              @PageableDefault(size = 9, sort = "publishedDateTime", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Study> studyPage = studyRepository.findByKeyword(keyword, pageable);
+        model.addAttribute("studyPage", studyPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortProperty", pageable.getSort().toString().contains("publishedDateTime")
+                ? "publishedDateTime"
+                : "memberCount");
+        return "search";
+    }
+}
+```
+
+<details>
+<summary>MainController.java 전체 보기</summary>
+
+```java
+package io.lcalmsky.app.modules.main.endpoint.controller;
+
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.support.CurrentUser;
+import io.lcalmsky.app.modules.study.domain.entity.Study;
+import io.lcalmsky.app.modules.study.infra.repository.StudyRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+@RequiredArgsConstructor
+public class MainController {
+
+    private final StudyRepository studyRepository;
+
+    @GetMapping("/")
+    public String home(@CurrentUser Account account, Model model) {
+        if (account != null) {
+            model.addAttribute(account);
+        }
+        return "index";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/search/study")
+    public String searchStudy(String keyword, Model model,
+                              @PageableDefault(size = 9, sort = "publishedDateTime", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Study> studyPage = studyRepository.findByKeyword(keyword, pageable);
+        model.addAttribute("studyPage", studyPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortProperty", pageable.getSort().toString().contains("publishedDateTime")
+                ? "publishedDateTime"
+                : "memberCount");
+        return "search";
+    }
+}
+```
+
+</details>
+
+## Entity 수정
+
+`Study`에 정렬을 위해 사용될 `memberCount` 변수를 추가합니다.
+
+`/src/main/java/io/lcalmsky/app/modules/study/domain/entity/Study.java`
+
+```java
+// 생략
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Study {
+    // 생략
+    @ColumnDefault(value = "0")
+    private Integer memberCount;
+    // 생략
+    public void addMember(Account account) {
+        this.members.add(account);
+        this.memberCount++;
+    }
+
+    public void removeMember(Account account) {
+        this.members.remove(account);
+        this.memberCount--;
+    }
+    // 생략
+}
+```
+
+직접 members를 가져와 size를 구해도 되지만 추가 쿼리가 발생할 수 있기 때문에, 가입시/탈퇴시 매번 갱신하도록 수정하였습니다.
+
+<details>
+<summary>Study.java 전체 보기</summary>
+
+```java
+package io.lcalmsky.app.modules.study.domain.entity;
+
+import io.lcalmsky.app.modules.account.domain.UserAccount;
+import io.lcalmsky.app.modules.account.domain.entity.Account;
+import io.lcalmsky.app.modules.account.domain.entity.Zone;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyDescriptionForm;
+import io.lcalmsky.app.modules.study.endpoint.form.StudyForm;
+import io.lcalmsky.app.modules.tag.domain.entity.Tag;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.ColumnDefault;
+
+import javax.persistence.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@NamedEntityGraph(name = "Study.withAll", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("zones"),
+        @NamedAttributeNode("managers"),
+        @NamedAttributeNode("members")
+})
+@NamedEntityGraph(name = "Study.withTagsAndManagers", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
+        @NamedAttributeNode("zones"),
+        @NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withManagers", attributeNodes = {
+        @NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withMembers", attributeNodes = {
+        @NamedAttributeNode("members")
+})
+@NamedEntityGraph(name = "Study.withTagsAndZones", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("zones")
+})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Study {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @ManyToMany
+    private Set<Account> managers = new HashSet<>();
+
+    @ManyToMany
+    private Set<Account> members = new HashSet<>();
+
+    @Column(unique = true)
+    private String path;
+
+    private String title;
+
+    private String shortDescription;
+
+    @Lob @Basic(fetch = FetchType.EAGER)
+    private String fullDescription;
+
+    @Lob @Basic(fetch = FetchType.EAGER)
+    private String image;
+
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany
+    private Set<Zone> zones = new HashSet<>();
+
+    private LocalDateTime publishedDateTime;
+
+    private LocalDateTime closedDateTime;
+
+    private LocalDateTime recruitingUpdatedDateTime;
+
+    private boolean recruiting;
+
+    private boolean published;
+
+    private boolean closed;
+
+    @Accessors(fluent = true)
+    private boolean useBanner;
+
+    @ColumnDefault(value = "0")
+    private Integer memberCount;
+
+    public static Study from(StudyForm studyForm) {
+        Study study = new Study();
+        study.title = studyForm.getTitle();
+        study.shortDescription = studyForm.getShortDescription();
+        study.fullDescription = studyForm.getFullDescription();
+        study.path = studyForm.getPath();
+        return study;
+    }
+
+    public void addManager(Account account) {
+        managers.add(account);
+    }
+
+    public boolean isJoinable(UserAccount userAccount) {
+        Account account = userAccount.getAccount();
+        return this.isPublished() && this.isRecruiting() && !this.members.contains(account) && !this.managers.contains(account);
+    }
+
+    public boolean isMember(UserAccount userAccount) {
+        return this.members.contains(userAccount.getAccount());
+    }
+
+    public boolean isManager(UserAccount userAccount) {
+        return this.managers.contains(userAccount.getAccount());
+    }
+
+    public void updateDescription(StudyDescriptionForm studyDescriptionForm) {
+        this.shortDescription = studyDescriptionForm.getShortDescription();
+        this.fullDescription = studyDescriptionForm.getFullDescription();
+    }
+
+    public void updateImage(String image) {
+        this.image = image;
+    }
+
+    public void setBanner(boolean useBanner) {
+        this.useBanner = useBanner;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
+
+    public void addZone(Zone zone) {
+        this.zones.add(zone);
+    }
+
+    public void removeZone(Zone zone) {
+        this.zones.remove(zone);
+    }
+
+    public void publish() {
+        if (this.closed || this.published) {
+            throw new IllegalStateException("스터디를 이미 공개했거나 종료된 스터디 입니다.");
+        }
+        this.published = true;
+        this.publishedDateTime = LocalDateTime.now();
+    }
+
+    public void close() {
+        if (!this.published || this.closed) {
+            throw new IllegalStateException("스터디를 공개하지 않았거나 이미 종료한 스터디 입니다.");
+        }
+        this.closed = true;
+        this.closedDateTime = LocalDateTime.now();
+    }
+
+    public boolean isEnableToRecruit() {
+        return this.published && this.recruitingUpdatedDateTime == null
+                || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public void updatePath(String newPath) {
+        this.path = newPath;
+    }
+
+    public void updateTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
+    public boolean isRemovable() {
+        return !this.published;
+    }
+
+    public void startRecruit() {
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 시작할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = true;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
+    }
+
+    public void stopRecruit() {
+        if (!isEnableToRecruit()) {
+            throw new RuntimeException("인원 모집을 멈출 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
+        }
+        this.recruiting = false;
+        this.recruitingUpdatedDateTime = LocalDateTime.now();
+    }
+
+    public void addMember(Account account) {
+        this.members.add(account);
+        this.memberCount++;
+    }
+
+    public void removeMember(Account account) {
+        this.members.remove(account);
+        this.memberCount--;
+    }
+
+    public String getEncodedPath() {
+        return URLEncoder.encode(path, StandardCharsets.UTF_8);
+    }
+
+    public boolean isManagedBy(Account account) {
+        return this.getManagers().contains(account);
+    }
+}
+
+```
+
+</details>
+
+## 검색 뷰 수정
+
+search.html 파일을 수정합니다.
+
+`/src/main/resources/templates/search.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html::head"></head>
+<body class="bg-light">
+    <div th:replace="fragments.html::navigation-bar"></div>
+    <div class="container">
+        <div class="py-5 text-center">
+            <!--생략-->
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" area-haspopup="false">
+                    정렬 방식
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'publishedDateTime')}? active"
+                       th:href="@{'/search/study?sort=publishedDateTime,desc&keyword=' + ${keyword}}">
+                        스터디 공개일
+                    </a>
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'memberCount')}? active"
+                       th:href="@{'/search/study?sort=memberCount,desc&keyword=' + ${keyword}}">
+                        멤버수
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--생략-->
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!studyPage.hasPrevious()}? disabled">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() - 1}}"
+                               class="page-link" tabindex="-1" aria-disabled="true">
+                                <!--hasPrvious가 false일 때 class 뒤에 disabled를 추가함-->
+                                Previous
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i == studyPage.getNumber()}? active"
+                            th:each="i: ${#numbers.sequence(0, studyPage.getTotalPages() - 1)}">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${i}}"
+                               class="page-link" href="#" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${!studyPage.hasNext()}? disabled">
+                            <!--hasNexts가 false일 때 class 뒤에 disabled를 추가함-->
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() + 1}}"
+                               class="page-link">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--생략-->
+    <script src="/node_modules/mark.js/dist/jquery.mark.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            var mark = function () {
+                var keyword = $("#keyword").text();
+                var options = {
+                    "each": function (element) {
+                        setTimeout(function () {
+                            $(element).addClass("animate");
+                        }, 150);
+                    }
+                };
+                $(".context").unmark({
+                    done: function () {
+                        $(".context").mark(keyword, options);
+                    }
+                });
+            };
+            mark();
+        })
+    </script>
+</body>
+</html>
+```
+
+페이지 내비게이션과 키워드 하일라이트 기능을 추가하였습니다.
+
+<details>
+<summary>search.html 전체 보기</summary>
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html::head"></head>
+<body class="bg-light">
+    <div th:replace="fragments.html::navigation-bar"></div>
+    <div class="container">
+        <div class="py-5 text-center">
+            <p class="lead" th:if="${studyPage.getTotalElements() == 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디가 없습니다.
+            </p>
+            <p class="lead" th:if="${studyPage.getTotalElements() > 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디를
+                <span th:text="${studyPage.getTotalElements()}"></span>개 찾았습니다.
+            </p>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" area-haspopup="false">
+                    정렬 방식
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'publishedDateTime')}? active"
+                       th:href="@{'/search/study?sort=publishedDateTime,desc&keyword=' + ${keyword}}">
+                        스터디 공개일
+                    </a>
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'memberCount')}? active"
+                       th:href="@{'/search/study?sort=memberCount,desc&keyword=' + ${keyword}}">
+                        멤버수
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-md-4" th:each="study: ${studyPage.getContent()}">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <a th:href="@{'/study/' + ${study.path}}" class="text-decoration-none">
+                                    <h5 class="card-title context" th:text="${study.title}"></h5>
+                                </a>
+                                <p class="card-text" th:text="${study.shortDescription}">Short description</p>
+                                <p class="card-text context">
+                                    <span th:each="tag: ${study.tags}"
+                                          class="font-weight-light font-monospace badge rounded-pill bg-success mr-3">
+                                        <a th:href="@{'/search/study?keyword=' + ${tag.title}}"
+                                           class="text-decoration-none text-white">
+                                            <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                                        </a>
+                                    </span>
+                                    <span th:each="zone: ${study.zones}"
+                                          class="font-weight-light font-monospace badge rounded-pill bg-primary mr-3">
+                                        <a th:href="@{'/search/study?keyword=' + ${zone.localNameOfCity}}"
+                                           class="text-decoration-none text-white">
+                                            <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}"
+                                                                              class="text-white">City</span>
+                                        </a>
+                                    </span>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fa fa-user-circle"></i>
+                                        <span th:text="${study.members.size()}"></span>명
+                                    </small>
+                                    <small class="text-muted date" th:text="${study.publishedDateTime}">9 mins</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!studyPage.hasPrevious()}? disabled">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() - 1}}"
+                               class="page-link" tabindex="-1" aria-disabled="true">
+                                <!--hasPrvious가 false일 때 class 뒤에 disabled를 추가함-->
+                                Previous
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i == studyPage.getNumber()}? active"
+                            th:each="i: ${#numbers.sequence(0, studyPage.getTotalPages() - 1)}">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${i}}"
+                               class="page-link" href="#" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${!studyPage.hasNext()}? disabled">
+                            <!--hasNexts가 false일 때 class 뒤에 disabled를 추가함-->
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() + 1}}"
+                               class="page-link">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments.html::footer"></div>
+    <script th:replace="fragments.html::date-time"></script>
+    <script src="/node_modules/mark.js/dist/jquery.mark.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            var mark = function () {
+                var keyword = $("#keyword").text();
+                var options = {
+                    "each": function (element) {
+                        setTimeout(function () {
+                            $(element).addClass("animate");
+                        }, 150);
+                    }
+                };
+                $(".context").unmark({
+                    done: function () {
+                        $(".context").mark(keyword, options);
+                    }
+                });
+            };
+            mark();
+        })
+    </script>
+</body>
+</html>
+```
+
+</details>
+
+하일라이트 css 수정을 위해 `fragments.html` 파일에 추가해줍니다.
+
+```html
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    /*생략*/
+    <style>
+        /*생략*/
+        mark {
+            padding: 0;
+            background: transparent;
+            background: linear-gradient(to right, #f0ad4e 50%, transparent 50%);
+            background-position: right bottom;
+            background-size: 200% 100%;
+            transition: all .5s ease;
+            color: #fff;
+        }
+
+        mark.animate {
+            background-position: left bottom;
+            color: #000;
+        }
+    </style>
+</head>
+/*생략*/
+</html>
+```
+
+<details>
+<summary>fragments.html 전체 보기</summary>
+
+```html
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
@@ -616,3 +1238,29 @@
 </ul>
 
 </html>
+```
+
+</details>
+
+## 테스트
+
+애플리케이션 실행 후 jpa를 검색하여 화면을 확인합니다.
+
+그냥 검색했을 때는 스터디 공개 오름차순으로 결과가 나타나고 하일라이트 및 페이지 내비게이션이 정확히 동작하는 것을 확인할 수 있습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/69-01.png)
+
+정렬 조건을 수정하여 검색하면, 
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/69-02.png)
+역시 정확히 동작하는 것을 확인할 수 있습니다.
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/69-03.png)
+
+멤버수 내림차순 정렬을 테스트하기 위해 기존 스터디에 가입한 뒤 다시 테스트 해보았습니다.
+
+먼저 지난번에 생성한 테스트 계정으로 스터디를 가입하고,
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/69-04.png)
+
+다시 멤버수로 정렬하여 조회하였더니 가입한 스터디가 가장 먼저 노출되는 것을 확인하였습니다.
+
+![](https://raw.githubusercontent.com/lcalmsky/spring-boot-app/master/resources/images/69-05.png)

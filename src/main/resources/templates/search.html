@@ -12,6 +12,24 @@
                 <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디를
                 <span th:text="${studyPage.getTotalElements()}"></span>개 찾았습니다.
             </p>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" area-haspopup="false">
+                    정렬 방식
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'publishedDateTime')}? active"
+                       th:href="@{'/search/study?sort=publishedDateTime,desc&keyword=' + ${keyword}}">
+                        스터디 공개일
+                    </a>
+                    <a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'memberCount')}? active"
+                       th:href="@{'/search/study?sort=memberCount,desc&keyword=' + ${keyword}}">
+                        멤버수
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-sm-10">
@@ -53,8 +71,56 @@
                 </div>
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!studyPage.hasPrevious()}? disabled">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() - 1}}"
+                               class="page-link" tabindex="-1" aria-disabled="true">
+                                <!--hasPrvious가 false일 때 class 뒤에 disabled를 추가함-->
+                                Previous
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i == studyPage.getNumber()}? active"
+                            th:each="i: ${#numbers.sequence(0, studyPage.getTotalPages() - 1)}">
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${i}}"
+                               class="page-link" href="#" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${!studyPage.hasNext()}? disabled">
+                            <!--hasNexts가 false일 때 class 뒤에 disabled를 추가함-->
+                            <a th:href="@{'/search/study?keyword=' + ${keyword} + '&sort=' + ${sortProperty} + ',desc&page=' + ${studyPage.getNumber() + 1}}"
+                               class="page-link">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
     <div th:replace="fragments.html::footer"></div>
     <script th:replace="fragments.html::date-time"></script>
+    <script src="/node_modules/mark.js/dist/jquery.mark.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            var mark = function () {
+                var keyword = $("#keyword").text();
+                var options = {
+                    "each": function (element) {
+                        setTimeout(function () {
+                            $(element).addClass("animate");
+                        }, 150);
+                    }
+                };
+                $(".context").unmark({
+                    done: function () {
+                        $(".context").mark(keyword, options);
+                    }
+                });
+            };
+            mark();
+        })
+    </script>
 </body>
 </html>
