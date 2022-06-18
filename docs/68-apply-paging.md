@@ -543,6 +543,107 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
 
 결과 데이터, `pageable`, 전체 데이터 수를 생성자로 전달해주어야 합니다.
 
+마지막으로 `MainController`에서 `view`로 전달해주는 이름이 바뀌었기 떄문에 `search.html` 파일도 수정해주어야 합니다.
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html::head"></head>
+<body class="bg-light">
+    <div th:replace="fragments.html::navigation-bar"></div>
+    <div class="container">
+        <div class="py-5 text-center">
+            <p class="lead" th:if="${studyPage.getTotalElements() == 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디가 없습니다.
+            </p>
+            <p class="lead" th:if="${studyPage.getTotalElements() > 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디를
+                <span th:text="${studyPage.getTotalElements()}"></span>개 찾았습니다.
+            </p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-md-4" th:each="study: ${studyPage.getContent()}">
+                    <!-- 생략-->
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
+```
+
+기존에 studyList를 사용하는 곳을 studyPage를 사용하도록 수정하였고 Page에서 제공하는 API를 이용해 비어있는지 확인하는 방식과 전체 개수를 획득하는 방식을 수정하였습니다.
+
+<details>
+<summary>search.html 전체 보기</summary>
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html::head"></head>
+<body class="bg-light">
+    <div th:replace="fragments.html::navigation-bar"></div>
+    <div class="container">
+        <div class="py-5 text-center">
+            <p class="lead" th:if="${studyPage.getTotalElements() == 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디가 없습니다.
+            </p>
+            <p class="lead" th:if="${studyPage.getTotalElements() > 0}">
+                <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디를
+                <span th:text="${studyPage.getTotalElements()}"></span>개 찾았습니다.
+            </p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-md-4" th:each="study: ${studyPage.getContent()}">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <a th:href="@{'/study/' + ${study.path}}" class="text-decoration-none">
+                                    <h5 class="card-title context" th:text="${study.title}"></h5>
+                                </a>
+                                <p class="card-text" th:text="${study.shortDescription}">Short description</p>
+                                <p class="card-text context">
+                                    <span th:each="tag: ${study.tags}"
+                                          class="font-weight-light font-monospace badge rounded-pill bg-success mr-3">
+                                        <a th:href="@{'/search/study?keyword=' + ${tag.title}}"
+                                           class="text-decoration-none text-white">
+                                            <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                                        </a>
+                                    </span>
+                                    <span th:each="zone: ${study.zones}"
+                                          class="font-weight-light font-monospace badge rounded-pill bg-primary mr-3">
+                                        <a th:href="@{'/search/study?keyword=' + ${zone.localNameOfCity}}"
+                                           class="text-decoration-none text-white">
+                                            <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}"
+                                                                              class="text-white">City</span>
+                                        </a>
+                                    </span>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fa fa-user-circle"></i>
+                                        <span th:text="${study.members.size()}"></span>명
+                                    </small>
+                                    <small class="text-muted date" th:text="${study.publishedDateTime}">9 mins</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments.html::footer"></div>
+    <script th:replace="fragments.html::date-time"></script>
+</body>
+</html>
+```
+
+</details>
+
 ## 테스트
 
 앞서 데이터를 추가한 뒤 jpa를 검색하였을 땐 31개가 모두 노출되었는데요, 애플리케이션을 재시작하여 동일하게 jpa를 검색해보면
