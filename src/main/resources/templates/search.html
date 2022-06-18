@@ -5,18 +5,18 @@
     <div th:replace="fragments.html::navigation-bar"></div>
     <div class="container">
         <div class="py-5 text-center">
-            <p class="lead" th:if="${#lists.isEmpty(studyList)}">
+            <p class="lead" th:if="${studyPage.getTotalElements() == 0}">
                 <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디가 없습니다.
             </p>
-            <p class="lead" th:if="${!#lists.isEmpty(studyList)}">
+            <p class="lead" th:if="${studyPage.getTotalElements() > 0}">
                 <strong th:text="${keyword}" id="keyword" class="context"></strong>에 해당하는 스터디를
-                <span th:text="${studyList.size()}"></span>개 찾았습니다.
+                <span th:text="${studyPage.getTotalElements()}"></span>개 찾았습니다.
             </p>
         </div>
         <div class="row justify-content-center">
             <div class="col-sm-10">
                 <div class="row">
-                    <div class="col-md-4" th:each="study: ${studyList}">
+                    <div class="col-md-4" th:each="study: ${studyPage.getContent()}">
                         <div class="card mb-4 shadow-sm">
                             <div class="card-body">
                                 <a th:href="@{'/study/' + ${study.path}}" class="text-decoration-none">
