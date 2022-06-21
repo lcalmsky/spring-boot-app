@@ -116,7 +116,7 @@ public class MainController {
 public class Study {
     // 생략
     @ColumnDefault(value = "0")
-    private Integer memberCount;
+    private Integer memberCount = 0;
     // 생략
     public void addMember(Account account) {
         this.members.add(account);
